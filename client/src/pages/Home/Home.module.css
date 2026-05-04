@@ -1,0 +1,177 @@
+.hero {
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5%;
+    position: relative;
+    overflow: hidden;
+    /* Fix URL Image */
+    background: url('../../assets/images/hero.png') center/cover no-repeat;
+}
+
+.heroOverlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, rgba(255, 248, 245, 0.9) 20%, transparent);
+    display: flex;
+    align-items: center;
+    padding: 0 5%;
+}
+
+.heroContent {
+    max-width: 600px;
+    z-index: 2;
+}
+
+.heroTitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem;
+    line-height: 1.1;
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+}
+
+.heroSubtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+}
+
+.heroButtons {
+    display: flex;
+    gap: 1rem;
+}
+
+.stats {
+    padding: 80px 5%;
+    background: var(--primary);
+    color: var(--white);
+    display: flex;
+    justify-content: space-around;
+    text-align: center;
+}
+
+.statItem h4 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.statItem p {
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.services {
+    padding: 120px 5%;
+    background: var(--white);
+}
+
+.sectionHeader {
+    text-align: center;
+    margin-bottom: 80px;
+}
+
+.sectionHeader h2 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.sectionHeader p {
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.servicesGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2.5rem;
+}
+
+.serviceCard {
+    background: var(--bg);
+    padding: 0;
+    overflow: hidden;
+    transition: var(--transition);
+    position: relative;
+}
+
+.serviceImg {
+    height: 360px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.serviceImg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.serviceInfo {
+    padding: 2.5rem;
+    text-align: center;
+}
+
+.serviceCard h3 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+}
+
+.serviceCard p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
+.serviceCard:hover {
+    transform: translateY(-15px);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+}
+
+.serviceCard:hover .serviceImg img {
+    transform: scale(1.1);
+}
+
+.btnPrimary {
+    padding: 15px 35px;
+    background: var(--primary);
+    color: var(--white);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.8rem;
+    transition: var(--transition);
+    cursor: pointer;
+    border: none;
+    display: inline-block;
+}
+
+.btnSecondary {
+    padding: 15px 35px;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.8rem;
+    transition: var(--transition);
+    cursor: pointer;
+    background: transparent;
+    display: inline-block;
+}
+
+.btnPrimary:hover {
+    background: var(--primary-light);
+    transform: translateY(-3px);
+}
+
+.btnSecondary:hover {
+    background: var(--primary);
+    color: var(--white);
+    transform: translateY(-3px);
+}

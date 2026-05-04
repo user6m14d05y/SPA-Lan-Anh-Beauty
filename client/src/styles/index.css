@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap');
+
+:root {
+    --primary: #775932;
+    --primary-light: #c5a073;
+    --accent: #e7c090;
+    --bg: #fff8f5;
+    --text-dark: #211a15;
+    --text-muted: #4e453b;
+    --white: #ffffff;
+    --glass: rgba(255, 255, 255, 0.8);
+    --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--bg);
+    color: var(--text-dark);
+    margin: 0;
+}
+
+h1, h2, h3, .font-serif {
+    font-family: 'Playfair Display', serif;
+}
+
+

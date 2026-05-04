@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lan Anh Beauty - User Profile</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600&amp;family=Noto+Serif:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#775932",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#fceee5",
+                        "tertiary-fixed": "#f1dfd1",
+                        "surface-bright": "#fff8f5",
+                        "on-secondary-container": "#67645f",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed-dim": "#d4c4b6",
+                        "surface": "#fff8f5",
+                        "secondary-fixed-dim": "#cac6bf",
+                        "on-secondary-fixed-variant": "#494742",
+                        "on-primary-fixed-variant": "#5d421d",
+                        "on-primary-fixed": "#2a1800",
+                        "primary-container": "#c5a073",
+                        "surface-container": "#f9ebe2",
+                        "on-tertiary-fixed-variant": "#50453a",
+                        "on-tertiary-container": "#453a30",
+                        "on-primary-container": "#503713",
+                        "on-surface": "#211a15",
+                        "secondary-container": "#e7e2db",
+                        "secondary-fixed": "#e7e2db",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#615e59",
+                        "inverse-surface": "#372f29",
+                        "inverse-primary": "#e7c090",
+                        "outline-variant": "#d2c4b7",
+                        "on-surface-variant": "#4e453b",
+                        "surface-container-highest": "#eee0d7",
+                        "background": "#fff8f5",
+                        "surface-container-high": "#f4e6dd",
+                        "tertiary": "#695c51",
+                        "primary": "#775932",
+                        "surface-variant": "#eee0d7",
+                        "on-primary": "#ffffff",
+                        "surface-dim": "#e5d7cf",
+                        "tertiary-container": "#b3a497",
+                        "on-background": "#211a15",
+                        "outline": "#80756a",
+                        "primary-fixed": "#ffddb6",
+                        "surface-container-low": "#fff1e8",
+                        "on-secondary-fixed": "#1d1b17",
+                        "primary-fixed-dim": "#e7c090",
+                        "on-tertiary-fixed": "#231a11",
+                        "error-container": "#ffdad6",
+                        "on-error-container": "#93000a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "32px",
+                        "component-gap": "24px",
+                        "container-max": "1280px",
+                        "unit": "8px",
+                        "section-padding": "120px"
+                    },
+                    "fontFamily": {
+                        "label-caps": ["Manrope"],
+                        "headline-xl": ["Noto Serif"],
+                        "headline-md": ["Noto Serif"],
+                        "display-lg": ["Noto Serif"],
+                        "body-lg": ["Manrope"],
+                        "body-md": ["Manrope"]
+                    },
+                    "fontSize": {
+                        "label-caps": ["12px", { "lineHeight": "1.0", "letterSpacing": "0.15em", "fontWeight": "600" }],
+                        "headline-xl": ["48px", { "lineHeight": "1.2", "fontWeight": "400" }],
+                        "headline-md": ["32px", { "lineHeight": "1.3", "fontWeight": "400" }],
+                        "display-lg": ["64px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-[#F5F0E9] min-h-screen text-on-surface flex flex-col">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-white/80 dark:bg-stone-950/80 backdrop-blur-md border-b border-stone-100 dark:border-stone-800 shadow-[0_4px_30px_rgba(197,160,115,0.05)]">
+<div class="max-w-[1280px] mx-auto flex justify-between items-center px-8 h-20">
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-serif tracking-tight uppercase text-xs text-stone-500 dark:text-stone-400 hover:text-[#C5A073] transition-colors duration-300 scale-95 active:opacity-80 transition-transform" href="#">Treatments</a>
+<a class="font-serif tracking-tight uppercase text-xs text-stone-500 dark:text-stone-400 hover:text-[#C5A073] transition-colors duration-300 scale-95 active:opacity-80 transition-transform" href="#">Shop</a>
+</nav>
+<a class="text-2xl font-serif tracking-[0.2em] text-[#C5A073] dark:text-[#D4AF37]" href="#">Lan Anh Beauty</a>
+<div class="flex items-center gap-6">
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-serif tracking-tight uppercase text-xs text-stone-500 dark:text-stone-400 hover:text-[#C5A073] transition-colors duration-300 scale-95 active:opacity-80 transition-transform" href="#">Blog</a>
+<a class="font-serif tracking-tight uppercase text-xs text-stone-500 dark:text-stone-400 hover:text-[#C5A073] transition-colors duration-300 scale-95 active:opacity-80 transition-transform" href="#">About</a>
+<a class="font-serif tracking-tight uppercase text-xs text-[#C5A073] border-b border-[#C5A073] pb-1 scale-95 active:opacity-80 transition-transform" href="#">Concierge</a>
+</nav>
+<div class="flex items-center gap-4 text-[#C5A073] dark:text-[#D4AF37]">
+<button class="hover:opacity-70 transition-opacity"><span class="material-symbols-outlined">search</span></button>
+<button class="hover:opacity-70 transition-opacity"><span class="material-symbols-outlined">shopping_bag</span></button>
+<button class="hover:opacity-70 transition-opacity"><span class="material-symbols-outlined">person</span></button>
+<button class="bg-[#C5A073] text-white px-6 py-2 rounded-DEFAULT font-label-caps text-label-caps hover:brightness-110 transition-all ml-4 hidden sm:block">Book Now</button>
+</div>
+</div>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex-grow pt-32 pb-section-padding px-8 max-w-[1280px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Sidebar Navigation -->
+<aside class="lg:col-span-3">
+<div class="bg-surface-container-lowest rounded-DEFAULT p-8 shadow-[0_4px_30px_rgba(197,160,115,0.05)] border border-[#d2c4b7]/30 sticky top-32">
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg bg-surface-container text-on-surface font-body-md text-body-md transition-colors" href="#">
+<span class="material-symbols-outlined text-[#C5A073]" style="font-variation-settings: 'FILL' 1;">person</span>
+                        Profile
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-highest font-body-md text-body-md transition-colors" href="#">
+<span class="material-symbols-outlined">receipt_long</span>
+                        Order History
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-highest font-body-md text-body-md transition-colors" href="#">
+<span class="material-symbols-outlined">local_shipping</span>
+                        Tracking
+                    </a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-highest font-body-md text-body-md transition-colors" href="#">
+<span class="material-symbols-outlined">favorite</span>
+                        Wishlist
+                    </a>
+<div class="h-px w-full bg-[#d2c4b7]/30 my-4"></div>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-surface-container-highest font-body-md text-body-md transition-colors" href="#">
+<span class="material-symbols-outlined">logout</span>
+                        Logout
+                    </a>
+</nav>
+</div>
+</aside>
+<!-- Profile Content -->
+<section class="lg:col-span-9 flex flex-col gap-component-gap">
+<!-- Personal Info Card -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-10 shadow-[0_4px_30px_rgba(197,160,115,0.05)] border border-[#d2c4b7]/30 flex flex-col md:flex-row gap-8 items-start relative">
+<button class="absolute top-8 right-8 text-on-surface-variant hover:text-[#C5A073] flex items-center gap-2 font-label-caps text-label-caps transition-colors">
+<span class="material-symbols-outlined text-[18px]">edit</span>
+                    EDIT
+                </button>
+<div class="w-32 h-32 rounded-full overflow-hidden shrink-0 border-2 border-surface-container">
+<img alt="Profile Avatar" class="w-full h-full object-cover" data-alt="A close-up portrait of a serene woman with flawless skin, reflecting a high-end beauty and wellness aesthetic. She is illuminated by soft, natural studio lighting that creates a tranquil, minimal-luxury mood. The background is a clean, neutral beige, tying into the primary brand palette. Her expression is calm and expert, embodying the professional and elegant feel of a premium spa environment." src="https://lh3.googleusercontent.com/aida/ADBb0ui4jkig0ssxyA5qQh0KqRJH_XnHrncCcdkVZHrG_H99I0EDIFSniBMtstAA6ZvVaeCxeX8IefwzwXoHuyEkahf4IQYziqcLNNdKAKOKEAsACTfo9t_JFpD_3v5qUU3WCZUiQH1DrRqeWB4EuT1cGCdBh5YjZJ3o_5mimF8_aJl74dlF1-zVpJwalxVa2RWbzWI1JEX8xLn2vF2_80YKiDrUpNOJ8uMN_27T-ov5ex9ofTYJKKgOvedZoHpr2M9Njj7fUrd7rps8"/>
+</div>
+<div class="flex-grow pt-2">
+<h1 class="font-headline-md text-headline-md text-on-surface mb-2">Eleanor Vance</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">eleanor.vance@example.com</p>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+<div>
+<span class="font-label-caps text-label-caps text-outline block mb-1">DATE OF BIRTH</span>
+<span class="font-body-md text-body-md text-on-surface">October 12, 1988</span>
+</div>
+<div>
+<span class="font-label-caps text-label-caps text-outline block mb-1">PHONE</span>
+<span class="font-body-md text-body-md text-on-surface">+1 (555) 123-4567</span>
+</div>
+<div class="sm:col-span-2">
+<span class="font-label-caps text-label-caps text-outline block mb-1">SHIPPING ADDRESS</span>
+<span class="font-body-md text-body-md text-on-surface">123 Serenity Lane, Apt 4B<br/>New York, NY 10001</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Recent Orders -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-10 shadow-[0_4px_30px_rgba(197,160,115,0.05)] border border-[#d2c4b7]/30">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-8 border-b border-[#d2c4b7]/30 pb-4">Recent Orders</h2>
+<div class="flex flex-col gap-6">
+<!-- Order 1 -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-[#d2c4b7]/30 last:border-0 last:pb-0">
+<div>
+<span class="font-label-caps text-label-caps text-outline block mb-1">ORDER #LA-8472</span>
+<h3 class="font-body-lg text-body-lg text-on-surface mb-1">Radiance Renewal Serum</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Placed on Oct 24, 2023</p>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-body-lg text-body-lg text-on-surface">$125.00</span>
+<span class="px-4 py-1 rounded-full bg-surface-container text-[#5d421d] font-label-caps text-label-caps">PROCESSING</span>
+</div>
+</div>
+<!-- Order 2 -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-[#d2c4b7]/30 last:border-0 last:pb-0">
+<div>
+<span class="font-label-caps text-label-caps text-outline block mb-1">ORDER #LA-8319</span>
+<h3 class="font-body-lg text-body-lg text-on-surface mb-1">Hydrating Rose Mist &amp; Clay Mask Duo</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Placed on Sep 15, 2023</p>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-body-lg text-body-lg text-on-surface">$85.00</span>
+<span class="px-4 py-1 rounded-full bg-primary-container/20 text-[#503713] font-label-caps text-label-caps">SHIPPED</span>
+</div>
+</div>
+<!-- Order 3 -->
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-6 border-b border-[#d2c4b7]/30 last:border-0 last:pb-0">
+<div>
+<span class="font-label-caps text-label-caps text-outline block mb-1">ORDER #LA-7902</span>
+<h3 class="font-body-lg text-body-lg text-on-surface mb-1">Signature Spa Day Package</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Placed on Jul 02, 2023</p>
+</div>
+<div class="flex items-center gap-4">
+<span class="font-body-lg text-body-lg text-on-surface">$350.00</span>
+<span class="px-4 py-1 rounded-full bg-surface-container-highest text-on-surface-variant font-label-caps text-label-caps">DELIVERED</span>
+</div>
+</div>
+</div>
+<button class="mt-8 text-[#C5A073] hover:text-[#775932] font-label-caps text-label-caps flex items-center gap-2 transition-colors">
+                    VIEW ALL ORDERS <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-20 border-t border-stone-200 dark:border-stone-800 bg-[#F5F0E9] dark:bg-stone-900 opacity-100 hover:opacity-70">
+<div class="max-w-[1280px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 px-8">
+<div class="col-span-1 md:col-span-1">
+<span class="text-xl font-serif tracking-widest text-stone-800 dark:text-stone-100 block mb-6">Lan Anh Beauty</span>
+<p class="font-serif text-sm tracking-wide text-stone-600 dark:text-stone-400">© 2024 Lan Anh Beauty. All rights reserved.</p>
+</div>
+<div class="col-span-1 md:col-span-3 flex flex-wrap gap-8 justify-start md:justify-end">
+<a class="font-serif text-sm tracking-wide text-stone-600 dark:text-stone-400 hover:translate-x-1 transition-transform duration-300" href="#">Privacy Policy</a>
+<a class="font-serif text-sm tracking-wide text-stone-600 dark:text-stone-400 hover:translate-x-1 transition-transform duration-300" href="#">Terms of Service</a>
+<a class="font-serif text-sm tracking-wide text-stone-600 dark:text-stone-400 hover:translate-x-1 transition-transform duration-300" href="#">Shipping &amp; Returns</a>
+<a class="font-serif text-sm tracking-wide text-stone-600 dark:text-stone-400 hover:translate-x-1 transition-transform duration-300" href="#">Contact Us</a>
+<a class="font-serif text-sm tracking-wide text-stone-600 dark:text-stone-400 hover:translate-x-1 transition-transform duration-300" href="#">Sustainability</a>
+</div>
+</div>
+</footer>
+</body></html>
