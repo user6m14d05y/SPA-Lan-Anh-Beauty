@@ -1,35 +1,68 @@
 import { Outlet, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import styles from "./MainLayout.module.css";
+import logoImg from "../../public/Logo.png";
 
 export default function MainLayout() {
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
-    <div className="min-h-screen flex flex-col font-sans">
-      <header className="bg-white shadow-sm sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex-shrink-0 flex items-center gap-2">
-            <span className="text-2xl font-bold text-pink-600">Lan Anh Beauty</span>
-          </div>
-          <nav className="hidden md:flex space-x-8">
-            <Link to="/" className="text-gray-700 hover:text-pink-600 font-medium transition-colors">Trang chủ</Link>
-            <Link to="/services" className="text-gray-700 hover:text-pink-600 font-medium transition-colors">Dịch vụ</Link>
-            <Link to="/booking" className="text-gray-700 hover:text-pink-600 font-medium transition-colors">Đặt lịch</Link>
-          </nav>
-          <div className="flex items-center">
-            <Link to="/booking" className="bg-pink-600 text-white px-5 py-2.5 rounded-full font-medium hover:bg-pink-700 transition-colors shadow-sm">
-              Đặt lịch ngay
-            </Link>
-          </div>
-        </div>
+    <div className="min-h-screen flex flex-col">
+      <header>
+        <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ""}`}>
+          <Link to="/" className={styles.logo}>
+            <img src={logoImg} alt="Logo" />
+          </Link>
+          <ul className={styles.navLinks}>
+            <li>
+              <Link to="/">Trang Chủ</Link>
+            </li>
+            <li>
+              <Link to="/services">Dịch Vụ</Link>
+            </li>
+            <li>
+              <Link to="/about">Về Chúng Tôi</Link>
+            </li>
+            <li>
+              <Link to="/contact">Liên Hệ</Link>
+            </li>
+          </ul>
+          <Link to="/booking" className={styles.btnBook}>
+            Đặt Lịch Ngay
+          </Link>
+        </nav>
       </header>
 
-      <main className="flex-grow">
+      <main className={styles.mainContent}>
         <Outlet />
       </main>
 
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-gray-400">© 2026 Lan Anh Beauty SPA. All rights reserved.</p>
+      <footer className={styles.footer}>
+        <div className={styles.footerContainer}>
+          <h2 className={styles.footerTitle}>LAN ANH BEAUTY</h2>
+          <div className={styles.socialLinks}>
+            <a href="#">Facebook</a>
+            <a href="#">Instagram</a>
+            <a href="#">Zalo</a>
+          </div>
+          <p className={styles.copyright}>© 2026 Lan Anh Beauty SPA. All rights reserved.</p>
         </div>
       </footer>
     </div>
   );
 }
+
+

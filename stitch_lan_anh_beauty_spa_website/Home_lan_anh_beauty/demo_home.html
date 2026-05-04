@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lan Anh Beauty - Phun Thêu & Spa Cao Cấp</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+    <style>
+        :root {
+            --primary: #775932;
+            --primary-light: #c5a073;
+            --accent: #e7c090;
+            --bg: #fff8f5;
+            --text-dark: #211a15;
+            --text-muted: #4e453b;
+            --white: #ffffff;
+            --glass: rgba(255, 255, 255, 0.8);
+            --transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .font-serif {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 80px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 5%;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(119, 89, 50, 0.1);
+            transition: var(--transition);
+        }
+
+        nav.scrolled {
+            height: 60px;
+            background: var(--white);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            letter-spacing: 1px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 400;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--primary);
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary);
+        }
+
+        .btn-book {
+            padding: 10px 25px;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: var(--transition);
+        }
+
+        .btn-book:hover {
+            background: var(--primary);
+            color: var(--white);
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 5%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            width: 50%;
+            z-index: 2;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 1s forwards 0.5s;
+        }
+
+        .hero-label {
+            display: inline-block;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--primary-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            line-height: 1.1;
+            margin-bottom: 2rem;
+            color: var(--text-dark);
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            max-width: 500px;
+            margin-bottom: 3rem;
+        }
+
+        .hero-image {
+            position: absolute;
+            right: -5%;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 55%;
+            height: 80%;
+            background: url('file:///C:/Users/USER/.gemini/antigravity/brain/10c93700-cdf9-4d33-8389-68687dd1d6de/spa_hero_luxurious_1777909191021.png') center/cover no-repeat;
+            border-radius: 300px 0 0 300px;
+            box-shadow: -20px 20px 60px rgba(0,0,0,0.1);
+            opacity: 0;
+            animation: fadeInRight 1.2s forwards;
+        }
+
+        .cta-group {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .btn-primary {
+            padding: 18px 40px;
+            background: var(--primary);
+            color: var(--white);
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.85rem;
+            transition: var(--transition);
+            box-shadow: 0 10px 30px rgba(119, 89, 50, 0.2);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(119, 89, 50, 0.3);
+        }
+
+        /* Services */
+        .services {
+            padding: 120px 5%;
+            background: var(--white);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .section-header h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+        }
+
+        .service-card {
+            background: var(--bg);
+            padding: 0;
+            overflow: hidden;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .service-img {
+            height: 350px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .service-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .service-info {
+            padding: 2.5rem;
+            text-align: center;
+        }
+
+        .service-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .service-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+        }
+
+        .service-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+        }
+
+        .service-card:hover .service-img img {
+            transform: scale(1.1);
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 80px 5%;
+            background: var(--primary);
+            color: var(--white);
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+        }
+
+        .stat-item h4 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-item p {
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translate(50px, -50%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(0, -50%);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero h1 { font-size: 3.5rem; }
+            .services-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero { flex-direction: column; text-align: center; padding-top: 100px; }
+            .hero-content { width: 100%; }
+            .hero-image { position: relative; width: 100%; height: 400px; right: 0; top: 0; transform: none; border-radius: 50px; margin-top: 50px; }
+            .hero h1 { font-size: 2.8rem; }
+            .services-grid { grid-template-columns: 1fr; }
+            .stats { flex-direction: column; gap: 3rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="navbar">
+        <a href="#" class="logo">LAN ANH BEAUTY</a>
+        <ul class="nav-links">
+            <li><a href="#home">Trang Chủ</a></li>
+            <li><a href="#services">Dịch Vụ</a></li>
+            <li><a href="#about">Về Chúng Tôi</a></li>
+            <li><a href="#contact">Liên Hệ</a></li>
+        </ul>
+        <a href="#book" class="btn-book">Đặt Lịch Ngay</a>
+    </nav>
+
+    <header class="hero" id="home">
+        <div class="hero-content">
+            <span class="hero-label">Phun Thêu & Spa Nghệ Thuật</span>
+            <h1>Nét Đẹp Tự Nhiên,<br>Hoàn Mỹ Từng Chi Tiết.</h1>
+            <p>Kiến tạo vẻ đẹp độc bản cho mỗi người phụ nữ Việt bằng công nghệ hiện đại và tâm huyết từ chuyên gia hàng đầu.</p>
+            <div class="cta-group">
+                <a href="#services" class="btn-primary">Xem Dịch Vụ</a>
+            </div>
+        </div>
+        <div class="hero-image"></div>
+    </header>
+
+    <section class="stats">
+        <div class="stat-item">
+            <h4>10+</h4>
+            <p>Năm Kinh Nghiệm</p>
+        </div>
+        <div class="stat-item">
+            <h4>15k+</h4>
+            <p>Khách Hàng Hài Lòng</p>
+        </div>
+        <div class="stat-item">
+            <h4>20+</h4>
+            <p>Chuyên Gia Tận Tâm</p>
+        </div>
+        <div class="stat-item">
+            <h4>100%</h4>
+            <p>Cam Kết Chất Lượng</p>
+        </div>
+    </section>
+
+    <section class="services" id="services">
+        <div class="section-header">
+            <h2>Dịch Vụ Nổi Bật</h2>
+            <p>Chúng tôi mang đến giải pháp làm đẹp toàn diện, kết hợp giữa kỹ thuật tinh xảo và dòng sản phẩm cao cấp nhất.</p>
+        </div>
+
+        <div class="services-grid">
+            <!-- Service 1 -->
+            <div class="service-card">
+                <div class="service-img">
+                    <img src="file:///C:/Users/USER/.gemini/antigravity/brain/10c93700-cdf9-4d33-8389-68687dd1d6de/spa_service_permanent_makeup_1777909206116.png" alt="Phun Thêu Thẩm Mỹ">
+                </div>
+                <div class="service-info">
+                    <h3>Phun Thêu Thẩm Mỹ</h3>
+                    <p>Kiến tạo đường nét mày, môi, mí sắc sảo nhưng vẫn giữ được sự tự nhiên vốn có của khuôn mặt.</p>
+                    <a href="#" class="btn-book" style="border:none; border-bottom:1px solid var(--primary); padding: 5px 0;">Tìm Hiểu Thêm</a>
+                </div>
+            </div>
+
+            <!-- Service 2 -->
+            <div class="service-card">
+                <div class="service-img">
+                    <img src="file:///C:/Users/USER/.gemini/antigravity/brain/10c93700-cdf9-4d33-8389-68687dd1d6de/spa_service_skincare_1777909221013.png" alt="Chăm Sóc Da">
+                </div>
+                <div class="service-info">
+                    <h3>Chăm Sóc Da</h3>
+                    <p>Liệu trình phục hồi chuyên sâu, đánh thức làn da rạng rỡ, căng bóng từ bên trong với công nghệ Nano.</p>
+                    <a href="#" class="btn-book" style="border:none; border-bottom:1px solid var(--primary); padding: 5px 0;">Tìm Hiểu Thêm</a>
+                </div>
+            </div>
+
+            <!-- Service 3 -->
+            <div class="service-card">
+                <div class="service-img">
+                    <img src="file:///C:/Users/USER/.gemini/antigravity/brain/10c93700-cdf9-4d33-8389-68687dd1d6de/spa_service_massage_1777909240157.png" alt="Massage Thư Giãn">
+                </div>
+                <div class="service-info">
+                    <h3>Massage Thư Giãn</h3>
+                    <p>Giải tỏa căng thẳng, cân bằng thân - tâm - trí với kỹ thuật massage đá nóng và tinh dầu organic.</p>
+                    <a href="#" class="btn-book" style="border:none; border-bottom:1px solid var(--primary); padding: 5px 0;">Tìm Hiểu Thêm</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer style="padding: 60px 5%; background: #211a15; color: white; text-align: center;">
+        <h2 class="font-serif" style="font-size: 2rem; margin-bottom: 2rem;">LAN ANH BEAUTY</h2>
+        <div style="margin-bottom: 2rem; display: flex; justify-content: center; gap: 2rem;">
+            <a href="#" style="color: #c5a073; text-decoration: none;">Facebook</a>
+            <a href="#" style="color: #c5a073; text-decoration: none;">Instagram</a>
+            <a href="#" style="color: #c5a073; text-decoration: none;">Zalo</a>
+        </div>
+        <p style="opacity: 0.5; font-size: 0.8rem;">&copy; 2024 Lan Anh Beauty Spa. Thiết kế bởi Antigravity.</p>
+    </footer>
+
+    <script>
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+    </script>
+</body>
+</html>
