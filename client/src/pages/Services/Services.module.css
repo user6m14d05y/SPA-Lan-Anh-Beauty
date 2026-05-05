@@ -1,0 +1,209 @@
+.servicesWrapper {
+    min-height: 100vh;
+    background: var(--bg);
+}
+
+.hero {
+    height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5%;
+    position: relative;
+    overflow: hidden;
+    background: url('../../assets/images/hero.png') center/cover no-repeat;
+}
+
+.heroOverlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, var(--bg) 0%, rgba(255, 248, 245, 0.7) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 5%;
+}
+
+.heroTitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    line-height: 1.2;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+    z-index: 2;
+}
+
+.heroSubtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 700px;
+    z-index: 2;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 5%;
+}
+
+.servicesSection {
+    padding: 80px 0;
+}
+
+.servicesGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+}
+
+.serviceCard {
+    background: var(--white);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: var(--transition);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    display: flex;
+    flex-direction: column;
+}
+
+.serviceCard:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(119, 89, 50, 0.1);
+}
+
+.serviceImg {
+    height: 300px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.serviceImg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: var(--transition);
+}
+
+.serviceCard:hover .serviceImg img {
+    transform: scale(1.05);
+}
+
+.priceTag {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    background: var(--white);
+    color: var(--primary);
+    padding: 8px 15px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.serviceInfo {
+    padding: 2.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.serviceInfo h3 {
+    font-size: 1.5rem;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+    font-family: 'Playfair Display', serif;
+}
+
+.serviceInfo p {
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+    flex: 1;
+}
+
+.btnBook {
+    display: inline-block;
+    padding: 12px 25px;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: var(--transition);
+}
+
+.btnBook:hover {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.ctaSection {
+    padding: 0 0 100px;
+}
+
+.ctaBox {
+    background: var(--primary);
+    padding: 4rem;
+    border-radius: 12px;
+    text-align: center;
+    color: var(--white);
+    box-shadow: 0 20px 40px rgba(119, 89, 50, 0.2);
+}
+
+.ctaBox h2 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    font-family: 'Playfair Display', serif;
+}
+
+.ctaBox p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 2.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.btnPrimary {
+    display: inline-block;
+    padding: 15px 40px;
+    background: var(--white);
+    color: var(--primary);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 6px;
+    transition: var(--transition);
+}
+
+.btnPrimary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 900px) {
+    .servicesGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .servicesGrid {
+        grid-template-columns: 1fr;
+    }
+    .ctaBox {
+        padding: 3rem 1.5rem;
+    }
+}

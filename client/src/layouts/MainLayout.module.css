@@ -35,6 +35,35 @@
     padding: 0;
 }
 
+.navActions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.authButton {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 999px;
+    background: rgba(197, 160, 115, 0.16);
+    color: var(--primary);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.authButton:hover {
+    background: var(--primary);
+    color: var(--white);
+}
+
+.userBadge {
+    font-size: 0.85rem;
+    color: var(--text-dark);
+    white-space: nowrap;
+}
+
 .navLinks a {
     text-decoration: none;
     color: var(--text-dark);
@@ -45,6 +74,121 @@
     transition: var(--transition);
     position: relative;
 }
+
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: rgba(17, 24, 39, 0.55);
+    z-index: 2000;
+}
+
+.modalPanel {
+    position: relative;
+    width: min(100%, 480px);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--white);
+    border-radius: 24px;
+    padding: 2rem;
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.22);
+}
+
+.modalClose {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 999px;
+    background: rgba(17, 24, 39, 0.08);
+    color: var(--text-dark);
+    font-size: 1.4rem;
+    cursor: pointer;
+}
+
+.modalClose:hover {
+    background: rgba(17, 24, 39, 0.14);
+}
+
+.modalClose:focus-visible,
+.authButton:focus-visible,
+.btnBook:focus-visible,
+.navLinks a:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+    .navbar {
+        gap: 1rem;
+        padding: 0 1rem;
+    }
+
+    .navLinks {
+        gap: 1rem;
+    }
+
+    .navActions {
+        gap: 0.5rem;
+    }
+
+    .userBadge {
+        display: none;
+    }
+}
+
+@media (max-width: 700px) {
+    .navbar {
+        height: auto;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    .logo {
+        width: 84px !important;
+        height: 84px !important;
+        padding: 0;
+    }
+
+    .navLinks {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .navActions {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .mainContent {
+        padding-top: 150px;
+    }
+}
+
+@media (max-width: 576px) {
+    .modalPanel {
+        padding: 1.5rem 1rem;
+        border-radius: 18px;
+    }
+}
+
+@media (max-width: 420px) {
+    .btnBook,
+    .authButton {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+/* Footer Styles */
 
 .navLinks a::after {
     content: '';
