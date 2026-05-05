@@ -1,58 +1,118 @@
-import { Outlet, Link, useLocation } from "react-router-dom";
+import React from 'react';
+import { Outlet, NavLink, useLocation } from 'react-router-dom';
+// Icon
+import { LayoutDashboard, Calendar, Users, Sparkles, Mail, MessageCircle, LogOut, User } from '../icons.jsx';
+import styles from './AdminLayout.module.css';
 
 export default function AdminLayout() {
   const location = useLocation();
-  
-  const navItems = [
-    { path: "/", label: "Tổng quan", icon: "📊" },
-    { path: "/appointments", label: "Lịch hẹn", icon: "📅" },
-    { path: "/customers", label: "Khách hàng", icon: "👥" },
-    { path: "/services", label: "Dịch vụ", icon: "✨" },
-  ];
+
+  // TODO: Thay bằng auth context khi có hệ thống đăng nhập thật
+  const user = { role: 'admin', name: 'Lan Anh Admin' };
+
+  const getPageTitle = () => {
+    switch(location.pathname) {
+      case '/': return 'Tổng quan';
+      case '/appointments': return 'Lịch hẹn';
+      case '/customers': return 'Khách hàng';
+      case '/services': return 'Dịch vụ';
+      case '/contacts': return 'Liên hệ';
+      case '/chat': return 'Chat Khách hàng';
+      case '/staffs': return 'Quản lý Nhân viên';
+      default: return 'Admin Panel';
+    }
+  };
 
   return (
-    <div className="flex h-screen bg-gray-50 font-sans">
-      {/* Sidebar */}
-      <aside className="w-64 bg-gray-900 text-white flex flex-col">
-        <div className="h-16 flex items-center justify-center border-b border-gray-800">
-          <span className="text-xl font-bold text-white">Admin Panel</span>
+    <div className={styles.adminContainer}>
+      <aside className={styles.sidebar}>
+        <div className={styles.sidebarHeader}>
+          Lan Anh Admin
         </div>
-        <nav className="flex-1 py-6 px-3 space-y-1">
-          {navItems.map((item) => (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-                location.pathname === item.path 
-                  ? "bg-indigo-600 text-white" 
-                  : "text-gray-300 hover:bg-gray-800 hover:text-white"
-              }`}
+        <ul className={styles.navList}>
+          <li>
+            <NavLink 
+              to="/" 
+              end
+              className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
             >
-              <span className="text-lg">{item.icon}</span>
-              <span className="font-medium">{item.label}</span>
-            </Link>
-          ))}
-        </nav>
-        <div className="p-4 border-t border-gray-800">
-          <button className="flex items-center gap-3 text-gray-400 hover:text-white w-full px-4 py-2 transition-colors">
-            <span>🚪</span> Đăng xuất
-          </button>
+              <span className={styles.navIcon}><LayoutDashboard size={20} /></span>
+              Tổng quan
+            </NavLink>
+          </li>
+          <li>
+            {user.role === 'admin' && (
+              <NavLink 
+                to="/staffs" 
+                className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
+              >
+                <span className={styles.navIcon}><User size={20} /></span>
+                Quản lý nhân viên
+              </NavLink>
+            )}
+          </li>
+          <li>
+            <NavLink 
+              to="/appointments" 
+              className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
+            >
+              <span className={styles.navIcon}><Calendar size={20} /></span>
+              Lịch hẹn
+            </NavLink>
+          </li>
+          <li>
+            <NavLink 
+              to="/customers" 
+              className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
+            >
+              <span className={styles.navIcon}><Users size={20} /></span>
+              Khách hàng
+            </NavLink>
+          </li>
+          <li>
+            <NavLink 
+              to="/services" 
+              className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
+            >
+              <span className={styles.navIcon}><Sparkles size={20} /></span>
+              Dịch vụ
+            </NavLink>
+          </li>
+          <li>
+            <NavLink 
+              to="/contacts" 
+              className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
+            >
+              <span className={styles.navIcon}><Mail size={20} /></span>
+              Liên hệ
+            </NavLink>
+          </li>
+          <li>
+            <NavLink 
+              to="/chat" 
+              className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
+            >
+              <span className={styles.navIcon}><MessageCircle size={20} /></span>
+              Chat
+            </NavLink>
+          </li>
+        </ul>
+        <div className={styles.sidebarFooter}>
+          <a href="http://localhost:5173" className={styles.navLink}>
+            <span className={styles.navIcon}><LogOut size={20} /></span>
+            Đăng xuất
+          </a>
         </div>
       </aside>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8">
-          <h2 className="text-xl font-semibold text-gray-800">
-            {navItems.find(i => i.path === location.pathname)?.label || "Dashboard"}
-          </h2>
-          <div className="flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 font-bold">
-              AD
-            </div>
+      <main className={styles.mainContent}>
+        <header className={styles.topbar}>
+          <h1 className={styles.pageTitle}>{getPageTitle()}</h1>
+          <div className={styles.topbarRight}>
+            <div className={styles.avatar}>LA</div>
           </div>
         </header>
-        <div className="flex-1 overflow-auto p-8">
+        <div className={styles.pageContent}>
           <Outlet />
         </div>
       </main>

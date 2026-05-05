@@ -1,12 +1,28 @@
 @import "tailwindcss";
 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap');
+
 :root {
-  --primary: #4F46E5; /* Indigo for admin panel */
-  --sidebar-bg: #111827;
+    --primary: #775932;
+    --primary-light: #c5a073;
+    --accent: #e7c090;
+    --bg: #fff8f5;
+    --bg-light: #ffffff;
+    --text-dark: #211a15;
+    --text-muted: #4e453b;
+    --white: #ffffff;
+    --glass: rgba(255, 255, 255, 0.8);
+    --border: #e0d5ce;
+    --transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 body {
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  background-color: #f3f4f6;
-  color: #1f2937;
+    font-family: 'Montserrat', sans-serif;
+    background-color: var(--bg);
+    color: var(--text-dark);
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6, .font-serif {
+    font-family: 'Playfair Display', serif;
 }

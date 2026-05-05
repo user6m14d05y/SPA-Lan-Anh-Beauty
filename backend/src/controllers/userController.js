@@ -1,95 +1,100 @@
 import { userService } from "../services/userService.js";
 
+const handleError = (res, error, fallbackMessage = 'Có lỗi xảy ra') => {
+  res.status(400).json({
+    success: false,
+    message: error.message || fallbackMessage,
+  });
+};
+
 export const userController = {
-  async login(req, res, next) {
+  async login(req, res) {
     try {
-      const userData = req.body;
-      const newUser = await userService.createUser(userData);
-      res.status(201).json({
+      const user = await userService.loginUser(req.body);
+      res.status(200).json({
         success: true,
         message: 'Đăng nhập thành công',
-        data: newUser
+        data: user,
       });
     } catch (error) {
-      next(error);
+      handleError(res, error, 'Đăng nhập thất bại');
     }
-  }, 
-  async register(req, res, next) {
+  },
+
+  async register(req, res) {
     try {
-      const userData = req.body;
-      const newUser = await userService.createUser(userData);
+      const newUser = await userService.registerUser(req.body);
       res.status(201).json({
         success: true,
         message: 'Đăng ký thành công',
-        data: newUser
+        data: newUser,
       });
     } catch (error) {
-      next(error);
+      handleError(res, error, 'Đăng ký thất bại');
     }
   },
-  async logout(req, res, next) {
-    try {
-      const userData = req.body;
-      const newUser = await userService.createUser(userData);
-      res.status(201).json({
-        success: true,
-        message: 'Đăng xuất thành công',
-        data: newUser
-      });
-    } catch (error) {
-      next(error);
-    }
-  }, 
-  async index(req, res, next) {
+
+  async logout(req, res) {
+    res.status(200).json({
+      success: true,
+      message: 'Đăng xuất thành công',
+    });
+  },
+
+  async index(req, res) {
     try {
       const users = await userService.getAllUsers();
       res.status(200).json({
         success: true,
         message: 'Lấy danh sách thành công',
-        data: users
+        data: users,
       });
     } catch (error) {
-      next(error);
+      handleError(res, error, 'Lấy danh sách thất bại');
     }
   },
-  async show(req, res, next) {
+
+  async show(req, res) {
     try {
       const { id } = req.params;
       const user = await userService.getUserById(id);
       res.status(200).json({
         success: true,
         message: 'Lấy thông tin thành công',
-        data: user
+        data: user,
       });
     } catch (error) {
-      next(error);
+      handleError(res, error, 'Lấy thông tin thất bại');
     }
   },
-  async update(req, res, next) {
+
+  async update(req, res) {
     try {
       const { id } = req.params;
-      const userData = req.body;
-      const updatedUser = await userService.updateUser(id, userData);
+      const updatedUser = await userService.updateUser(id, req.body);
       res.status(200).json({
         success: true,
         message: 'Cập nhật thành công',
-        data: updatedUser
+        data: updatedUser,
       });
     } catch (error) {
-      next(error);
+      handleError(res, error, 'Cập nhật thất bại');
     }
   },
-  async delete(req, res, next) {
+
+  async delete(req, res) {
     try {
       const { id } = req.params;
       const deletedUser = await userService.deleteUser(id);
       res.status(200).json({
         success: true,
         message: 'Xóa thành công',
-        data: deletedUser
+        data: deletedUser,
       });
     } catch (error) {
-      next(error);
+      handleError(res, error, 'Xóa thất bại');
     }
-  }
-}
+  },
+};
+
+export default userController;

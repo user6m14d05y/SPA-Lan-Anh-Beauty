@@ -1,0 +1,186 @@
+.aboutWrapper {
+    min-height: 100vh;
+    background: var(--bg);
+}
+
+.hero {
+    height: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 5%;
+    position: relative;
+    overflow: hidden;
+    background: url('../../assets/images/hero.png') center/cover no-repeat;
+}
+
+.heroOverlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, var(--bg) 0%, rgba(255, 248, 245, 0.7) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 5%;
+}
+
+.heroTitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 3.5rem;
+    line-height: 1.2;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+    z-index: 2;
+}
+
+.heroSubtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 700px;
+    z-index: 2;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 5%;
+}
+
+.storySection {
+    padding: 100px 0;
+}
+
+.storySection .container {
+    display: flex;
+    align-items: center;
+    gap: 4rem;
+}
+
+.storyContent {
+    flex: 1;
+}
+
+.sectionTitle {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    color: var(--text-dark);
+    margin-bottom: 1.5rem;
+}
+
+.sectionDesc {
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: 1.5rem;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 3rem;
+    padding-top: 3rem;
+    border-top: 1px solid rgba(119, 89, 50, 0.2);
+}
+
+.statItem h3 {
+    font-size: 2.5rem;
+    color: var(--primary);
+    margin-bottom: 0.5rem;
+    font-family: 'Playfair Display', serif;
+}
+
+.statItem p {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.storyImage {
+    flex: 1;
+}
+
+.imagePlaceholder {
+    width: 100%;
+    height: 500px;
+    background: var(--primary-light);
+    border-radius: 12px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--primary-light), var(--accent));
+}
+
+.valuesSection {
+    padding: 100px 0;
+    background: var(--white);
+}
+
+.valuesHeader {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.valuesHeader .sectionDesc {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.valuesGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+}
+
+.valueCard {
+    background: var(--bg);
+    padding: 3rem 2rem;
+    border-radius: 12px;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.valueCard:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(119, 89, 50, 0.1);
+}
+
+.valueIcon {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+}
+
+.valueCard h3 {
+    font-size: 1.5rem;
+    color: var(--text-dark);
+    margin-bottom: 1rem;
+    font-family: 'Playfair Display', serif;
+}
+
+.valueCard p {
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+    .storySection .container {
+        flex-direction: column;
+    }
+    .valuesGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .valuesGrid {
+        grid-template-columns: 1fr;
+    }
+    .statsGrid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
