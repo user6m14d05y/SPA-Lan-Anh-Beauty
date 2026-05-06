@@ -10,14 +10,27 @@ const handleError = (res, error, fallbackMessage = 'Có lỗi xảy ra') => {
 export const userController = {
   async login(req, res) {
     try {
-      const user = await userService.loginUser(req.body);
+      const result = await userService.loginUser(req.body);
       res.status(200).json({
         success: true,
         message: 'Đăng nhập thành công',
-        data: user,
+        data: result,
       });
     } catch (error) {
       handleError(res, error, 'Đăng nhập thất bại');
+    }
+  },
+
+  // Lấy thông tin user hiện tại từ token
+  async me(req, res) {
+    try {
+      const user = await userService.getUserById(req.user.id);
+      res.status(200).json({
+        success: true,
+        data: user,
+      });
+    } catch (error) {
+      handleError(res, error, 'Không thể lấy thông tin');
     }
   },
 
@@ -35,10 +48,16 @@ export const userController = {
   },
 
   async logout(req, res) {
-    res.status(200).json({
-      success: true,
-      message: 'Đăng xuất thành công',
-    });
+    try {
+      const { refreshToken } = req.body;
+      await userService.logoutUser(refreshToken);
+      res.status(200).json({
+        success: true,
+        message: 'Đăng xuất thành công',
+      });
+    } catch (error) {
+      handleError(res, error, 'Đăng xuất thất bại');
+    }
   },
 
   async index(req, res) {

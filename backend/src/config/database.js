@@ -9,10 +9,10 @@ const sequelize = new Sequelize(
   process.env.DB_USER,
   process.env.DB_PASS,
   {
-    host: process.env.DB_HOST, // Sẽ là 'localhost' nếu chạy node ngoài Docker, hoặc 'mysql' nếu chạy trong Docker mạng nội bộ
-    port: Number(process.env.DB_PORT || 3306),
+    host: process.env.DB_HOST, // 'mysql' trong Docker network nội bộ
+    port: Number(process.env.DB_PORT || 3306), // 3306 là port nội bộ Docker, 3307 là port expose ra ngoài
     dialect: 'mysql',
-    logging: false, // Tắt log các câu query để console gọn gàng hơn
+    logging: false,
   }
 );
 

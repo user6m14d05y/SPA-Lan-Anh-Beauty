@@ -1,0 +1,4 @@
+# Environment files - KHÔNG commit lên GitHub
+.env
+backend/.env
+node_modules

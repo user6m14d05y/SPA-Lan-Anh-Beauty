@@ -1,5 +1,6 @@
 require('dotenv').config();
 
+// SỬ DỤNG CHO MIGRATION, SEEDER CỦA SEQUELIZE
 const baseConfig = {
   username: process.env.DB_USER,
   password: process.env.DB_PASS,

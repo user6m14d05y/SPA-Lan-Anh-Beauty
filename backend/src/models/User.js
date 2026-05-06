@@ -28,8 +28,8 @@ const User = sequelize.define("User", {
     allowNull: true,
   },
   role: {
-    type: Sequelize.ENUM('ADMIN', 'STAFF', 'CUSTOMER'),
-    defaultValue: 'CUSTOMER',
+    type: Sequelize.ENUM('ADMIN', 'STAFF'),
+    defaultValue: 'STAFF',
   },
   isActive: {
     type: Sequelize.BOOLEAN,

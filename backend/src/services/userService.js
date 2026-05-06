@@ -1,6 +1,8 @@
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import { Op } from 'sequelize';
 import User from '../models/User.js';
+import RefreshToken from '../models/RefreshToken.js';
 
 const sanitizeUser = (user) => {
   if (!user) return null;
@@ -104,7 +106,45 @@ export const userService = {
       throw new Error('Mật khẩu không chính xác.');
     }
 
-    return sanitizeUser(user);
+    const safeUser = sanitizeUser(user);
+
+    // Tạo JWT tokens
+    const payload = {
+      id: safeUser.id,
+      email: safeUser.email,
+      role: safeUser.role,
+      fullName: safeUser.fullName,
+    };
+
+    const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: '8h',
+    });
+
+    const refreshTokenValue = jwt.sign({ id: safeUser.id }, process.env.JWT_SECRET, {
+      expiresIn: '7d',
+    });
+
+    // Lưu refresh token vào DB
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + 7); // 7 ngày
+    await RefreshToken.create({
+      userId: safeUser.id,
+      token: refreshTokenValue,
+      expiresAt,
+    });
+
+    return {
+      user: safeUser,
+      accessToken,
+      refreshToken: refreshTokenValue,
+      expiresIn: 8 * 60 * 60,
+    };
+  },
+
+  // Xóa refresh token khi logout
+  async logoutUser(refreshTokenValue) {
+    if (!refreshTokenValue) return;
+    await RefreshToken.destroy({ where: { token: refreshTokenValue } });
   },
 
   async createUser(userData) {
