@@ -1,24 +1,24 @@
 import React from 'react';
-import { Outlet, NavLink, useLocation } from 'react-router-dom';
+import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
 // Icon
 import { LayoutDashboard, Calendar, Users, Sparkles, Mail, MessageCircle, LogOut, User } from '../icons.jsx';
+import { useAuth } from '../context/AuthContext';
 import styles from './AdminLayout.module.css';
 
 export default function AdminLayout() {
   const location = useLocation();
-
-  // TODO: Thay bằng auth context khi có hệ thống đăng nhập thật
-  const user = { role: 'admin', name: 'Lan Anh Admin' };
+  const navigate = useNavigate();
+  const { user, logout, hasRole } = useAuth();
 
   const getPageTitle = () => {
     switch(location.pathname) {
       case '/': return 'Tổng quan';
-      case '/appointments': return 'Lịch hẹn';
       case '/customers': return 'Khách hàng';
+      case '/staffs': return 'Quản lý Nhân viên';
+      case '/appointments': return 'Lịch hẹn';
       case '/services': return 'Dịch vụ';
       case '/contacts': return 'Liên hệ';
       case '/chat': return 'Chat Khách hàng';
-      case '/staffs': return 'Quản lý Nhân viên';
       default: return 'Admin Panel';
     }
   };
@@ -41,7 +41,7 @@ export default function AdminLayout() {
             </NavLink>
           </li>
           <li>
-            {user.role === 'admin' && (
+                      {hasRole('ADMIN') && (
               <NavLink 
                 to="/staffs" 
                 className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
@@ -98,10 +98,14 @@ export default function AdminLayout() {
           </li>
         </ul>
         <div className={styles.sidebarFooter}>
-          <a href="http://localhost:5173" className={styles.navLink}>
+          <button
+            onClick={() => { logout(); navigate('/login'); }}
+            className={styles.navLink}
+            style={{ background: 'none', border: 'none', width: '100%', cursor: 'pointer', textAlign: 'left' }}
+          >
             <span className={styles.navIcon}><LogOut size={20} /></span>
             Đăng xuất
-          </a>
+          </button>
         </div>
       </aside>
 
@@ -109,7 +113,10 @@ export default function AdminLayout() {
         <header className={styles.topbar}>
           <h1 className={styles.pageTitle}>{getPageTitle()}</h1>
           <div className={styles.topbarRight}>
-            <div className={styles.avatar}>LA</div>
+            <div className={styles.avatar}>
+              {user?.fullName?.charAt(0)?.toUpperCase() || 'A'}
+            </div>
+            <span style={{ fontSize: '13px', color: '#94a3b8' }}>{user?.fullName}</span>
           </div>
         </header>
         <div className={styles.pageContent}>

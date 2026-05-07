@@ -2,9 +2,6 @@ import { Outlet, Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import styles from "./MainLayout.module.css";
 import logoImg from "../../public/Logo.png";
-import Login from "../pages/Auth/login";
-import Register from "../pages/Auth/register";
-import Forgot from "../pages/Auth/forgot";
 
 export default function MainLayout() {
   const [scrolled, setScrolled] = useState(false);
@@ -116,18 +113,6 @@ export default function MainLayout() {
           </ul>
 
           <div className={styles.navActions}>
-            {authUser ? (
-              <>
-                <span className={styles.userBadge}>Xin chào, {userDisplayName}</span>
-                <button type="button" className={styles.authButton} onClick={handleLogout}>
-                  Đăng xuất
-                </button>
-              </>
-            ) : (
-              <button type="button" className={styles.authButton} onClick={() => openAuthModal("login")}>
-                Đăng nhập
-              </button>
-            )}
             <Link to="/booking" className={styles.btnBook}>
               Đặt Lịch Ngay
             </Link>
