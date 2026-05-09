@@ -1,7 +1,7 @@
 import { userService } from "../services/userService.js";
 
 const handleError = (res, error, fallbackMessage = 'Có lỗi xảy ra') => {
-  res.status(400).json({
+  res.status(error.status || 500).json({
     success: false,
     message: error.message || fallbackMessage,
   });
@@ -34,23 +34,10 @@ export const userController = {
     }
   },
 
-  async register(req, res) {
-    try {
-      const newUser = await userService.registerUser(req.body);
-      res.status(201).json({
-        success: true,
-        message: 'Đăng ký thành công',
-        data: newUser,
-      });
-    } catch (error) {
-      handleError(res, error, 'Đăng ký thất bại');
-    }
-  },
-
   async logout(req, res) {
     try {
       const { refreshToken } = req.body;
-      await userService.logoutUser(refreshToken);
+      await userService.logoutUser(req.user.id, refreshToken);
       res.status(200).json({
         success: true,
         message: 'Đăng xuất thành công',
@@ -87,6 +74,19 @@ export const userController = {
     }
   },
 
+  async create(req, res) {
+    try {
+      const create = await userService.createUser(req.body);
+      res.status(201).json({
+        success: true,
+        message: 'Tạo mới thành công',
+        data: create,
+      });
+    } catch (error) {
+      handleError(res, error, 'Tạo mới thất bại');
+    }
+  },
+
   async update(req, res) {
     try {
       const { id } = req.params;
@@ -98,20 +98,6 @@ export const userController = {
       });
     } catch (error) {
       handleError(res, error, 'Cập nhật thất bại');
-    }
-  },
-
-  async delete(req, res) {
-    try {
-      const { id } = req.params;
-      const deletedUser = await userService.deleteUser(id);
-      res.status(200).json({
-        success: true,
-        message: 'Xóa thành công',
-        data: deletedUser,
-      });
-    } catch (error) {
-      handleError(res, error, 'Xóa thất bại');
     }
   },
 };

@@ -1,10 +1,10 @@
 import express from 'express';
 import { getContacts } from '../controllers/contactController.js';
-import { verifyToken } from '../middlewares/authMiddleware.js';
+import { verifyToken, requireRole } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.get('/', verifyToken, getContacts);
+router.get('/', verifyToken, requireRole('ADMIN', 'STAFF'), getContacts);
 
 
 export default router;

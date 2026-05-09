@@ -1,4 +1,4 @@
-import React from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
 // Icon
 import { LayoutDashboard, Calendar, Users, Sparkles, Mail, MessageCircle, LogOut, User } from '../icons.jsx';
@@ -10,11 +10,27 @@ export default function AdminLayout() {
   const navigate = useNavigate();
   const { user, logout, hasRole } = useAuth();
 
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   const getPageTitle = () => {
     switch(location.pathname) {
       case '/': return 'Tổng quan';
       case '/customers': return 'Khách hàng';
       case '/staffs': return 'Quản lý Nhân viên';
+      case '/users': return 'Quản lý tài khoản';
       case '/appointments': return 'Lịch hẹn';
       case '/services': return 'Dịch vụ';
       case '/contacts': return 'Liên hệ';
@@ -27,7 +43,7 @@ export default function AdminLayout() {
     <div className={styles.adminContainer}>
       <aside className={styles.sidebar}>
         <div className={styles.sidebarHeader}>
-          Lan Anh Admin
+          ADMIN
         </div>
         <ul className={styles.navList}>
           <li>
@@ -41,9 +57,20 @@ export default function AdminLayout() {
             </NavLink>
           </li>
           <li>
-                      {hasRole('ADMIN') && (
-              <NavLink 
-                to="/staffs" 
+            {hasRole('ADMIN') && (
+              <NavLink
+                to="/users"
+                className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
+              >
+                <span className={styles.navIcon}><User size={20} /></span>
+                Quản lý tài khoản
+              </NavLink>
+            )}
+          </li>
+          <li>
+            {hasRole('ADMIN') && (
+              <NavLink
+                to="/staffs"
                 className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
               >
                 <span className={styles.navIcon}><User size={20} /></span>
@@ -99,7 +126,13 @@ export default function AdminLayout() {
         </ul>
         <div className={styles.sidebarFooter}>
           <button
-            onClick={() => { logout(); navigate('/login'); }}
+            onClick={() => {
+              if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                logout();
+                // navigate('/login');
+                 window.location.href = 'http://localhost:5173';
+              }
+            }}
             className={styles.navLink}
             style={{ background: 'none', border: 'none', width: '100%', cursor: 'pointer', textAlign: 'left' }}
           >
@@ -112,11 +145,48 @@ export default function AdminLayout() {
       <main className={styles.mainContent}>
         <header className={styles.topbar}>
           <h1 className={styles.pageTitle}>{getPageTitle()}</h1>
-          <div className={styles.topbarRight}>
-            <div className={styles.avatar}>
-              {user?.fullName?.charAt(0)?.toUpperCase() || 'A'}
+          <div className={styles.topbarRight} ref={dropdownRef}>
+            <div 
+              className={styles.userInfo} 
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            >
+              <div className={styles.avatar}>
+                {user?.fullName?.charAt(0)?.toUpperCase() || 'A'}
+              </div>
+              <div className={styles.userDetails}>
+                <span className={styles.userName}>{user?.fullName || 'User'}</span>
+                <span className={styles.userRole}>{hasRole('ADMIN') ? 'Quản trị viên' : 'Nhân viên'}</span>
+              </div>
+              <svg 
+                className={`${styles.dropdownIcon} ${isDropdownOpen ? styles.dropdownIconOpen : ''}`} 
+                width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+              >
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
             </div>
-            <span style={{ fontSize: '13px', color: '#94a3b8' }}>{user?.fullName}</span>
+
+            <div className={`${styles.dropdownMenu} ${isDropdownOpen ? styles.dropdownMenuOpen : ''}`}>
+              <div className={styles.dropdownHeader}>
+                <strong>{user?.fullName || 'User'}</strong>
+                <span className={styles.dropdownEmail}>{user?.email || ''}</span>
+              </div>
+              <div className={styles.dropdownDivider}></div>
+              <NavLink to="/profile" className={styles.dropdownItem} onClick={() => setIsDropdownOpen(false)}>
+                <User size={18} className={styles.dropdownItemIcon} /> Thông tin cá nhân
+              </NavLink>
+              <button 
+                onClick={() => {
+                  setIsDropdownOpen(false);
+                  if (confirm('Bạn có chắc chắn muốn đăng xuất?')) {
+                    logout();
+                    navigate('/login');
+                  }
+                }}
+                className={`${styles.dropdownItem} ${styles.logoutItem}`}
+              >
+                <LogOut size={18} className={styles.dropdownItemIcon} /> Đăng xuất
+              </button>
+            </div>
           </div>
         </header>
         <div className={styles.pageContent}>

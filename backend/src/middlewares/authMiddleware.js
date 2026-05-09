@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { userService } from '../services/userService.js';
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -6,9 +7,9 @@ const JWT_SECRET = process.env.JWT_SECRET;
  * Middleware xác thực JWT token từ header Authorization
  * Header format: Authorization: Bearer <token>
  */
-export const verifyToken = (req, res, next) => {
+export const verifyToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
-  const token = authHeader && authHeader.split(' ')[1]; // Lấy phần sau "Bearer "
+  const token = authHeader && authHeader.split(' ')[1];
 
   if (!token) {
     return res.status(401).json({
@@ -19,7 +20,16 @@ export const verifyToken = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded; // Gắn thông tin user vào request
+    const currentUser = await userService.getCurrentUserFromToken(decoded.id);
+
+    req.user = {
+      id: currentUser.id,
+      email: currentUser.email,
+      role: currentUser.role,
+      fullName: currentUser.fullName,
+      isActive: currentUser.isActive,
+    };
+
     next();
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
@@ -29,6 +39,15 @@ export const verifyToken = (req, res, next) => {
         code: 'TOKEN_EXPIRED',
       });
     }
+
+    if (error.status) {
+      return res.status(error.status).json({
+        success: false,
+        message: error.message,
+        code: error.status === 403 ? 'FORBIDDEN' : 'UNAUTHORIZED',
+      });
+    }
+
     return res.status(403).json({
       success: false,
       message: 'Token không hợp lệ.',
