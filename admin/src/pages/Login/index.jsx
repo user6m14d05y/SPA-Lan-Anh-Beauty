@@ -42,10 +42,10 @@ export default function Login() {
       <div className={styles.card}>
         {/* Logo / Header */}
         <div className={styles.header}>
-          <div className={styles.logo}>
-            <img src="assets/logo.png" alt="Logo" />
+          <div>
+            <img src="../../public/logo.png" alt="Logo" style={{ width: '50%', height: '50%', margin: '0 auto' }} />
           </div>
-          <h1 className={styles.title}>Lan Anh Beauty</h1>
+          <h1 className={styles.title}>LAN ANH BEAUTY</h1>
           <p className={styles.subtitle}>Đăng nhập vào trang quản trị</p>
         </div>
 

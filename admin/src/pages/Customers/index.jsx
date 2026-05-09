@@ -12,6 +12,7 @@ export default function Customers() {
   const handleAction = (action) => {
     alert(`Đã chọn thao tác: ${action}`);
   };
+  
 
   return (
     <div>
@@ -20,10 +21,10 @@ export default function Customers() {
         <div className={styles.headerActions}>
           <input
             type="text"
-            placeholder="Tìm kiếm khách hàng..."
+            placeholder="Tìm kiếm số điện thoại..."
             className={styles.searchInput}
           />
-          <button className={styles.btnPrimary}>Thêm mới</button>
+          <button className={styles.btnPrimary} onClick={() => handleAction('Thêm mới')}>Thêm mới</button>
         </div>
       </div>
 

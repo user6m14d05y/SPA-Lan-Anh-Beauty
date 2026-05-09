@@ -11,6 +11,7 @@ import Services from "./pages/Services";
 import Contacts from "./pages/Contacts";
 import Chat from "./pages/Chat";
 import Staffs from "./pages/Staffs";
+import UsersPage from "./pages/Users";
 
 function App() {
   return (
@@ -36,6 +37,7 @@ function App() {
             <Route path="services" element={<Services />} />
             <Route path="contacts" element={<Contacts />} />
             <Route path="chat" element={<Chat />} />
+            <Route path="users" element={<UsersPage />} />
             {/* Staffs chỉ ADMIN mới thấy menu, nhưng route vẫn cần bảo vệ riêng */}
             <Route path="staffs" element={<Staffs />} />
           </Route>
