@@ -33,6 +33,7 @@ export default function AdminLayout() {
       case '/users': return 'Quản lý tài khoản';
       case '/appointments': return 'Lịch hẹn';
       case '/services': return 'Dịch vụ';
+      case '/category-services': return 'Danh mục dịch vụ';
       case '/contacts': return 'Liên hệ';
       case '/chat': return 'Chat Khách hàng';
       default: return 'Admin Panel';
@@ -97,8 +98,8 @@ export default function AdminLayout() {
             </NavLink>
           </li>
           <li>
-            <NavLink 
-              to="/services" 
+            <NavLink
+              to="/services"
               className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
             >
               <span className={styles.navIcon}><Sparkles size={20} /></span>
@@ -106,8 +107,17 @@ export default function AdminLayout() {
             </NavLink>
           </li>
           <li>
-            <NavLink 
-              to="/contacts" 
+            <NavLink
+              to="/category-services"
+              className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
+            >
+              <span className={styles.navIcon}><Sparkles size={20} /></span>
+              Danh mục dịch vụ
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/contacts"
               className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
             >
               <span className={styles.navIcon}><Mail size={20} /></span>

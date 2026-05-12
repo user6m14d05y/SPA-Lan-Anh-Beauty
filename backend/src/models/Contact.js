@@ -23,6 +23,24 @@ const Contact = sequelize.define('Contact', {
     type: Sequelize.TEXT,
     allowNull: false,
   },
+  // Updated
+  status: {
+    type: Sequelize.STRING,
+    allowNull: false,
+    defaultValue: 'NEW',
+  },
+  replyMessage: {
+    type: Sequelize.TEXT,
+    allowNull: true,
+  },
+  repliedAt: {
+    type: Sequelize.DATE,
+    allowNull: true,
+  },
+  repliedBy: {
+    type: Sequelize.INTEGER,
+    allowNull: true,
+  },
 }, {
   tableName: 'contacts',
   timestamps: true,

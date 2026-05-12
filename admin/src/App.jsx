@@ -8,6 +8,8 @@ import Dashboard from "./pages/Dashboard";
 import Appointments from "./pages/Appointments";
 import Customers from "./pages/Customers";
 import Services from "./pages/Services";
+import AddService from "./pages/Services/add";
+import CategoryServices from "./pages/CategoryServices";
 import Contacts from "./pages/Contacts";
 import Chat from "./pages/Chat";
 import Staffs from "./pages/Staffs";
@@ -35,6 +37,8 @@ function App() {
             <Route path="appointments" element={<Appointments />} />
             <Route path="customers" element={<Customers />} />
             <Route path="services" element={<Services />} />
+            <Route path="services/add" element={<AddService />} />
+            <Route path="category-services" element={<CategoryServices />} />
             <Route path="contacts" element={<Contacts />} />
             <Route path="chat" element={<Chat />} />
             <Route path="users" element={<UsersPage />} />

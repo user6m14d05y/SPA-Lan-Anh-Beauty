@@ -105,14 +105,19 @@
     flex: 1;
 }
 
-.imagePlaceholder {
+.storyImg {
     width: 100%;
     height: 500px;
-    background: var(--primary-light);
+    object-fit: cover;
     border-radius: 12px;
-    position: relative;
-    overflow: hidden;
-    background: linear-gradient(135deg, var(--primary-light), var(--accent));
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+.valueIcon {
+    color: var(--primary);
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: center;
 }
 
 .valuesSection {
@@ -149,10 +154,7 @@
     box-shadow: 0 20px 40px rgba(119, 89, 50, 0.1);
 }
 
-.valueIcon {
-    font-size: 3rem;
-    margin-bottom: 1.5rem;
-}
+
 
 .valueCard h3 {
     font-size: 1.5rem;
@@ -171,13 +173,39 @@
         flex-direction: column;
     }
     .valuesGrid {
-        grid-template-columns: repeat(2, 1fr);
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 1.5rem;
+        padding-bottom: 1.5rem;
+        -webkit-overflow-scrolling: touch;
+    }
+    .valuesGrid::-webkit-scrollbar {
+        height: 6px;
+    }
+    .valuesGrid::-webkit-scrollbar-track {
+        background: var(--bg);
+        border-radius: 4px;
+    }
+    .valuesGrid::-webkit-scrollbar-thumb {
+        background: rgba(119, 89, 50, 0.5);
+        border-radius: 4px;
+    }
+    .valueCard {
+        flex: 0 0 calc(50% - 1rem);
+        scroll-snap-align: start;
     }
 }
 
 @media (max-width: 600px) {
-    .valuesGrid {
-        grid-template-columns: 1fr;
+    .heroTitle {
+        font-size: 2.5rem;
+    }
+    .sectionTitle {
+        font-size: 2rem;
+    }
+    .valueCard {
+        flex: 0 0 85%;
     }
     .statsGrid {
         grid-template-columns: 1fr;

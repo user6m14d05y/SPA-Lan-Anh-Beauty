@@ -5,6 +5,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { connectDB } from './config/database.js';
 import router from './routes/index.js';
+import session from 'express-session';
 
 // Load biến môi trường từ file .env
 dotenv.config();
@@ -13,9 +14,25 @@ const app = express();
 const httpServer = createServer(app);
 
 // Middlewares
-app.use(cors());
+app.use(cors({
+  origin: true, // Cho phép mọi origin gọi và nhận credential (hoặc chỉ định http://localhost:5173)
+  credentials: true
+}));
 app.use(express.json()); // Để parse body dạng JSON
 app.use(express.urlencoded({ extended: true }));
+
+// Cấu hình Session cho CAPTCHA
+app.use(session({
+  secret: process.env.SESSION_SECRET || process.env.JWT_SECRET || 'spa_lan_anh_beauty_session_secret',
+  resave: false,
+  saveUninitialized: false, // Chỉ tạo session khi có dữ liệu (tiết kiệm tài nguyên)
+  cookie: {
+    httpOnly: true,       // Ngăn JavaScript phía client đọc cookie
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',      // Bảo vệ CSRF
+    maxAge: 15 * 60 * 1000 // 15 phút
+  }
+}));
 
 app.use('/api', router);
 

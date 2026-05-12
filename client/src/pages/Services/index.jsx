@@ -1,55 +1,44 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import styles from './Services.module.css';
 import serviceImg1 from '../../assets/images/service1.png';
 import serviceImg2 from '../../assets/images/service2.png';
 import serviceImg3 from '../../assets/images/service3.png';
 
+const fallbackImages = [serviceImg1, serviceImg2, serviceImg3];
+
+const collectServices = (category) => [
+  ...(category.services || []),
+  ...(category.children || []).flatMap((child) => child.services || []),
+];
+
 export default function Services() {
-  const services = [
-    {
-      id: 1,
-      title: 'Phun Thêu Thẩm Mỹ',
-      desc: 'Kiến tạo đường nét mày, môi, mí sắc sảo nhưng vẫn giữ được sự tự nhiên vốn có của khuôn mặt.',
-      image: serviceImg1,
-      price: 'Từ 1.500.000đ'
-    },
-    {
-      id: 2,
-      title: 'Chăm Sóc Da Chuyên Sâu',
-      desc: 'Liệu trình phục hồi chuyên sâu, đánh thức làn da rạng rỡ, căng bóng từ bên trong với công nghệ tiên tiến.',
-      image: serviceImg2,
-      price: 'Từ 500.000đ'
-    },
-    {
-      id: 3,
-      title: 'Massage Thư Giãn',
-      desc: 'Giải tỏa căng thẳng, cân bằng thân - tâm - trí với kỹ thuật massage đá nóng và tinh dầu organic.',
-      image: serviceImg3,
-      price: 'Từ 350.000đ'
-    },
-    {
-      id: 4,
-      title: 'Trị Mụn Tận Gốc',
-      desc: 'Phác đồ điều trị cá nhân hóa giúp loại bỏ tận gốc các loại mụn, trả lại làn da mịn màng, khỏe mạnh.',
-      image: serviceImg2, // Reusing image temporarily
-      price: 'Từ 800.000đ'
-    },
-    {
-      id: 5,
-      title: 'Tắm Trắng Phi Thuyền',
-      desc: 'Làm bật tông da toàn thân an toàn, hiệu quả tức thì nhờ công nghệ ánh sáng hồng ngoại tiên tiến.',
-      image: serviceImg1, // Reusing image temporarily
-      price: 'Từ 2.000.000đ'
-    },
-    {
-      id: 6,
-      title: 'Triệt Lông Vĩnh Viễn',
-      desc: 'Sử dụng công nghệ Diode Laser lạnh, không đau rát, hiệu quả lâu dài và an toàn cho mọi vùng da.',
-      image: serviceImg3, // Reusing image temporarily
-      price: 'Từ 200.000đ'
-    }
-  ];
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchCatalog = async () => {
+      try {
+        setLoading(true);
+        setError('');
+        const response = await fetch('http://localhost:5000/api/catalog/tree');
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+          throw new Error(result.message || 'Không thể tải danh sách dịch vụ.');
+        }
+
+        setCategories(result.data || []);
+      } catch (error) {
+        setError(error.message || 'Không thể tải danh sách dịch vụ.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCatalog();
+  }, []);
 
   return (
     <div className={styles.servicesWrapper}>
@@ -64,23 +53,65 @@ export default function Services() {
 
       <section className={styles.servicesSection}>
         <div className={styles.container}>
-          <div className={styles.servicesGrid}>
-            {services.map(service => (
-              <div key={service.id} className={styles.serviceCard}>
-                <div className={styles.serviceImg}>
-                  <img src={service.image} alt={service.title} />
-                  <div className={styles.priceTag}>{service.price}</div>
+          {loading ? (
+            <div className={styles.stateBox}>Đang tải danh sách dịch vụ...</div>
+          ) : error ? (
+            <div className={styles.errorBox}>{error}</div>
+          ) : categories.length === 0 ? (
+            <div className={styles.stateBox}>Chưa có dịch vụ nào.</div>
+          ) : (
+            categories.map((category, categoryIndex) => {
+              const services = collectServices(category);
+
+              return (
+                <div key={category.id} className={styles.categorySection}>
+                  <div className={styles.categoryHeader}>
+                    <h2>{category.name}</h2>
+                    {category.description && <p>{category.description}</p>}
+                  </div>
+
+                  <div className={styles.servicesGrid}>
+                    {services.map((service, serviceIndex) => (
+                      <div key={service.id} className={styles.serviceCard}>
+                        <div className={styles.serviceImg}>
+                          <img
+                            src={service.thumbnailUrl || service.imageUrl || fallbackImages[(categoryIndex + serviceIndex) % fallbackImages.length]}
+                            alt={service.name}
+                          />
+                          {service.discountPercent > 0 && (
+                            <div className={styles.discountBadge}>-{service.discountPercent}%</div>
+                          )}
+                          <div className={styles.priceTag}>
+                            {service.salePriceLabel ? (
+                              <>
+                                <span className={styles.oldPrice}>{service.priceLabel}</span>
+                                <span>{service.salePriceLabel}</span>
+                              </>
+                            ) : service.priceLabel}
+                          </div>
+                        </div>
+                        <div className={styles.serviceInfo}>
+                          <h3>{service.name}</h3>
+                          <p>{service.shortDescription || service.description}</p>
+                          {service.durationMinutes && (
+                            <div className={styles.duration}>Thời lượng: {service.durationMinutes} phút</div>
+                          )}
+                          <div className={styles.cardActions}>
+                            <Link to={`/services/${service.slug}`} className={styles.btnDetail}>
+                              Xem Chi Tiết
+                            </Link>
+                            <Link to="/booking" className={styles.btnBook}>
+                              Đặt Lịch Ngay
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className={styles.serviceInfo}>
-                  <h3>{service.title}</h3>
-                  <p>{service.desc}</p>
-                  <Link to="/booking" className={styles.btnBook}>
-                    Đặt Lịch Ngay
-                  </Link>
-                </div>
-              </div>
-            ))}
-          </div>
+              );
+            })
+          )}
         </div>
       </section>
 
@@ -89,7 +120,7 @@ export default function Services() {
           <div className={styles.ctaBox}>
             <h2>Bạn Cần Tư Vấn Thêm?</h2>
             <p>Đội ngũ chuyên gia của chúng tôi luôn sẵn sàng lắng nghe và đưa ra giải pháp phù hợp nhất cho làn da của bạn.</p>
-            <Link to="/booking" className={styles.btnPrimary}>Liên Hệ Ngay</Link>
+            <Link to="/contact" className={styles.btnPrimary}>Liên Hệ Ngay</Link>
           </div>
         </div>
       </section>
