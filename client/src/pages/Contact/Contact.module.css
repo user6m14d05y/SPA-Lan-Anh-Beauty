@@ -201,10 +201,107 @@
     margin-top: 1rem;
 }
 
-.btnSubmit:hover {
+.btnSubmit:hover:not(:disabled) {
     background: var(--primary-light);
     transform: translateY(-3px);
     box-shadow: 0 10px 20px rgba(119, 89, 50, 0.2);
+}
+
+.btnSubmit:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.successMessage,
+.errorMessage {
+    padding: 12px 14px;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.successMessage {
+    background: #e8f7ef;
+    color: #217a46;
+    border: 1px solid #b9e6ca;
+}
+
+.errorMessage {
+    background: #fdecec;
+    color: #b42318;
+    border: 1px solid #fac5c5;
+}
+
+.captchaGroup {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.5rem;
+}
+
+.captchaGroup label {
+    font-size: 0.9rem;
+    color: var(--text-dark);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.captchaContainer {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.captchaImageWrap {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #e0d5ce;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.captchaImage {
+    height: 50px;
+    width: 150px;
+    display: block;
+}
+
+.btnRefresh {
+    background: #fdfaf8;
+    border: none;
+    border-left: 1px solid #e0d5ce;
+    height: 50px;
+    width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--primary);
+    transition: var(--transition);
+}
+
+.btnRefresh:hover {
+    background: #f0e9e4;
+}
+
+.captchaInput {
+    flex: 1;
+    padding: 14px 15px;
+    border: 1px solid #e0d5ce;
+    border-radius: 6px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    background: #fdfaf8;
+    color: var(--text-dark);
+    transition: var(--transition);
+    height: 50px;
+}
+
+.captchaInput:focus {
+    outline: none;
+    border-color: var(--primary);
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(119, 89, 50, 0.1);
 }
 
 @media (max-width: 992px) {
@@ -213,5 +310,9 @@
     }
     .contactInfo, .contactFormContainer {
         padding: 3rem 2rem;
+    }
+    .captchaContainer {
+        flex-direction: column;
+        align-items: stretch;
     }
 }

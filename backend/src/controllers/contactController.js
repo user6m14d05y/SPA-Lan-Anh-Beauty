@@ -1,64 +1,99 @@
-import Contact from '../models/Contact.js';
+import { contactService } from '../services/contactService.js';
+import svgCaptcha from 'svg-captcha';
+import { signCaptchaToken } from '../middlewares/rateLimitMiddleware.js';
 
-export const getContacts = async (req, res) => {
-    try {
-        const contacts = await Contact.findAll({
-            order: [['createdAt', 'DESC']]
-        });
-        res.status(200).json(contacts);
-    } catch (error) {
-        console.error('Error fetching contacts:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
+const handleError = (res, error, fallbackMessage = 'Có lỗi xảy ra') => {
+  res.status(error.status || 500).json({
+    success: false,
+    message: error.message || fallbackMessage,
+  });
 };
 
 export const createContact = async (req, res) => {
-    try {
-        const contact = await Contact.create(req.body);
-        res.status(201).json(contact);
-    } catch (error) {
-        console.error('Error creating contact:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-}
+  try {
+    const contact = await contactService.createContact(req.body);
 
-export const updateContact = async (req, res) => {
-    try {
-        const contact = await Contact.findByPk(req.params.id);
-        if (!contact) {
-            return res.status(404).json({ message: 'Contact not found' });
-        }
-        await contact.update(req.body);
-        res.status(200).json(contact);
-    } catch (error) {
-        console.error('Error updating contact:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-}
+    res.status(201).json({
+      success: true,
+      message: 'Gửi liên hệ thành công. Chúng tôi sẽ phản hồi bạn sớm nhất.',
+      data: contact,
+    });
+  } catch (error) {
+    handleError(res, error, 'Không thể gửi liên hệ.');
+  }
+};
+
+export const getContacts = async (req, res) => {
+  try {
+    const contacts = await contactService.getContacts(req.query);
+
+    res.status(200).json({
+      success: true,
+      data: contacts,
+    });
+  } catch (error) {
+    handleError(res, error, 'Không thể lấy danh sách liên hệ.');
+  }
+};
+
+export const getContactDetail = async (req, res) => {
+  try {
+    const contact = await contactService.getContactById(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      data: contact,
+    });
+  } catch (error) {
+    handleError(res, error, 'Không thể lấy chi tiết liên hệ.');
+  }
+};
+
+export const replyContact = async (req, res) => {
+  try {
+    const contact = await contactService.replyToContact(req.params.id, req.body, req.user);
+
+    res.status(200).json({
+      success: true,
+      message: 'Gửi phản hồi thành công.',
+      data: contact,
+    });
+  } catch (error) {
+    handleError(res, error, 'Không thể gửi phản hồi.');
+  }
+};
 
 export const deleteContact = async (req, res) => {
-    try {
-        const contact = await Contact.findByPk(req.params.id);
-        if (!contact) {
-            return res.status(404).json({ message: 'Contact not found' });
-        }
-        await contact.destroy();
-        res.status(200).json({ message: 'Contact deleted successfully' });
-    } catch (error) {
-        console.error('Error deleting contact:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-}
+  try {
+    await contactService.deleteContact(req.params.id);
 
-export const DetailContact = async (req, res) => {
-    try {
-        const contact = await Contact.findByPk(req.params.id);
-        if (!contact) {
-            return res.status(404).json({ message: 'Contact not found' });
-        }
-        res.status(200).json(contact);
-    } catch (error) {
-        console.error('Error fetching contact:', error);
-        res.status(500).json({ message: 'Internal server error' });
-    }
-}
+    res.status(200).json({
+      success: true,
+      message: 'Xóa liên hệ thành công.',
+    });
+  } catch (error) {
+    handleError(res, error, 'Không thể xóa liên hệ.');
+  }
+};
+
+export const generateCaptcha = (req, res) => {
+  const captcha = svgCaptcha.create({
+    size: 4,
+    ignoreChars: '0o1il', // Loại bỏ ký tự dễ nhầm lẫn
+    noise: 2,
+    color: true,
+    background: '#fdfaf8',
+    width: 150,
+    height: 50,
+    fontSize: 50,
+  });
+
+  // Ký text bằng HMAC — không lưu vào session
+  const token = signCaptchaToken(captcha.text);
+
+  res.status(200).json({
+    svg: captcha.data,   // SVG dưới dạng string
+    token,               // Token để gửi kèm khi submit form
+  });
+};
+

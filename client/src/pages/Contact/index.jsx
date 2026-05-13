@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { MapPin, Phone, Mail, Clock, RefreshCw } from '../../icons.jsx';
 import styles from './Contact.module.css';
 
 export default function Contact() {
@@ -8,6 +9,30 @@ export default function Contact() {
     phone: '',
     message: ''
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  
+  // Captcha state
+  const [requireCaptcha, setRequireCaptcha] = useState(false);
+  const [captchaCode, setCaptchaCode] = useState('');
+  const [captchaSvg, setCaptchaSvg] = useState('');
+  const [captchaToken, setCaptchaToken] = useState('');
+
+  const fetchCaptcha = async () => {
+    try {
+      const res = await fetch('http://localhost:5000/api/contacts/captcha');
+      const data = await res.json();
+      setCaptchaSvg(data.svg);
+      setCaptchaToken(data.token);
+      setCaptchaCode('');
+    } catch {
+      // nếu không lấy được thì bỏ trống
+      setCaptchaSvg('');
+    }
+  };
+
+  const refreshCaptcha = () => fetchCaptcha();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -17,16 +42,48 @@ export default function Contact() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Contact form submitted:', formData);
-    alert('Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.');
-    setFormData({
-      name: '',
-      email: '',
-      phone: '',
-      message: ''
-    });
+    setSubmitting(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      const payload = requireCaptcha
+        ? { ...formData, captchaCode, captchaToken }
+        : formData;
+
+      const response = await fetch('http://localhost:5000/api/contacts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        if ((response.status === 429 || response.status === 400) && result.requireCaptcha) {
+          if (!requireCaptcha) {
+            setRequireCaptcha(true);
+            await fetchCaptcha();
+          } else {
+            await refreshCaptcha();
+          }
+          throw new Error(result.message);
+        }
+        throw new Error(result.message || 'Không thể gửi liên hệ. Vui lòng thử lại.');
+      }
+
+      setSuccess(result.message || 'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.');
+      setRequireCaptcha(false);
+      setCaptchaCode('');
+      setCaptchaSvg('');
+      setCaptchaToken('');
+      setFormData({ name: '', email: '', phone: '', message: '' });
+    } catch (error) {
+      setError(error.message || 'Không thể gửi liên hệ. Vui lòng thử lại.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -51,28 +108,28 @@ export default function Contact() {
               
               <ul className={styles.infoList}>
                 <li>
-                  <div className={styles.icon}>📍</div>
+                  <div className={styles.icon}><MapPin size={24} /></div>
                   <div>
                     <h4>Địa Chỉ</h4>
                     <p>123 Đường Sắc Đẹp, Quận Hoàn Kiếm, Hà Nội</p>
                   </div>
                 </li>
                 <li>
-                  <div className={styles.icon}>📞</div>
+                  <div className={styles.icon}><Phone size={24} /></div>
                   <div>
                     <h4>Điện Thoại</h4>
                     <p>0987 654 321</p>
                   </div>
                 </li>
                 <li>
-                  <div className={styles.icon}>✉️</div>
+                  <div className={styles.icon}><Mail size={24} /></div>
                   <div>
                     <h4>Email</h4>
                     <p>contact@lananhbeauty.vn</p>
                   </div>
                 </li>
                 <li>
-                  <div className={styles.icon}>⏰</div>
+                  <div className={styles.icon}><Clock size={24} /></div>
                   <div>
                     <h4>Giờ Mở Cửa</h4>
                     <p>Thứ 2 - Chủ Nhật: 08:00 - 20:00</p>
@@ -102,6 +159,8 @@ export default function Contact() {
               </p>
               
               <form onSubmit={handleSubmit} className={styles.form}>
+                {success && <div className={styles.successMessage}>{success}</div>}
+                {error && <div className={styles.errorMessage}>{error}</div>}
                 <div className={styles.formGroup}>
                   <label htmlFor="name">Họ và Tên *</label>
                   <input
@@ -149,8 +208,34 @@ export default function Contact() {
                     required
                   ></textarea>
                 </div>
-                <button type="submit" className={styles.btnSubmit}>
-                  Gửi Tin Nhắn
+                
+                {requireCaptcha && (
+                  <div className={styles.captchaGroup}>
+                    <label>Mã xác thực *</label>
+                    <div className={styles.captchaContainer}>
+                      <div className={styles.captchaImageWrap}>
+                        <div
+                          className={styles.captchaImage}
+                          dangerouslySetInnerHTML={{ __html: captchaSvg }}
+                        />
+                        <button type="button" onClick={refreshCaptcha} className={styles.btnRefresh} title="Đổi mã khác">
+                          <RefreshCw size={18} />
+                        </button>
+                      </div>
+                      <input
+                        type="text"
+                        value={captchaCode}
+                        onChange={(e) => setCaptchaCode(e.target.value)}
+                        placeholder="Nhập mã xác thực"
+                        required
+                        className={styles.captchaInput}
+                      />
+                    </div>
+                  </div>
+                )}
+
+                <button type="submit" className={styles.btnSubmit} disabled={submitting}>
+                  {submitting ? 'Đang gửi...' : 'Gửi Tin Nhắn'}
                 </button>
               </form>
             </div>

@@ -1,5 +1,7 @@
 import React from 'react';
+import { Diamond, Heart, Leaf } from '../../icons.jsx';
 import styles from './About.module.css';
+import aboutImg from '../../assets/images/About-lan-anh.jpg';
 
 export default function About() {
   return (
@@ -18,7 +20,7 @@ export default function About() {
           <div className={styles.storyContent}>
             <h2 className={styles.sectionTitle}>Câu Chuyện Của Lan Anh Beauty</h2>
             <p className={styles.sectionDesc}>
-              Được thành lập từ năm 2010, Lan Anh Beauty ra đời với sứ mệnh "Đánh thức vẻ đẹp tiềm ẩn" trong mỗi người phụ nữ. Chúng tôi tin rằng, mỗi người sinh ra đều mang một nét đẹp riêng, và nhiệm vụ của chúng tôi là giúp nét đẹp ấy tỏa sáng một cách tự nhiên nhất.
+              Được thành lập từ năm 2025, Lan Anh Beauty ra đời với sứ mệnh "Đánh thức vẻ đẹp tiềm ẩn" trong mỗi người phụ nữ. Chúng tôi tin rằng, mỗi người sinh ra đều mang một nét đẹp riêng, và nhiệm vụ của chúng tôi là giúp nét đẹp ấy tỏa sáng một cách tự nhiên nhất.
             </p>
             <p className={styles.sectionDesc}>
               Trải qua hơn 10 năm phát triển, từ một cơ sở nhỏ, Lan Anh Beauty đã vươn lên trở thành một trong những trung tâm thẩm mỹ uy tín hàng đầu, là nơi gửi trọn niềm tin của hàng ngàn khách hàng. Chúng tôi không ngừng cập nhật các công nghệ tiên tiến nhất và đào tạo đội ngũ chuyên gia tận tâm.
@@ -39,7 +41,7 @@ export default function About() {
             </div>
           </div>
           <div className={styles.storyImage}>
-            <div className={styles.imagePlaceholder}></div>
+            <img src={aboutImg} alt="Câu Chuyện Lan Anh Beauty" className={styles.storyImg} />
           </div>
         </div>
       </section>
@@ -52,17 +54,17 @@ export default function About() {
           </div>
           <div className={styles.valuesGrid}>
             <div className={styles.valueCard}>
-              <div className={styles.valueIcon}>💎</div>
+              <div className={styles.valueIcon}><Diamond size={40} /></div>
               <h3>Chất Lượng</h3>
               <p>Cam kết sử dụng công nghệ tiên tiến và sản phẩm cao cấp nhất trong mọi liệu trình, đảm bảo hiệu quả rõ rệt.</p>
             </div>
             <div className={styles.valueCard}>
-              <div className={styles.valueIcon}>💖</div>
+              <div className={styles.valueIcon}><Heart size={40} /></div>
               <h3>Tận Tâm</h3>
               <p>Phục vụ khách hàng bằng cả trái tim, luôn lắng nghe và thấu hiểu để đáp ứng mọi nhu cầu làm đẹp.</p>
             </div>
             <div className={styles.valueCard}>
-              <div className={styles.valueIcon}>🌿</div>
+              <div className={styles.valueIcon}><Leaf size={40} /></div>
               <h3>An Toàn</h3>
               <p>Tuân thủ nghiêm ngặt các tiêu chuẩn y tế, dụng cụ vô khuẩn, đảm bảo an toàn tuyệt đối cho mọi khách hàng.</p>
             </div>

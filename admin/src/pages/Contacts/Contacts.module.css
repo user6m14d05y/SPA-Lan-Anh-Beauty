@@ -12,9 +12,8 @@
     font-weight: 600;
 }
 
-.btnPrimary {
-    background-color: var(--primary);
-    color: var(--white);
+.btnPrimary,
+.btnSecondary {
     padding: 10px 20px;
     border-radius: 8px;
     border: none;
@@ -24,30 +23,26 @@
     transition: var(--transition);
 }
 
-.btnPrimary:hover {
+.btnPrimary {
+    background-color: var(--primary);
+    color: var(--white);
+}
+
+.btnPrimary:hover:not(:disabled) {
     background-color: var(--primary-light);
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(119, 89, 50, 0.2);
 }
 
-.headerActions {
-    display: flex;
-    gap: 12px;
+.btnPrimary:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
 }
 
-.searchInput {
-    border: 1px solid var(--border);
-    padding: 10px 15px;
-    border-radius: 8px;
-    font-family: 'Montserrat', sans-serif;
-    min-width: 250px;
-    background: var(--bg-light);
+.btnSecondary {
+    background: var(--bg);
     color: var(--text-dark);
-}
-
-.searchInput:focus {
-    outline: none;
-    border-color: var(--primary);
+    border: 1px solid var(--border);
 }
 
 .tableContainer {
@@ -76,6 +71,7 @@
     border-bottom: 1px solid var(--border);
     color: var(--text-dark);
     font-size: 0.95rem;
+    vertical-align: top;
 }
 
 .table tr:last-child td {
@@ -84,6 +80,33 @@
 
 .table tr:hover {
     background: var(--bg);
+}
+
+.customerName {
+    font-weight: 600;
+}
+
+.contactLine,
+.contactLineMuted {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.85rem;
+    margin-bottom: 4px;
+}
+
+.contactLineMuted {
+    color: var(--text-muted);
+}
+
+.messageCell {
+    max-width: 250px;
+}
+
+.messagePreview {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .statusBadge {
@@ -105,17 +128,13 @@
     color: #854d0e;
 }
 
-.statusDefault {
-    background: #f3f4f6;
-    color: #374151;
-}
-
 .actionBtn {
     background: var(--bg);
     border: 1px solid transparent;
     cursor: pointer;
     font-weight: 500;
     margin-right: 8px;
+    margin-bottom: 6px;
     font-size: 0.85rem;
     padding: 6px 12px;
     border-radius: 6px;
@@ -123,6 +142,11 @@
     display: inline-flex;
     align-items: center;
     gap: 4px;
+}
+
+.actionBtn:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
 }
 
 .actionView {
@@ -155,80 +179,144 @@
     background: #fecaca;
 }
 
-.serviceGrid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
+.emptyState,
+.errorState,
+.emptyCell {
+    padding: 20px;
+    text-align: center;
 }
 
-.serviceCard {
-    background: var(--bg-light);
-    border-radius: 12px;
-    border: 1px solid var(--border);
-    overflow: hidden;
-    transition: var(--transition);
+.errorState,
+.errorBox {
+    color: #b42318;
 }
 
-.serviceCard:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(119, 89, 50, 0.1);
+.errorBox {
+    background: #fdecec;
+    border: 1px solid #fac5c5;
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 16px;
 }
 
-.serviceImg {
-    height: 160px;
-    background: var(--bg);
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 3rem;
-    border-bottom: 1px solid var(--border);
-    color: var(--primary-light);
-}
-
-.serviceInfo {
+    z-index: 1000;
     padding: 20px;
 }
 
-.serviceInfo h3 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.2rem;
-    margin: 0 0 10px 0;
-    color: var(--primary);
-    font-weight: 600;
+.modal {
+    width: min(680px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--bg-light);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    padding: 24px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 }
 
-.serviceMeta {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    margin-bottom: 15px;
-}
-
-.servicePrice {
-    font-weight: 600;
-    color: var(--primary);
-}
-
-.serviceFooter {
+.modalHeader {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 18px;
 }
 
-@media (max-width: 1024px) {
-    .serviceGrid {
-        grid-template-columns: repeat(2, 1fr);
-    }
+.modalHeader h3 {
+    margin: 0;
+    color: var(--primary);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+}
+
+.closeBtn {
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    background: var(--bg);
+    color: var(--text-dark);
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.detailGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.detailBlock {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    margin-top: 14px;
+}
+
+.detailBlock p {
+    margin: 8px 0 0;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    word-break: break-word; /* Fix cho text dài dính liền */
+    overflow-wrap: break-word;
+}
+
+.replyForm {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.replyForm label {
+    color: var(--text-dark);
+    font-weight: 600;
+}
+
+.replyForm textarea {
+    min-height: 180px;
+    resize: vertical;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text-dark);
+    background: var(--bg);
+}
+
+.replyForm textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 12px;
 }
 
 @media (max-width: 768px) {
-    .serviceGrid {
-        grid-template-columns: 1fr;
-    }
     .pageHeader {
         flex-direction: column;
         align-items: flex-start;
         gap: 15px;
+    }
+
+    .tableContainer {
+        overflow-x: auto;
+    }
+
+    .detailGrid {
+        grid-template-columns: 1fr;
     }
 }

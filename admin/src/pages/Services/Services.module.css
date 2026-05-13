@@ -155,6 +155,161 @@
     background: #fecaca;
 }
 
+.listSection {
+    background: var(--bg-light);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 20px rgba(119, 89, 50, 0.06);
+}
+
+.listHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.listHeader h3 {
+    margin: 0;
+    color: var(--primary);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+}
+
+.listHeader span {
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.serviceGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+.imageSection {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.imageSectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.imageSectionHeader h4 {
+    margin: 0;
+    color: var(--primary);
+    font-size: 1rem;
+}
+
+.imageSectionHeader span {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.previewSection {
+    margin-top: 8px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(119, 89, 50, 0.03);
+}
+
+.previewTitleRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.previewTitleRow h5 {
+    margin: 0;
+    color: var(--primary);
+    font-size: 0.95rem;
+}
+
+.previewTitleRow span {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.previewGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.previewCard {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--bg-light);
+}
+
+.previewCard img {
+    width: 100%;
+    height: 140px;
+    object-fit: cover;
+    display: block;
+}
+
+.previewMeta {
+    padding: 10px 12px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.previewMeta span {
+    color: var(--text-dark);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.previewMeta small {
+    color: var(--text-muted);
+}
+
+.previewActions {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+}
+
+.previewBtn {
+    flex: 1;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--primary);
+    border-radius: 8px;
+    padding: 8px 10px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.previewBtnDanger {
+    color: #b91c1c;
+    border-color: #fecaca;
+    background: #fff5f5;
+}
+
+.previewEmpty {
+    border: 1px dashed var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
 .serviceGrid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -175,6 +330,7 @@
 }
 
 .serviceImg {
+    position: relative;
     height: 160px;
     background: var(--bg);
     display: flex;
@@ -183,6 +339,25 @@
     font-size: 3rem;
     border-bottom: 1px solid var(--border);
     color: var(--primary-light);
+    overflow: hidden;
+}
+
+.serviceImg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.discountBadge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #b91c1c;
+    color: #fff;
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: 0.8rem;
+    font-weight: 700;
 }
 
 .serviceInfo {
@@ -197,16 +372,29 @@
     font-weight: 600;
 }
 
+.serviceCategory {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin: 0 0 12px;
+}
+
 .serviceMeta {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 8px;
     font-size: 0.9rem;
     color: var(--text-muted);
     margin-bottom: 15px;
 }
 
+.oldPrice {
+    color: var(--text-muted);
+    text-decoration: line-through;
+    margin-right: 8px;
+}
+
 .servicePrice {
-    font-weight: 600;
+    font-weight: 700;
     color: var(--primary);
 }
 
@@ -216,6 +404,344 @@
     align-items: center;
 }
 
+.formPage {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.formPageHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.backLink {
+    display: inline-block;
+    margin-bottom: 10px;
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.pageDescription {
+    margin: 8px 0 0;
+    color: var(--text-muted);
+    max-width: 760px;
+    line-height: 1.6;
+}
+
+.serviceStandaloneForm {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.formSection {
+    background: var(--bg-light);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 20px rgba(119, 89, 50, 0.06);
+}
+
+.formSection h3 {
+    margin: 0 0 16px;
+    color: var(--primary);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem;
+}
+
+.formSection label {
+    display: block;
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 8px;
+}
+
+.formSection input,
+.formSection select,
+.formSection textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 11px 12px;
+    font-family: 'Montserrat', sans-serif;
+    background: var(--bg);
+    color: var(--text-dark);
+}
+
+.formSection textarea {
+    min-height: 96px;
+    resize: vertical;
+}
+
+.formSection input:focus,
+.formSection select:focus,
+.formSection textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(119, 89, 50, 0.12);
+}
+
+.textareaLarge {
+    min-height: 180px !important;
+}
+
+.toggleGroup {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.toggleCard {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+    background: var(--bg);
+}
+
+.toggleCard strong {
+    display: block;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+}
+
+.toggleCard p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.switch {
+    position: relative;
+    width: 54px;
+    height: 32px;
+    border: none;
+    border-radius: 999px;
+    background: #d1d5db;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+}
+
+.switchOn {
+    background: #22c55e;
+}
+
+.switchThumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    transition: transform 0.2s ease;
+}
+
+.switchOn .switchThumb {
+    transform: translateX(22px);
+}
+
+.sectionHint {
+    margin: 4px 0 0;
+    color: var(--text-muted);
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.uploadButton {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--primary);
+    color: var(--white);
+    padding: 10px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.uploadHint {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+}
+
+.formActionsSticky {
+    position: sticky;
+    bottom: 12px;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    padding: 16px;
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+}
+
+.stateBox,
+.errorBox {
+    background: var(--bg-light);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.errorBox {
+    color: #b42318;
+    background: #fdecec;
+    border-color: #fac5c5;
+}
+
+.modalOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(17, 24, 39, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 50;
+}
+
+.modal {
+    width: min(760px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: var(--bg-light);
+    border-radius: 16px;
+    box-shadow: 0 24px 60px rgba(17, 24, 39, 0.22);
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.modalHeader h3 {
+    margin: 0;
+    color: var(--primary);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.35rem;
+}
+
+.closeBtn {
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    background: var(--bg);
+    color: var(--text-dark);
+    cursor: pointer;
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.serviceForm {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.serviceForm label {
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.serviceForm input,
+.serviceForm select,
+.serviceForm textarea {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-family: 'Montserrat', sans-serif;
+    background: var(--bg);
+    color: var(--text-dark);
+}
+
+.serviceForm textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.serviceForm input:focus,
+.serviceForm select:focus,
+.serviceForm textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(119, 89, 50, 0.12);
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.formGrid > div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.checkRow {
+    display: flex;
+    gap: 18px;
+    flex-wrap: wrap;
+    margin-top: 6px;
+}
+
+.checkRow label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text-dark);
+}
+
+.modalActions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.btnSecondary {
+    background: var(--bg);
+    color: var(--primary);
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 500;
+}
+
+.btnPrimary:disabled,
+.btnSecondary:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+    transform: none;
+}
+
 @media (max-width: 1024px) {
     .serviceGrid {
         grid-template-columns: repeat(2, 1fr);
@@ -223,12 +749,37 @@
 }
 
 @media (max-width: 768px) {
-    .serviceGrid {
+    .serviceGrid,
+    .formGrid,
+    .previewGrid {
         grid-template-columns: 1fr;
     }
-    .pageHeader {
+
+    .pageHeader,
+    .serviceFooter,
+    .listHeader,
+    .imageSectionHeader,
+    .previewTitleRow,
+    .previewActions {
         flex-direction: column;
         align-items: flex-start;
         gap: 15px;
+    }
+
+    .previewBtn {
+        width: 100%;
+    }
+
+    .modalOverlay {
+        align-items: flex-start;
+        padding: 12px;
+    }
+
+    .modalActions {
+        flex-direction: column-reverse;
+    }
+
+    .modalActions button {
+        width: 100%;
     }
 }
