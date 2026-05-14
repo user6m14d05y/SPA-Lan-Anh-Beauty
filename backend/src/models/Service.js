@@ -26,7 +26,7 @@ const Service = sequelize.define('Service', {
     allowNull: true,
   },
   description: {
-    type: Sequelize.TEXT,
+    type: Sequelize.TEXT('long'),
     allowNull: true,
   },
   price: {
@@ -46,7 +46,7 @@ const Service = sequelize.define('Service', {
     allowNull: true,
   },
   images: {
-    type: Sequelize.TEXT,
+    type: Sequelize.TEXT('long'),
     allowNull: true,
   },
   discountPercent: {
