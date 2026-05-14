@@ -7,6 +7,8 @@ const toBoolean = (value, defaultValue = true) => {
   return value === true || value === 'true';
 };
 
+const shouldIncludeAll = (value) => ['all', 'both', 'any'].includes(String(value).toLowerCase());
+
 const categoryOrder = [
   ['sortOrder', 'ASC'],
   ['name', 'ASC'],
@@ -35,6 +37,12 @@ const normalizeImages = (images) => {
   if (Array.isArray(images)) return images.filter(Boolean).map((item) => String(item).trim()).filter(Boolean);
   if (typeof images === 'string') return images.split('\n').map((item) => item.trim()).filter(Boolean);
   return [];
+};
+
+const normalizeImageUrl = (imageUrl, images) => {
+  const value = imageUrl?.trim();
+  if (value && !value.startsWith('data:')) return value;
+  return images.find((image) => !image.startsWith('data:')) || null;
 };
 
 const enrichService = (service) => {
@@ -113,7 +121,7 @@ const buildServicePayload = async (payload, existingServiceId) => {
     price,
     priceLabel,
     durationMinutes,
-    imageUrl: payload.imageUrl?.trim() || images[0] || null,
+    imageUrl: normalizeImageUrl(payload.imageUrl, images),
     images: JSON.stringify(images),
     discountPercent,
     isFeatured: Boolean(payload.isFeatured),
@@ -136,23 +144,29 @@ export const catalogService = {
     });
   },
 
-  async getCategoryTree() {
+  async getCategoryTree({ active = 'true' } = {}) {
+    const includeInactive = shouldIncludeAll(active);
+    const categoryWhere = { parentId: null };
+    const childWhere = includeInactive ? undefined : { isActive: true };
+    const serviceWhere = includeInactive ? undefined : { isActive: true };
+
+    if (!includeInactive) {
+      categoryWhere.isActive = true;
+    }
+
     const categories = await ServiceCategory.findAll({
-      where: {
-        parentId: null,
-        isActive: true,
-      },
+      where: categoryWhere,
       include: [
         {
           model: ServiceCategory,
           as: 'children',
-          where: { isActive: true },
+          where: childWhere,
           required: false,
           include: [
             {
               model: Service,
               as: 'services',
-              where: { isActive: true },
+              where: serviceWhere,
               required: false,
             },
           ],
@@ -160,7 +174,7 @@ export const catalogService = {
         {
           model: Service,
           as: 'services',
-          where: { isActive: true },
+          where: serviceWhere,
           required: false,
         },
       ],
@@ -187,7 +201,7 @@ export const catalogService = {
       where: categorySlug ? { slug: categorySlug } : undefined,
     }];
 
-    if (active !== undefined) {
+    if (active !== undefined && !shouldIncludeAll(active)) {
       where.isActive = toBoolean(active);
     }
 

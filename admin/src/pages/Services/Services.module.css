@@ -523,18 +523,20 @@
 
 .switch {
     position: relative;
-    width: 54px;
-    height: 32px;
-    border: none;
+    width: 58px;
+    height: 34px;
+    border: 1px solid #d8c7b2;
     border-radius: 999px;
-    background: #d1d5db;
+    background: #eadfd4;
     cursor: pointer;
-    transition: background 0.2s ease;
+    transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     flex-shrink: 0;
 }
 
 .switchOn {
-    background: #22c55e;
+    background: var(--primary);
+    border-color: var(--primary);
+    box-shadow: 0 8px 18px rgba(119, 89, 50, 0.24);
 }
 
 .switchThumb {
@@ -550,7 +552,7 @@
 }
 
 .switchOn .switchThumb {
-    transform: translateX(22px);
+    transform: translateX(24px);
 }
 
 .sectionHint {
@@ -742,9 +744,285 @@
     transform: none;
 }
 
+.statusTabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.statusTab {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text-dark);
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.statusTab span {
+    margin-left: 6px;
+    color: var(--primary);
+}
+
+.statusTabActive {
+    background: var(--primary);
+    color: var(--white);
+    border-color: var(--primary);
+}
+
+.statusTabActive span {
+    color: var(--white);
+}
+
+.serviceCardHidden {
+    opacity: 0.78;
+}
+
+.hiddenOverlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(17, 24, 39, 0.46);
+    color: #fff;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+}
+
+.serviceTitleRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.serviceTitleRow h3 {
+    margin-bottom: 0;
+}
+
+.actionHide {
+    color: #854d0e;
+    background: #fef9c3;
+    border-color: #fde68a;
+}
+
+.actionRestore {
+    color: #166534;
+    background: #dcfce7;
+    border-color: #bbf7d0;
+}
+
+.formLayout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 420px;
+    gap: 20px;
+    align-items: start;
+}
+
+.formMainColumn,
+.formSideColumn {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.formSideColumn {
+    position: sticky;
+    top: 18px;
+}
+
+.sectionTitleRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.sectionTitleRow h3 {
+    margin-bottom: 4px;
+}
+
+.sectionTitleRow p {
+    margin: 0;
+    color: var(--text-muted);
+    line-height: 1.5;
+    font-size: 0.9rem;
+}
+
+.coverPreview {
+    height: 220px;
+    border: 1px dashed var(--border);
+    border-radius: 14px;
+    background: var(--bg);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+}
+
+.coverPreview img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.uploadButtonWide {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--primary);
+    color: var(--white) !important;
+    padding: 12px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 700;
+    margin-bottom: 10px !important;
+}
+
+.previewGridCompact {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.previewCardCompact {
+    position: relative;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--bg);
+}
+
+.previewCardCompact img {
+    width: 100%;
+    height: 92px;
+    object-fit: cover;
+    display: block;
+}
+
+.coverBadge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: var(--primary);
+    color: var(--white);
+    border-radius: 999px;
+    padding: 5px 8px;
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.previewHoverActions {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    background: rgba(17, 24, 39, 0.56);
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.previewCardCompact:hover .previewHoverActions {
+    opacity: 1;
+}
+
+.previewHoverActions button {
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    background: #fff;
+    color: var(--primary);
+    border-radius: 999px;
+    padding: 8px 10px;
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 0.78rem;
+}
+
+.iconRemoveBtn {
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 !important;
+    color: #b91c1c !important;
+}
+
+.fieldError {
+    margin-top: 8px;
+    color: #b42318;
+    font-size: 0.86rem;
+    font-weight: 700;
+}
+
+.uploadButtonError {
+    background: #b42318 !important;
+    box-shadow: 0 8px 18px rgba(180, 35, 24, 0.2);
+}
+
+.editorHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.editorToolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.editorToolbar button {
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--primary);
+    border-radius: 8px;
+    padding: 7px 9px;
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 0.78rem;
+}
+
+.editorToolbar button:hover {
+    background: rgba(119, 89, 50, 0.1);
+}
+
+.editorHint {
+    margin-top: 8px;
+    color: var(--text-muted);
+    font-size: 0.86rem;
+    line-height: 1.5;
+}
+
+.toggleStack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 18px;
+}
+
 @media (max-width: 1024px) {
     .serviceGrid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .formLayout {
+        grid-template-columns: 1fr;
+    }
+
+    .formSideColumn {
+        position: static;
     }
 }
 
@@ -758,6 +1036,7 @@
     .pageHeader,
     .serviceFooter,
     .listHeader,
+    .serviceTitleRow,
     .imageSectionHeader,
     .previewTitleRow,
     .previewActions {

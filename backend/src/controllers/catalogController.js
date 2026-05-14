@@ -23,7 +23,7 @@ export const getCategories = async (req, res) => {
 
 export const getCategoryTree = async (req, res) => {
   try {
-    const categories = await catalogService.getCategoryTree();
+    const categories = await catalogService.getCategoryTree(req.query);
 
     res.status(200).json({
       success: true,

@@ -111,7 +111,7 @@ export default function Contact() {
                   <div className={styles.icon}><MapPin size={24} /></div>
                   <div>
                     <h4>Địa Chỉ</h4>
-                    <p>123 Đường Sắc Đẹp, Quận Hoàn Kiếm, Hà Nội</p>
+                    <p>Buôn Sang B - Xã Cư M'gar - Tỉnh Đắk Lắk</p>
                   </div>
                 </li>
                 <li>
@@ -132,7 +132,7 @@ export default function Contact() {
                   <div className={styles.icon}><Clock size={24} /></div>
                   <div>
                     <h4>Giờ Mở Cửa</h4>
-                    <p>Thứ 2 - Chủ Nhật: 08:00 - 20:00</p>
+                    <p>Thứ 2 - Chủ Nhật: 07:00 - 20:00</p>
                   </div>
                 </li>
               </ul>

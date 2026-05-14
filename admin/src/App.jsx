@@ -9,6 +9,7 @@ import Appointments from "./pages/Appointments";
 import Customers from "./pages/Customers";
 import Services from "./pages/Services";
 import AddService from "./pages/Services/add";
+import EditService from "./pages/Services/edit";
 import CategoryServices from "./pages/CategoryServices";
 import Contacts from "./pages/Contacts";
 import Chat from "./pages/Chat";
@@ -38,6 +39,7 @@ function App() {
             <Route path="customers" element={<Customers />} />
             <Route path="services" element={<Services />} />
             <Route path="services/add" element={<AddService />} />
+            <Route path="services/edit/:id" element={<EditService />} />
             <Route path="category-services" element={<CategoryServices />} />
             <Route path="contacts" element={<Contacts />} />
             <Route path="chat" element={<Chat />} />
