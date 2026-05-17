@@ -92,9 +92,17 @@
     line-height: 1.5;
 }
 
-.contactList li span:first-child {
-    margin-right: 15px;
-    font-size: 1.2rem;
+.contactIcon {
+    width: 36px;
+    height: 36px;
+    margin-right: 14px;
+    flex-shrink: 0;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.12);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
 }
 
 .bookingForm {
@@ -168,6 +176,96 @@
     min-height: 120px;
 }
 
+.slotGrid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.slotButton {
+    border: 1px solid #e0d5ce;
+    border-radius: 10px;
+    background: #fdfaf8;
+    color: var(--text-dark);
+    padding: 14px 10px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: center;
+}
+
+.slotButton strong {
+    color: var(--primary);
+    font-size: 1rem;
+}
+
+.slotButton span {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+}
+
+.slotButton:hover:not(:disabled),
+.slotSelected {
+    border-color: var(--primary);
+    background: rgba(119, 89, 50, 0.08);
+    transform: translateY(-2px);
+}
+
+.slotFull {
+    opacity: 0.55;
+    cursor: not-allowed;
+    background: #f3f4f6;
+}
+
+.slotState,
+.closedMessage,
+.formMessage {
+    border-radius: 10px;
+    padding: 13px 15px;
+    line-height: 1.5;
+}
+
+.slotState {
+    background: #fdfaf8;
+    color: var(--text-muted);
+    border: 1px dashed #e0d5ce;
+}
+
+.closedMessage,
+.errorMessage {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+}
+
+.successMessage {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #bbf7d0;
+}
+
+.formMessage {
+    margin-bottom: 18px;
+    font-weight: 600;
+}
+
+.uploadHint {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    margin-top: 8px;
+}
+
+.imagePreview {
+    width: 140px;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #e0d5ce;
+    margin-top: 12px;
+}
+
 .btnSubmit {
     padding: 16px 35px;
     background: var(--primary);
@@ -184,10 +282,15 @@
     margin-top: 1rem;
 }
 
-.btnSubmit:hover {
+.btnSubmit:hover:not(:disabled) {
     background: var(--primary-light);
     transform: translateY(-3px);
     box-shadow: 0 10px 20px rgba(119, 89, 50, 0.2);
+}
+
+.btnSubmit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
 
 @media (max-width: 900px) {
@@ -202,7 +305,8 @@
 }
 
 @media (max-width: 600px) {
-    .formGrid {
+    .formGrid,
+    .slotGrid {
         grid-template-columns: 1fr;
     }
     .fullWidth {

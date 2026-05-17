@@ -101,7 +101,7 @@ export default function Services() {
                               Xem Chi Tiết
                             </Link>
                             <Link to="/booking" className={styles.btnBook}>
-                              Đặt Lịch Ngay
+                              Đặt Lịch
                             </Link>
                           </div>
                         </div>
