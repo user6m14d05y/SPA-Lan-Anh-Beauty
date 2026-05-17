@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Unauthorized from "./pages/Unauthorized";
 import Dashboard from "./pages/Dashboard";
 import Appointments from "./pages/Appointments";
+import ClosedPeriods from "./pages/ClosedPeriods";
 import Customers from "./pages/Customers";
 import Services from "./pages/Services";
 import AddService from "./pages/Services/add";
@@ -36,6 +37,7 @@ function App() {
           >
             <Route index element={<Dashboard />} />
             <Route path="appointments" element={<Appointments />} />
+            <Route path="closed-periods" element={<ClosedPeriods />} />
             <Route path="customers" element={<Customers />} />
             <Route path="services" element={<Services />} />
             <Route path="services/add" element={<AddService />} />

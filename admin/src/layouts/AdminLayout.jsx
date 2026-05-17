@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
 // Icon
-import { LayoutDashboard, Calendar, Users, Sparkles, Mail, MessageCircle, LogOut, User } from '../icons.jsx';
+import { LayoutDashboard, Calendar, CalendarOff, Users, Sparkles, Mail, MessageCircle, LogOut, User } from '../icons.jsx';
 import { useAuth } from '../context/AuthContext';
 import styles from './AdminLayout.module.css';
 
@@ -32,6 +32,7 @@ export default function AdminLayout() {
       case '/staffs': return 'Quản lý Nhân viên';
       case '/users': return 'Quản lý tài khoản';
       case '/appointments': return 'Lịch hẹn';
+      case '/closed-periods': return 'Ngày nghỉ';
       case '/services': return 'Dịch vụ';
       case '/category-services': return 'Danh mục dịch vụ';
       case '/contacts': return 'Liên hệ';
@@ -80,12 +81,21 @@ export default function AdminLayout() {
             )}
           </li>
           <li>
-            <NavLink 
-              to="/appointments" 
+            <NavLink
+              to="/appointments"
               className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
             >
               <span className={styles.navIcon}><Calendar size={20} /></span>
               Lịch hẹn
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/closed-periods"
+              className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
+            >
+              <span className={styles.navIcon}><CalendarOff size={20} /></span>
+              Ngày nghỉ
             </NavLink>
           </li>
           <li>

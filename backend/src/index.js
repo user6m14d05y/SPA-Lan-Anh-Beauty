@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { connectDB } from './config/database.js';
@@ -19,6 +20,7 @@ app.use(cors({
 }));
 app.use(express.json({ limit: '25mb' })); // Để parse body dạng JSON
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
+app.use('/uploads/img', express.static(path.join(process.cwd(), 'uploads', 'img')));
 
 app.use('/api', router);
 

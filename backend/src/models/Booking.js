@@ -30,6 +30,14 @@ const Booking = sequelize.define("Booking", {
   status: {
     type: Sequelize.ENUM('PENDING', 'CONFIRMED', 'COMPLETED', 'CANCELLED'),
     defaultValue: 'PENDING', // Mặc định vừa đặt xong là Chờ xác nhận
+  },
+  notes: {
+    type: Sequelize.TEXT,
+    allowNull: true,
+  },
+  customerImage: {
+    type: Sequelize.STRING,
+    allowNull: true,
   }
 }, {
   tableName: 'bookings',

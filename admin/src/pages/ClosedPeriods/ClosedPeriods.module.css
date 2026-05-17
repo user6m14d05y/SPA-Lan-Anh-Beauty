@@ -1,0 +1,197 @@
+.page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.pageHeader h2 {
+    margin: 0;
+    color: var(--primary);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+}
+
+.pageHeader p,
+.sectionTitle p {
+    color: var(--text-muted);
+    margin: 6px 0 0;
+    line-height: 1.5;
+}
+
+.layoutGrid {
+    display: grid;
+    grid-template-columns: 360px minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+}
+
+.formCard,
+.listCard {
+    background: var(--bg-light);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 22px;
+}
+
+.sectionTitle {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 18px;
+    color: var(--primary);
+}
+
+.sectionTitle h3 {
+    margin: 0;
+    color: var(--text-dark);
+}
+
+.formCard label {
+    display: block;
+    color: var(--text-dark);
+    font-weight: 600;
+    margin: 14px 0 8px;
+}
+
+.formCard input,
+.formCard select {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    padding: 11px 12px;
+    background: var(--bg);
+    color: var(--text-dark);
+    font-family: 'Montserrat', sans-serif;
+}
+
+.formCard input:focus,
+.formCard select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(119, 89, 50, 0.1);
+}
+
+.formCard button,
+.periodItem button {
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    font-weight: 700;
+    transition: var(--transition);
+}
+
+.formCard button {
+    width: 100%;
+    margin-top: 18px;
+    background: var(--primary);
+    color: var(--white);
+    padding: 12px 16px;
+}
+
+.formCard button:hover:not(:disabled) {
+    background: var(--primary-light);
+    transform: translateY(-2px);
+}
+
+.formCard button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.periodList {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.periodItem {
+    display: grid;
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+    gap: 12px;
+    align-items: center;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 14px;
+}
+
+.periodIcon {
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    background: rgba(119, 89, 50, 0.1);
+    color: var(--primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.periodItem strong,
+.periodItem span,
+.periodItem p {
+    display: block;
+}
+
+.periodItem strong {
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+
+.periodItem span,
+.periodItem p {
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.45;
+}
+
+.periodItem button {
+    color: #991b1b;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+    padding: 8px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.periodItem button:hover {
+    background: #fecaca;
+}
+
+.messageBox,
+.stateBox {
+    border-radius: 10px;
+    padding: 14px 16px;
+    line-height: 1.5;
+}
+
+.stateBox {
+    color: var(--text-muted);
+    background: var(--bg);
+    border: 1px dashed var(--border);
+    text-align: center;
+}
+
+.successBox {
+    color: #166534;
+    background: #dcfce7;
+    border: 1px solid #bbf7d0;
+}
+
+.errorBox {
+    color: #991b1b;
+    background: #fee2e2;
+    border: 1px solid #fecaca;
+}
+
+@media (max-width: 900px) {
+    .layoutGrid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 600px) {
+    .periodItem {
+        grid-template-columns: 1fr;
+    }
+}
