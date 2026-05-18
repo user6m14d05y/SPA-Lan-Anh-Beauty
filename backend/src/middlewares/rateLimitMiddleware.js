@@ -95,3 +95,16 @@ export const contactRateLimiter = rateLimit({
     });
   },
 });
+
+export const chatbotRateLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (_req, res) => {
+    res.status(429).json({
+      success: false,
+      message: 'Bạn đang gửi tin nhắn quá nhanh. Vui lòng thử lại sau ít phút.',
+    });
+  },
+});

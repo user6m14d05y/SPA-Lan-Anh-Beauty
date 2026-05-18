@@ -174,8 +174,8 @@ export default function ServiceDetail() {
                 </div>
 
                 <div className={styles.actions}>
-                  <Link to="/booking" className={styles.btnPrimary}>Đặt lịch ngay</Link>
-                  <Link to="/contact" className={styles.btnSecondary}>Tư vấn thêm</Link>
+                  <Link to="/booking" className={styles.btnPrimary}>Đặt lịch</Link>
+                  <Link to="/contact" className={styles.btnSecondary}>Tư vấn</Link>
                 </div>
               </div>
 

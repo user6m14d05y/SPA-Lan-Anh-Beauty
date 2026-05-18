@@ -6,9 +6,12 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { connectDB } from './config/database.js';
 import router from './routes/index.js';
+import { setupChatSocket } from './socket/chatSocket.js';
 
 // Load biến môi trường từ file .env
-dotenv.config();
+dotenv.config({ path: path.resolve(process.cwd(), '.env') });
+dotenv.config({ path: path.resolve(process.cwd(), 'backend', '.env'), override: false });
+dotenv.config({ path: path.resolve(process.cwd(), '..', '.env'), override: false });
 
 const app = express();
 const httpServer = createServer(app);
@@ -37,14 +40,7 @@ app.get('/api/health', (req, res) => {
   res.status(200).json({ status: 'success', message: 'Backend is running correctly!' });
 });
 
-// Socket.io connection logic
-io.on('connection', (socket) => {
-  console.log(`Client connected: ${socket.id}`);
-  
-  socket.on('disconnect', () => {
-    console.log(`Client disconnected: ${socket.id}`);
-  });
-});
+setupChatSocket(io);
 
 const PORT = process.env.PORT || 5000;
 

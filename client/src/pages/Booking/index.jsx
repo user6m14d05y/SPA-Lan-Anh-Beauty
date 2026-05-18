@@ -256,12 +256,6 @@ export default function Booking() {
             <p>Chọn ngày, khung giờ còn trống và gửi thông tin để được xác nhận lịch hẹn.</p>
           </div>
 
-          {message.text && (
-            <div className={`${styles.formMessage} ${message.type === 'success' ? styles.successMessage : styles.errorMessage}`}>
-              {message.text}
-            </div>
-          )}
-
           <form onSubmit={handleSubmit}>
             <div className={styles.formGrid}>
               <div className={styles.formGroup}>
@@ -331,6 +325,12 @@ export default function Booking() {
                 <textarea id="notes" name="notes" value={formData.notes} onChange={handleChange} placeholder="Bạn có yêu cầu gì đặc biệt hay thắc mắc về dịch vụ không?" />
               </div>
             </div>
+            
+          {message.text && (
+            <div className={`${styles.formMessage} ${message.type === 'success' ? styles.successMessage : styles.errorMessage}`}>
+              {message.text}
+            </div>
+          )}
 
             <button type="submit" className={styles.btnSubmit} disabled={submitting || availability?.isClosed}>
               {submitting ? 'Đang gửi lịch hẹn...' : 'Hoàn Tất Đặt Lịch'}
