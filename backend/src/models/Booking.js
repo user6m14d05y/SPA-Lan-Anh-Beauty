@@ -15,6 +15,10 @@ const Booking = sequelize.define("Booking", {
     type: Sequelize.STRING,
     allowNull: false, // Bắt buộc khách phải để lại SĐT
   },
+  customerEmail: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
   serviceName: {
     type: Sequelize.STRING,
     allowNull: false, // Tên dịch vụ (vd: Massage mặt, Trị mụn...)

@@ -12,7 +12,7 @@ export default function Contact() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  
+
   // Captcha state
   const [requireCaptcha, setRequireCaptcha] = useState(false);
   const [captchaCode, setCaptchaCode] = useState('');
@@ -105,7 +105,7 @@ export default function Contact() {
               <p className={styles.sectionDesc}>
                 Hãy đến trực tiếp hoặc liên hệ với chúng tôi qua các kênh dưới đây để được tư vấn miễn phí và trải nghiệm dịch vụ đẳng cấp.
               </p>
-              
+
               <ul className={styles.infoList}>
                 <li>
                   <div className={styles.icon}><MapPin size={24} /></div>
@@ -157,10 +157,8 @@ export default function Contact() {
               <p className={styles.formDesc}>
                 Bạn có câu hỏi? Vui lòng điền vào biểu mẫu dưới đây và chúng tôi sẽ liên hệ lại với bạn.
               </p>
-              
+
               <form onSubmit={handleSubmit} className={styles.form}>
-                {success && <div className={styles.successMessage}>{success}</div>}
-                {error && <div className={styles.errorMessage}>{error}</div>}
                 <div className={styles.formGroup}>
                   <label htmlFor="name">Họ và Tên *</label>
                   <input
@@ -208,7 +206,7 @@ export default function Contact() {
                     required
                   ></textarea>
                 </div>
-                
+
                 {requireCaptcha && (
                   <div className={styles.captchaGroup}>
                     <label>Mã xác thực *</label>
@@ -233,6 +231,9 @@ export default function Contact() {
                     </div>
                   </div>
                 )}
+
+                {success && <div className={styles.successMessage}>{success}</div>}
+                {error && <div className={styles.errorMessage}>{error}</div>}
 
                 <button type="submit" className={styles.btnSubmit} disabled={submitting}>
                   {submitting ? 'Đang gửi...' : 'Gửi Tin Nhắn'}

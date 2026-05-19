@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  createCategory,
   createService,
   getCategories,
   getCategoryTree,
@@ -14,6 +15,7 @@ const router = express.Router();
 const adminOnly = [verifyToken, requireRole('ADMIN')];
 
 router.get('/categories', getCategories);
+router.post('/categories', adminOnly, createCategory);
 router.get('/tree', getCategoryTree);
 router.get('/services', getServices);
 router.post('/services', adminOnly, createService);

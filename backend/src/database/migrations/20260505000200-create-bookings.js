@@ -15,6 +15,10 @@ export default {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      customerEmail: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
       serviceName: {
         type: Sequelize.STRING,
         allowNull: false,

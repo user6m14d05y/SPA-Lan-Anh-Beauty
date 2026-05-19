@@ -97,10 +97,10 @@ export default function Services() {
                             <div className={styles.duration}>Thời lượng: {service.durationMinutes} phút</div>
                           )}
                           <div className={styles.cardActions}>
-                            <Link to={`/services/${service.slug}`} className={styles.btnDetail}>
+                            <Link to={`/services/detail/${service.slug}`} className={styles.btnDetail}>
                               Xem Chi Tiết
                             </Link>
-                            <Link to="/booking" className={styles.btnBook}>
+                            <Link to={`/booking?service=${encodeURIComponent(service.slug)}`} className={styles.btnBook}>
                               Đặt Lịch
                             </Link>
                           </div>

@@ -276,7 +276,7 @@ export default function AddService() {
                 </div>
               </div>
 
-              <label>Mô tả ngắn</label>
+              <label className={'mt-3'}>Mô tả ngắn</label>
               <textarea name="shortDescription" value={formData.shortDescription} onChange={handleFormChange} maxLength={255} placeholder="Tóm tắt ngắn gọn lợi ích hoặc điểm nổi bật của dịch vụ." />
 
               <div className={styles.editorHeader}>

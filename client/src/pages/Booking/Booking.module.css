@@ -44,7 +44,7 @@
 }
 
 .bookingContainer {
-    max-width: 1100px;
+    max-width: 1200px;
     margin: -80px auto 80px; 
     background: var(--white);
     border-radius: 12px;
@@ -174,6 +174,26 @@
 .formGroup textarea {
     resize: vertical;
     min-height: 120px;
+}
+
+.selectedServicePrice {
+    margin-top: 10px;
+    border: 1px solid rgba(119, 89, 50, 0.16);
+    border-radius: 10px;
+    background: rgba(119, 89, 50, 0.06);
+    padding: 11px 13px;
+}
+
+.selectedServicePrice span {
+    display: block;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    margin-bottom: 4px;
+}
+
+.selectedServicePrice strong {
+    color: var(--primary);
+    font-size: 1rem;
 }
 
 .slotGrid {

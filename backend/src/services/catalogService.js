@@ -76,6 +76,16 @@ const normalizeCategory = (category) => {
   };
 };
 
+const generateSlug = (value) => value
+  .normalize('NFD')
+  .replace(/[̀-ͯ]/g, '')
+  .replace(/đ/g, 'd')
+  .replace(/Đ/g, 'd')
+  .toLowerCase()
+  .trim()
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-+|-+$/g, '');
+
 const assertValidNumber = (value, fieldName, { min = 0, max } = {}) => {
   if (value === undefined || value === null || value === '') return null;
 
@@ -86,6 +96,33 @@ const assertValidNumber = (value, fieldName, { min = 0, max } = {}) => {
   }
 
   return Math.round(numberValue);
+};
+
+const buildCategoryPayload = async (payload) => {
+  const parentId = assertValidNumber(payload.parentId, 'Danh mục cha', { min: 1 });
+  const sortOrder = assertValidNumber(payload.sortOrder, 'Thứ tự hiển thị', { min: 0 }) || 0;
+  const name = payload.name?.trim();
+  const slug = (payload.slug?.trim() || generateSlug(name || '')).toLowerCase();
+
+  if (!name || name.length < 2 || name.length > 150) throw createAppError('Tên danh mục phải từ 2 đến 150 ký tự.', 422);
+  if (!slug || !/^[a-z0-9-]+$/.test(slug)) throw createAppError('Slug chỉ được gồm chữ thường, số và dấu gạch ngang.', 422);
+
+  if (parentId) {
+    const parent = await ServiceCategory.findByPk(parentId);
+    if (!parent) throw createAppError('Danh mục cha không tồn tại.', 404);
+  }
+
+  const existedCategory = await ServiceCategory.findOne({ where: { slug } });
+  if (existedCategory) throw createAppError('Slug danh mục đã tồn tại.', 409);
+
+  return {
+    parentId,
+    name,
+    slug,
+    description: payload.description?.trim() || null,
+    sortOrder,
+    isActive: payload.isActive === undefined ? true : Boolean(payload.isActive),
+  };
 };
 
 const buildServicePayload = async (payload, existingServiceId) => {
@@ -142,6 +179,11 @@ export const catalogService = {
       where,
       order: categoryOrder,
     });
+  },
+
+  async createCategory(payload) {
+    const categoryPayload = await buildCategoryPayload(payload);
+    return ServiceCategory.create(categoryPayload);
   },
 
   async getCategoryTree({ active = 'true' } = {}) {

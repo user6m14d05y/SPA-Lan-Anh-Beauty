@@ -5,7 +5,7 @@ import AdminLayout from "./layouts/AdminLayout";
 import Login from "./pages/Login";
 import Unauthorized from "./pages/Unauthorized";
 import Dashboard from "./pages/Dashboard";
-import Appointments from "./pages/Appointments";
+import Bookings from "./pages/Bookings";
 import ClosedPeriods from "./pages/ClosedPeriods";
 import Customers from "./pages/Customers";
 import Services from "./pages/Services";
@@ -36,7 +36,7 @@ function App() {
             }
           >
             <Route index element={<Dashboard />} />
-            <Route path="appointments" element={<Appointments />} />
+            <Route path="bookings" element={<Bookings />} />
             <Route path="closed-periods" element={<ClosedPeriods />} />
             <Route path="customers" element={<Customers />} />
             <Route path="services" element={<Services />} />
