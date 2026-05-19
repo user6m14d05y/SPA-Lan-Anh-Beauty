@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { Sparkles } from '../../icons.jsx';
+import { useAuth } from '../../context/AuthContext.jsx';
+import { Sparkles, X } from '../../icons.jsx';
 import styles from './CategoryServices.module.css';
 
 const collectServices = (category) => [
@@ -7,11 +8,24 @@ const collectServices = (category) => [
   ...(category.children || []).flatMap((child) => child.services || []),
 ];
 
+const initialFormData = {
+  name: '',
+  parentId: '',
+  description: '',
+  sortOrder: '0',
+};
+
 export default function CategoryServices() {
+  const { authFetch } = useAuth();
   const [categories, setCategories] = useState([]);
   const [openCategoryIds, setOpenCategoryIds] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState(initialFormData);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const summary = useMemo(() => {
     const childrenCount = categories.reduce((total, category) => total + (category.children || []).length, 0);
@@ -24,27 +38,26 @@ export default function CategoryServices() {
     };
   }, [categories]);
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        setLoading(true);
-        setError('');
-        const response = await fetch('http://localhost:5000/api/catalog/tree?active=all');
-        const result = await response.json();
+  const fetchCategories = async () => {
+    try {
+      setLoading(true);
+      setError('');
+      const response = await fetch('http://localhost:5000/api/catalog/tree?active=all');
+      const result = await response.json();
 
-        if (!response.ok || !result.success) {
-          throw new Error(result.message || 'Không thể tải danh mục dịch vụ.');
-        }
-
-        setCategories(result.data || []);
-        setOpenCategoryIds((result.data || []).map((category) => category.id));
-      } catch (error) {
-        setError(error.message || 'Không thể tải danh mục dịch vụ.');
-      } finally {
-        setLoading(false);
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Không thể tải danh mục dịch vụ.');
       }
-    };
 
+      setCategories(result.data || []);
+    } catch (error) {
+      setError(error.message || 'Không thể tải danh mục dịch vụ.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchCategories();
   }, []);
 
@@ -52,6 +65,63 @@ export default function CategoryServices() {
     setOpenCategoryIds((current) => current.includes(categoryId)
       ? current.filter((id) => id !== categoryId)
       : [...current, categoryId]);
+  };
+
+  const openCreateModal = () => {
+    setFormData(initialFormData);
+    setShowForm(true);
+    setFormError('');
+    setSuccessMessage('');
+  };
+
+  const closeCreateModal = () => {
+    if (submitting) return;
+    setShowForm(false);
+    setFormData(initialFormData);
+    setFormError('');
+  };
+
+  const handleFormChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((current) => ({ ...current, [name]: value }));
+    setFormError('');
+    setSuccessMessage('');
+  };
+
+  const handleSubmitCategory = async (event) => {
+    event.preventDefault();
+
+    try {
+      setSubmitting(true);
+      setFormError('');
+      setSuccessMessage('');
+
+      const payload = {
+        name: formData.name,
+        parentId: formData.parentId || null,
+        description: formData.description,
+        sortOrder: formData.sortOrder,
+        isActive: true,
+      };
+      const response = await authFetch('http://localhost:5000/api/catalog/categories', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'Không thể tạo danh mục dịch vụ.');
+      }
+
+      setFormData(initialFormData);
+      setShowForm(false);
+      setSuccessMessage('Đã thêm danh mục dịch vụ.');
+      await fetchCategories();
+    } catch (error) {
+      setFormError(error.message || 'Không thể tạo danh mục dịch vụ.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const renderService = (service) => (
@@ -87,7 +157,57 @@ export default function CategoryServices() {
           <h2 className={styles.pageTitle}>Danh mục dịch vụ</h2>
           <p>Theo dõi cấu trúc danh mục cha, danh mục con và dịch vụ đang thuộc từng nhóm.</p>
         </div>
+        <button type="button" className={styles.btnPrimary} onClick={openCreateModal}>
+          + Thêm danh mục
+        </button>
       </div>
+
+      {successMessage && <div className={styles.successBox}>{successMessage}</div>}
+
+      {showForm && (
+        <div className={styles.modalOverlay} onClick={closeCreateModal}>
+          <div className={styles.modal} onClick={(event) => event.stopPropagation()}>
+            <div className={styles.modalHeader}>
+              <h3>Tạo danh mục mới</h3>
+              <button type="button" className={styles.closeBtn} onClick={closeCreateModal}>
+                <X size={20} />
+              </button>
+            </div>
+            <form onSubmit={handleSubmitCategory}>
+              <div className={styles.modalBody}>
+                {formError && <div className={styles.formError}>{formError}</div>}
+                <div className={styles.formGrid}>
+                  <div className={styles.formGroup}>
+                    <label>Tên danh mục</label>
+                    <input className={styles.formInput} name="name" value={formData.name} onChange={handleFormChange} placeholder="Nhập tên danh mục" required />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label>Danh mục cha</label>
+                    <select className={styles.formInput} name="parentId" value={formData.parentId} onChange={handleFormChange}>
+                      <option value="">Danh mục cha</option>
+                      {categories.map((category) => (
+                        <option key={category.id} value={category.id}>{category.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+                    <label>Thứ tự</label>
+                    <input className={styles.formInput} name="sortOrder" type="text" min="0" value={formData.sortOrder} onChange={handleFormChange} />
+                  </div>
+                  <div className={`${styles.formGroup} ${styles.formGroupFull}`}>
+                    <label>Mô tả</label>
+                    <textarea className={styles.formInput} name="description" value={formData.description} onChange={handleFormChange} placeholder="Nhập mô tả danh mục" rows="3" />
+                  </div>
+                </div>
+              </div>
+              <div className={styles.modalFooter}>
+                <button type="button" className={styles.btnSecondary} onClick={closeCreateModal}>Hủy</button>
+                <button type="submit" className={styles.btnPrimary} disabled={submitting}>{submitting ? 'Đang lưu...' : 'Lưu danh mục'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {loading ? (
         <div className={styles.stateBox}>Đang tải danh mục dịch vụ...</div>

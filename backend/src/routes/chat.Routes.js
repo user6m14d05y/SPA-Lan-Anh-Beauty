@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  closeConversation,
   getConversationMessages,
   listConversations,
   startConversation,
@@ -12,5 +13,6 @@ const adminOrStaff = [verifyToken, requireRole('ADMIN', 'STAFF')];
 router.post('/conversations', startConversation);
 router.get('/conversations', adminOrStaff, listConversations);
 router.get('/conversations/:id/messages', adminOrStaff, getConversationMessages);
+router.patch('/conversations/:id/close', adminOrStaff, closeConversation);
 
 export default router;

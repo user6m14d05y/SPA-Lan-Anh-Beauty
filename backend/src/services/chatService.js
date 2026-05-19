@@ -1,3 +1,5 @@
+import fs from 'fs/promises';
+import path from 'path';
 import ChatConversation from '../models/ChatConversation.js';
 import ChatMessage from '../models/ChatMessage.js';
 
@@ -27,15 +29,52 @@ const normalizeVisitorId = (visitorId) => {
 const normalizeMessage = (message) => {
   const value = normalizeText(message);
 
-  if (!value) {
-    throw createAppError('Vui lòng nhập nội dung tin nhắn.', 422);
-  }
-
   if (value.length > MAX_MESSAGE_LENGTH) {
     throw createAppError(`Tin nhắn không được vượt quá ${MAX_MESSAGE_LENGTH} ký tự.`, 422);
   }
 
   return value;
+};
+
+const saveImage = async (imageUrl) => {
+  const value = String(imageUrl || '').trim();
+  if (!value) return '';
+
+  const match = value.match(/^data:image\/(png|jpe?g|webp|gif);base64,(.+)$/i);
+  if (!match) throw createAppError('Ảnh không hợp lệ.', 422);
+
+  const extension = match[1].toLowerCase().replace('jpeg', 'jpg');
+  const buffer = Buffer.from(match[2], 'base64');
+  if (buffer.length > 2 * 1024 * 1024) throw createAppError('Ảnh không được vượt quá 2MB.', 422);
+
+  const uploadDir = path.join(process.cwd(), 'uploads', 'img', 'chat');
+  await fs.mkdir(uploadDir, { recursive: true });
+
+  const fileName = `chat-${Date.now()}-${Math.random().toString(36).slice(2, 10)}.${extension}`;
+  await fs.writeFile(path.join(uploadDir, fileName), buffer);
+  return `/uploads/img/chat/${fileName}`;
+};
+
+const buildMessageText = async ({ message, imageUrl }) => {
+  const text = normalizeMessage(message);
+  const image = await saveImage(imageUrl);
+
+  if (!text && !image) {
+    throw createAppError('Vui lòng nhập nội dung hoặc chọn ảnh.', 422);
+  }
+
+  return image ? JSON.stringify({ text, imageUrl: image }) : text;
+};
+
+const buildLastMessage = (message) => {
+  try {
+    const parsed = JSON.parse(message);
+    if (parsed?.imageUrl) return parsed.text || 'Đã gửi ảnh';
+  } catch {
+    return message;
+  }
+
+  return message;
 };
 
 const serializeConversation = (conversation) => {
@@ -52,7 +91,7 @@ const serializeMessage = (message) => (
 );
 
 export const chatService = {
-  async getOrCreateConversation({ visitorId, customerName, customerPhone, customerEmail } = {}) {
+  async getOrCreateConversation({ visitorId, customerName, customerPhone, customerEmail, reopenClosed = true } = {}) {
     const normalizedVisitorId = normalizeVisitorId(visitorId);
     const [conversation, created] = await ChatConversation.findOrCreate({
       where: { visitorId: normalizedVisitorId },
@@ -82,7 +121,7 @@ export const chatService = {
       updates.customerEmail = nextCustomerEmail;
     }
 
-    if (conversation.status !== 'OPEN') {
+    if (reopenClosed && conversation.status !== 'OPEN') {
       updates.status = 'OPEN';
     }
 
@@ -140,9 +179,14 @@ export const chatService = {
     };
   },
 
-  async createCustomerMessage({ visitorId, customerName, message }) {
-    const conversation = await this.getOrCreateConversation({ visitorId, customerName });
-    const text = normalizeMessage(message);
+  async createCustomerMessage({ visitorId, customerName, message, imageUrl }) {
+    const conversation = await this.getOrCreateConversation({ visitorId, customerName, reopenClosed: false });
+
+    if (conversation.status === 'CLOSED') {
+      throw createAppError('Hội thoại đã kết thúc. Vui lòng bắt đầu hội thoại mới.', 409);
+    }
+
+    const text = await buildMessageText({ message, imageUrl });
     const createdMessage = await ChatMessage.create({
       conversationId: conversation.id,
       senderType: 'CUSTOMER',
@@ -153,7 +197,7 @@ export const chatService = {
     const updatedConversation = await ChatConversation.findByPk(conversation.id);
     await updatedConversation.update({
       status: 'OPEN',
-      lastMessage: text,
+      lastMessage: buildLastMessage(text),
       lastMessageAt: createdMessage.createdAt,
       unreadByStaff: updatedConversation.unreadByStaff + 1,
     });
@@ -164,14 +208,18 @@ export const chatService = {
     };
   },
 
-  async createStaffMessage({ conversationId, message, user }) {
+  async createStaffMessage({ conversationId, message, imageUrl, user }) {
     const conversation = await ChatConversation.findByPk(conversationId);
 
     if (!conversation) {
       throw createAppError('Không tìm thấy hội thoại.', 404);
     }
 
-    const text = normalizeMessage(message);
+    if (conversation.status === 'CLOSED') {
+      throw createAppError('Hội thoại đã kết thúc.', 409);
+    }
+
+    const text = await buildMessageText({ message, imageUrl });
     const createdMessage = await ChatMessage.create({
       conversationId: conversation.id,
       senderType: 'STAFF',
@@ -183,7 +231,7 @@ export const chatService = {
     await conversation.update({
       status: 'OPEN',
       assignedTo: user?.id || conversation.assignedTo,
-      lastMessage: text,
+      lastMessage: buildLastMessage(text),
       lastMessageAt: createdMessage.createdAt,
       unreadByCustomer: conversation.unreadByCustomer + 1,
     });
@@ -192,6 +240,22 @@ export const chatService = {
       conversation: serializeConversation(conversation),
       message: serializeMessage(createdMessage),
     };
+  },
+
+  async closeConversation(conversationId) {
+    const conversation = await ChatConversation.findByPk(conversationId);
+
+    if (!conversation) {
+      throw createAppError('Không tìm thấy hội thoại.', 404);
+    }
+
+    await conversation.update({
+      status: 'CLOSED',
+      unreadByStaff: 0,
+      unreadByCustomer: 0,
+    });
+
+    return serializeConversation(conversation);
   },
 
   async markStaffRead(conversationId) {

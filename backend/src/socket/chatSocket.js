@@ -57,7 +57,7 @@ export const setupChatSocket = (io) => {
       if (conversation) emitConversationUpdate(io, conversation);
     });
 
-    socket.on('chat:staff:message', async ({ conversationId, message } = {}) => {
+    socket.on('chat:staff:message', async ({ conversationId, message, imageUrl } = {}) => {
       if (!socket.user) {
         socket.emit('chat:error', { message: 'Chưa xác thực nhân viên.' });
         return;
@@ -67,6 +67,7 @@ export const setupChatSocket = (io) => {
         const result = await chatService.createStaffMessage({
           conversationId,
           message,
+          imageUrl,
           user: socket.user,
         });
 
@@ -77,11 +78,30 @@ export const setupChatSocket = (io) => {
       }
     });
 
+    socket.on('chat:staff:closeConversation', async ({ conversationId } = {}) => {
+      if (!socket.user) {
+        socket.emit('chat:error', { message: 'Chưa xác thực nhân viên.' });
+        return;
+      }
+
+      try {
+        const conversation = await chatService.closeConversation(conversationId);
+        emitConversationUpdate(io, conversation);
+      } catch (error) {
+        socket.emit('chat:error', { message: error.message || 'Không thể kết thúc hội thoại.' });
+      }
+    });
+
     socket.on('chat:customer:join', async ({ visitorId, customerName } = {}) => {
       try {
-        const conversation = await chatService.getOrCreateConversation({ visitorId, customerName });
+        const conversation = await chatService.getOrCreateConversation({ visitorId, customerName, reopenClosed: false });
         const result = await chatService.getMessages(conversation.id, { markCustomerRead: true });
 
+        if (socket.activeConversationId && socket.activeConversationId !== conversation.id) {
+          socket.leave(conversationRoom(socket.activeConversationId));
+        }
+
+        socket.activeConversationId = conversation.id;
         socket.join(conversationRoom(conversation.id));
         socket.emit('chat:conversation', result);
         emitConversationUpdate(io, result.conversation);
@@ -90,15 +110,40 @@ export const setupChatSocket = (io) => {
       }
     });
 
-    socket.on('chat:customer:message', async ({ visitorId, customerName, message } = {}) => {
+    socket.on('chat:customer:message', async ({ visitorId, customerName, message, imageUrl } = {}) => {
       try {
-        const result = await chatService.createCustomerMessage({ visitorId, customerName, message });
+        const result = await chatService.createCustomerMessage({ visitorId, customerName, message, imageUrl });
 
+        if (socket.activeConversationId && socket.activeConversationId !== result.conversation.id) {
+          socket.leave(conversationRoom(socket.activeConversationId));
+        }
+
+        socket.activeConversationId = result.conversation.id;
         socket.join(conversationRoom(result.conversation.id));
         io.to(conversationRoom(result.conversation.id)).emit('chat:message', result.message);
         emitConversationUpdate(io, result.conversation);
       } catch (error) {
         socket.emit('chat:error', { message: error.message || 'Không thể gửi tin nhắn.' });
+      }
+    });
+
+    socket.on('chat:customer:newConversation', async ({ visitorId, customerName } = {}) => {
+      try {
+        const nextVisitorId = `${visitorId}_${Date.now().toString(36)}`;
+        const conversation = await chatService.getOrCreateConversation({ visitorId: nextVisitorId, customerName });
+        const result = await chatService.getMessages(conversation.id, { markCustomerRead: true });
+
+        if (socket.activeConversationId) {
+          socket.leave(conversationRoom(socket.activeConversationId));
+        }
+
+        socket.activeConversationId = conversation.id;
+        socket.join(conversationRoom(conversation.id));
+        socket.emit('chat:visitorId:update', { visitorId: nextVisitorId });
+        socket.emit('chat:conversation', result);
+        io.to(staffRoom).emit('chat:conversation:upsert', result.conversation);
+      } catch (error) {
+        socket.emit('chat:error', { message: error.message || 'Không thể bắt đầu hội thoại mới.' });
       }
     });
 

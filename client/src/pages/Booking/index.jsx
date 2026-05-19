@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import styles from './Booking.module.css';
 
 const API_URL = 'http://localhost:5000/api';
@@ -45,6 +46,7 @@ const addDays = (date, days) => {
 const emptyForm = {
   name: '',
   phone: '',
+  email: '',
   service: '',
   date: '',
   time: '',
@@ -53,6 +55,8 @@ const emptyForm = {
 };
 
 export default function Booking() {
+  const [searchParams] = useSearchParams();
+  const selectedServiceSlug = searchParams.get('service');
   const [formData, setFormData] = useState(emptyForm);
   const [services, setServices] = useState([]);
   const [availability, setAvailability] = useState(null);
@@ -66,6 +70,9 @@ export default function Booking() {
   const selectedSlot = useMemo(() => (
     availability?.slots?.find((slot) => slot.time === formData.time)
   ), [availability, formData.time]);
+  const selectedService = useMemo(() => (
+    services.find((service) => service.name === formData.service) || null
+  ), [services, formData.service]);
 
   useEffect(() => {
     const fetchServices = async () => {
@@ -74,7 +81,15 @@ export default function Booking() {
         const result = await response.json();
 
         if (response.ok && result.success) {
-          setServices(result.data || []);
+          const nextServices = result.data || [];
+          setServices(nextServices);
+
+          if (selectedServiceSlug) {
+            const matchedService = nextServices.find((service) => service.slug === selectedServiceSlug);
+            if (matchedService) {
+              setFormData((current) => ({ ...current, service: matchedService.name }));
+            }
+          }
         }
       } catch {
         setServices([]);
@@ -82,7 +97,7 @@ export default function Booking() {
     };
 
     fetchServices();
-  }, []);
+  }, [selectedServiceSlug]);
 
   useEffect(() => {
     if (!formData.date) {
@@ -192,6 +207,7 @@ export default function Booking() {
     const payload = new FormData();
     payload.append('customerName', formData.name.trim());
     payload.append('customerPhone', formData.phone.trim());
+    payload.append('customerEmail', formData.email.trim());
     payload.append('serviceName', formData.service);
     payload.append('bookingDate', formData.date);
     payload.append('bookingTime', formData.time);
@@ -266,9 +282,13 @@ export default function Booking() {
                 <label htmlFor="phone">Số Điện Thoại *</label>
                 <input type="tel" id="phone" name="phone" value={formData.phone} onChange={handleChange} placeholder="09xx xxx xxx" required />
               </div>
+              <div className={`${styles.formGroup} ${styles.fullWidth}`}>
+                <label htmlFor="email">Email *</label>
+                <input className='appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500' type="email" id="email" name="email" value={formData.email} onChange={handleChange} placeholder="email@example.com" required />
+              </div>
               <div className={styles.formGroup}>
                 <label htmlFor="service">Dịch Vụ Quan Tâm *</label>
-                <select id="service" name="service" value={formData.service} onChange={handleChange} required>
+                <select className='appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500' id="service" name="service" value={formData.service} onChange={handleChange} required>
                   <option value="" disabled>Chọn dịch vụ</option>
                   {services.length > 0 ? services.map((service) => (
                     <option key={service.id} value={service.name}>{service.name}</option>
@@ -281,6 +301,12 @@ export default function Booking() {
                     </>
                   )}
                 </select>
+                {selectedService && (
+                  <div className={styles.selectedServicePrice}>
+                    <span>Giá dịch vụ</span>
+                    <strong>{selectedService.salePriceLabel || selectedService.priceLabel || 'Tư vấn theo tình trạng'}</strong>
+                  </div>
+                )}
               </div>
               <div className={styles.formGroup}>
                 <label htmlFor="date">Ngày Hẹn *</label>

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import styles from "./MainLayout.module.css";
 import logoImg from "../../public/Logo.png";
-import { Chat } from "../icons";
+import { Chat, Paperclip } from "../icons";
 
 const API_URL = 'http://localhost:5000/api';
 const SOCKET_URL = 'http://localhost:5000';
@@ -18,6 +18,41 @@ const getVisitorId = () => {
   return nextVisitorId;
 };
 
+const parseChatMessage = (message) => {
+  try {
+    const parsed = JSON.parse(message || '');
+    if (typeof parsed !== 'object' || parsed === null) return { text: message };
+    return {
+      ...parsed,
+      imageUrl: parsed.imageUrl?.startsWith('/uploads') ? `${SOCKET_URL}${parsed.imageUrl}` : parsed.imageUrl,
+    };
+  } catch {
+    return { text: message };
+  }
+};
+
+const readImageFile = (file) => new Promise((resolve, reject) => {
+  if (!file) {
+    resolve('');
+    return;
+  }
+
+  if (!file.type.startsWith('image/')) {
+    reject(new Error('Vui lòng chọn file ảnh.'));
+    return;
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    reject(new Error('Ảnh không được vượt quá 2MB.'));
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => resolve(reader.result);
+  reader.onerror = () => reject(new Error('Không thể đọc ảnh.'));
+  reader.readAsDataURL(file);
+});
+
 export default function MainLayout() {
   const [scrolled, setScrolled] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -25,9 +60,12 @@ export default function MainLayout() {
   const [chatInput, setChatInput] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const [staffInput, setStaffInput] = useState("");
+  const [staffImage, setStaffImage] = useState('');
   const [staffMessages, setStaffMessages] = useState([]);
   const [staffConversation, setStaffConversation] = useState(null);
   const [staffConnected, setStaffConnected] = useState(false);
+  const [startingNewConversation, setStartingNewConversation] = useState(false);
+  const isStaffConversationClosed = staffConversation?.status === 'CLOSED';
   const [chatMessages, setChatMessages] = useState([
     {
       id: 1,
@@ -100,6 +138,13 @@ export default function MainLayout() {
       socket.on("chat:conversation", ({ conversation, messages }) => {
         setStaffConversation(conversation);
         setStaffMessages(messages || []);
+        setStartingNewConversation(false);
+      });
+
+      socket.on("chat:visitorId:update", ({ visitorId }) => {
+        if (!visitorId) return;
+        visitorIdRef.current = visitorId;
+        localStorage.setItem(VISITOR_ID_KEY, visitorId);
       });
 
       socket.on("chat:conversation:update", (conversation) => {
@@ -113,6 +158,7 @@ export default function MainLayout() {
       });
 
       socket.on("chat:error", (error) => {
+        setStartingNewConversation(false);
         setStaffMessages((messages) => [
           ...messages,
           {
@@ -205,14 +251,47 @@ export default function MainLayout() {
   const handleStaffSubmit = (event) => {
     event.preventDefault();
     const trimmedMessage = staffInput.trim();
-    if (!trimmedMessage || !staffSocketRef.current) return;
+    if ((!trimmedMessage && !staffImage) || !staffSocketRef.current || isStaffConversationClosed) return;
 
     staffSocketRef.current.emit("chat:customer:message", {
       visitorId: visitorIdRef.current,
       customerName: "Khách website",
       message: trimmedMessage,
+      imageUrl: staffImage,
     });
     setStaffInput("");
+    setStaffImage('');
+  };
+
+  const handleStaffImageChange = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+
+    try {
+      setStaffImage(await readImageFile(file));
+    } catch (imageError) {
+      setStaffMessages((messages) => [
+        ...messages,
+        {
+          id: `error_${Date.now()}`,
+          senderType: "SYSTEM",
+          message: imageError.message || "Không thể chọn ảnh.",
+          createdAt: new Date().toISOString(),
+        },
+      ]);
+    }
+  };
+
+  const startNewStaffConversation = () => {
+    if (!staffSocketRef.current || startingNewConversation) return;
+
+    setStartingNewConversation(true);
+    staffSocketRef.current.emit("chat:customer:newConversation", {
+      visitorId: visitorIdRef.current,
+      customerName: "Khách website",
+    });
+    setStaffInput("");
+    setStaffImage('');
   };
 
   const openStaffChat = () => {
@@ -300,9 +379,8 @@ export default function MainLayout() {
                 {chatMessages.map((message) => (
                   <div
                     key={message.id}
-                    className={`${styles.chatBubble} ${
-                      message.sender === "user" ? styles.userBubble : styles.botBubble
-                    }`}
+                    className={`${styles.chatBubble} ${message.sender === "user" ? styles.userBubble : styles.botBubble
+                      }`}
                   >
                     {message.text}
                   </div>
@@ -325,12 +403,7 @@ export default function MainLayout() {
                   Địa chỉ
                 </button>
               </div>
-              <div className={styles.quickReplies}>
-                <button type="button" onClick={openStaffChat}>
-                  Chat với nhân viên
-                </button>
-              </div>
-              <form className={styles.chatForm} onSubmit={handleChatSubmit}>
+              <form className={`${styles.chatForm} ${styles.botChatForm}`} onSubmit={handleChatSubmit}>
                 <input
                   type="text"
                   value={chatInput}
@@ -345,9 +418,11 @@ export default function MainLayout() {
           ) : (
             <div className={styles.staffChatLive}>
               <div className={styles.staffStatus}>
-                {staffConnected
-                  ? `Đã kết nối với bộ phận tư vấn${staffConversation?.id ? ` #${staffConversation.id}` : ''}`
-                  : 'Đang kết nối nhân viên...'}
+                {isStaffConversationClosed
+                  ? 'Hội thoại đã kết thúc. Bạn không thể nhắn tin thêm trong cuộc trò chuyện này.'
+                  : staffConnected
+                    ? `Đã kết nối với bộ phận tư vấn${staffConversation?.id ? ` #${staffConversation.id}` : ''}`
+                    : 'Đang kết nối nhân viên...'}
               </div>
               <div className={styles.chatMessages}>
                 {staffMessages.length === 0 ? (
@@ -358,30 +433,54 @@ export default function MainLayout() {
                   staffMessages.map((message) => (
                     <div
                       key={message.id}
-                      className={`${styles.chatBubble} ${
-                        message.senderType === "CUSTOMER"
+                      className={`${styles.chatBubble} ${message.senderType === "CUSTOMER"
                           ? styles.userBubble
                           : message.senderType === "SYSTEM"
                             ? styles.systemBubble
                             : styles.botBubble
-                      }`}
+                        }`}
                     >
-                      {message.message}
+                      {(() => {
+                        const content = parseChatMessage(message.message);
+                        return (
+                          <>
+                            {content.imageUrl && <img className={styles.chatImage} src={content.imageUrl} alt="Ảnh trong hội thoại" />}
+                            {content.text && <span>{content.text}</span>}
+                          </>
+                        );
+                      })()}
                     </div>
                   ))
                 )}
                 <div ref={staffMessagesEndRef} />
               </div>
+              {staffImage && (
+                <div className={styles.imagePreview}>
+                  <img src={staffImage} alt="Ảnh chuẩn bị gửi" />
+                  <button type="button" onClick={() => setStaffImage('')}>Xóa ảnh</button>
+                </div>
+              )}
+              {isStaffConversationClosed && (
+                <div className={styles.quickReplies}>
+                  <button type="button" onClick={startNewStaffConversation} disabled={!staffConnected || startingNewConversation}>
+                    {startingNewConversation ? 'Đang tạo hội thoại...' : 'Bắt đầu hội thoại mới'}
+                  </button>
+                </div>
+              )}
               <form className={styles.chatForm} onSubmit={handleStaffSubmit}>
+                <label className={styles.attachImageBtn}>
+                  <Paperclip size={20} />
+                  <input type="file" accept="image/*" onChange={handleStaffImageChange} disabled={!staffConnected || isStaffConversationClosed} />
+                </label>
                 <input
                   type="text"
                   value={staffInput}
                   onChange={(event) => setStaffInput(event.target.value)}
-                  placeholder="Nhập tin nhắn cho nhân viên..."
+                  placeholder={isStaffConversationClosed ? 'Hội thoại đã kết thúc' : 'Nhập tin nhắn cho nhân viên...'}
                   aria-label="Nhập tin nhắn cho nhân viên"
-                  disabled={!staffConnected}
+                  disabled={!staffConnected || isStaffConversationClosed}
                 />
-                <button type="submit" disabled={!staffConnected || !staffInput.trim()}>Gửi</button>
+                <button type="submit" disabled={!staffConnected || isStaffConversationClosed || (!staffInput.trim() && !staffImage)}>Gửi</button>
               </form>
             </div>
           )}

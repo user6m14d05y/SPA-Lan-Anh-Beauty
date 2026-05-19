@@ -24,7 +24,7 @@ const ChatMessage = sequelize.define('ChatMessage', {
     allowNull: true,
   },
   message: {
-    type: Sequelize.TEXT,
+    type: Sequelize.TEXT('long'),
     allowNull: false,
   },
 }, {

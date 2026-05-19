@@ -201,6 +201,34 @@
     overflow-wrap: anywhere;
 }
 
+.chatBubble:has(.chatImage) {
+    width: fit-content;
+    max-width: 78%;
+    padding: 0;
+    overflow: visible;
+    background: transparent;
+    border: none;
+}
+
+.chatImage {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: min(220px, 100%);
+    max-height: 260px;
+    border: 1px solid rgba(119, 89, 50, 0.16);
+    border-radius: 14px;
+    object-fit: contain;
+}
+
+.chatImage + span {
+    display: block;
+    margin-top: 0.45rem;
+    padding: 0.65rem 0.8rem;
+    border-radius: 14px;
+    background: inherit;
+}
+
 .botBubble {
     align-self: flex-start;
     background: var(--white);
@@ -262,13 +290,17 @@
 
 .chatForm {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     gap: 0.5rem;
     padding: 0.75rem 1rem 1rem;
     background: var(--white);
 }
 
-.chatForm input {
+.botChatForm {
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.chatForm input[type="text"] {
     min-width: 0;
     height: 42px;
     border: 1px solid rgba(119, 89, 50, 0.2);
@@ -296,6 +328,47 @@
 
 .chatForm button {
     padding: 0 1rem;
+}
+
+.attachImageBtn {
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(119, 89, 50, 0.24);
+    border-radius: 999px;
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0 0.75rem;
+}
+
+.attachImageBtn input {
+    display: none;
+}
+
+.imagePreview {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.75rem 1rem 0;
+    background: var(--white);
+}
+
+.imagePreview img {
+    width: 54px;
+    height: 54px;
+    border-radius: 12px;
+    object-fit: cover;
+}
+
+.imagePreview button {
+    border: none;
+    background: transparent;
+    color: #b91c1c;
+    cursor: pointer;
+    font-weight: 600;
 }
 
 .staffChat {

@@ -121,6 +121,7 @@ const handleError = (res, error, fallbackMessage = 'Có lỗi xảy ra') => {
 const buildBookingPayload = (body, file) => ({
   customerName: body.customerName?.trim(),
   customerPhone: body.customerPhone?.trim(),
+  customerEmail: body.customerEmail?.trim(),
   serviceName: body.serviceName?.trim(),
   bookingDate: body.bookingDate,
   bookingTime: normalizeTime(body.bookingTime),
@@ -131,6 +132,8 @@ const buildBookingPayload = (body, file) => ({
 const validateCreatePayload = (payload) => {
   if (!payload.customerName) return 'Vui lòng nhập họ tên.';
   if (!payload.customerPhone) return 'Vui lòng nhập số điện thoại.';
+  if (!payload.customerEmail) return 'Vui lòng nhập email.';
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.customerEmail)) return 'Email không hợp lệ.';
   if (!payload.serviceName) return 'Vui lòng chọn dịch vụ.';
   if (!payload.bookingDate) return 'Vui lòng chọn ngày hẹn.';
   if (!payload.bookingTime) return 'Vui lòng chọn giờ hẹn.';
@@ -213,6 +216,7 @@ export const bookingController = {
         where[Op.or] = [
           { customerName: { [Op.like]: `%${search}%` } },
           { customerPhone: { [Op.like]: `%${search}%` } },
+          { customerEmail: { [Op.like]: `%${search}%` } },
           { serviceName: { [Op.like]: `%${search}%` } },
         ];
       }

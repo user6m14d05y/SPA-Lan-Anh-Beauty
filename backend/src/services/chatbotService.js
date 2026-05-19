@@ -48,26 +48,44 @@ const extractGeminiText = (data) => {
 
 const isPriceQuestion = (message) => {
   const normalizedMessage = message.toLowerCase();
-  return ['giá', 'gia', 'rẻ', 're', 'thấp', 'thap', 'tiết kiệm', 'tiet kiem'].some((keyword) => (
+  return ['giá', 'gia', 'rẻ', 're', 'thấp', 'thap', 'tiết kiệm', 'tiet kiem', 'dưới', 'duoi', 'k', 'ngân sách', 'ngan sach'].some((keyword) => (
     normalizedMessage.includes(keyword)
   ));
 };
 
-const buildCheapServiceAnswer = (services = []) => {
+const extractBudget = (message) => {
+  const normalizedMessage = message.toLowerCase().replace(/,/g, '.');
+  const match = normalizedMessage.match(/(?:dưới|duoi|<=|<)?\s*(\d+(?:\.\d+)?)\s*(k|nghìn|nghin|tr|triệu|trieu|m)?/);
+  if (!match) return null;
+
+  const value = Number(match[1]);
+  const unit = match[2];
+  if (!Number.isFinite(value)) return null;
+  if (unit === 'tr' || unit === 'triệu' || unit === 'trieu' || unit === 'm') return Math.round(value * 1000000);
+  if (unit === 'k' || unit === 'nghìn' || unit === 'nghin') return Math.round(value * 1000);
+  return value >= 10000 ? Math.round(value) : Math.round(value * 1000);
+};
+
+const buildCheapServiceAnswer = (services = [], budget = null) => {
   const cheapestServices = services
     .filter((service) => Number.isFinite(Number(service.price)))
+    .filter((service) => !budget || Number(service.price) <= budget)
     .sort((firstService, secondService) => Number(firstService.price) - Number(secondService.price))
-    .slice(0, 3);
+    .slice(0, 5);
 
   if (!cheapestServices.length) {
-    return 'Hiện các dịch vụ cần được tư vấn theo tình trạng. Bạn có thể chuyển sang tab Nhân viên để được báo giá phù hợp.';
+    return budget
+      ? `Hiện chưa có dịch vụ nào dưới ${budget.toLocaleString('vi-VN')}đ trong danh sách. Bạn có thể chuyển sang tab Nhân viên để được tư vấn lựa chọn phù hợp hơn.`
+      : 'Hiện các dịch vụ cần được tư vấn theo tình trạng. Bạn có thể chuyển sang tab Nhân viên để được báo giá phù hợp.';
   }
 
   const serviceList = cheapestServices
     .map((service) => `${service.name} (${service.salePriceLabel || service.priceLabel})`)
     .join(', ');
 
-  return `Các dịch vụ có giá dễ tiếp cận nhất hiện tại là: ${serviceList}. Giá có thể thay đổi theo tình trạng thực tế, bạn có thể đặt lịch hoặc chuyển sang tab Nhân viên để được tư vấn chi tiết.`;
+  return budget
+    ? `Với ngân sách dưới ${budget.toLocaleString('vi-VN')}đ, bạn có thể tham khảo: ${serviceList}. Bạn có thể đặt lịch hoặc chuyển sang tab Nhân viên để được tư vấn dịch vụ phù hợp nhất.`
+    : `Các dịch vụ có giá dễ tiếp cận nhất hiện tại là: ${serviceList}. Giá có thể thay đổi theo tình trạng thực tế, bạn có thể đặt lịch hoặc chuyển sang tab Nhân viên để được tư vấn chi tiết.`;
 };
 
 const getCandidateModels = () => {
@@ -128,6 +146,12 @@ export const chatbotService = {
     }
 
     const services = await catalogService.getServices({ active: 'true' });
+    const budget = extractBudget(trimmedMessage);
+
+    if (isPriceQuestion(trimmedMessage) && budget) {
+      return buildCheapServiceAnswer(services, budget);
+    }
+
     const serviceCatalog = buildServiceCatalog(services);
     const prompt = createPrompt({
       message: trimmedMessage,
@@ -180,7 +204,7 @@ export const chatbotService = {
 
       if (reply) {
         if (isPriceQuestion(trimmedMessage) && !/\d/.test(reply)) {
-          return buildCheapServiceAnswer(services);
+          return buildCheapServiceAnswer(services, budget);
         }
 
         return reply;
@@ -191,7 +215,7 @@ export const chatbotService = {
     }
 
     if (isPriceQuestion(trimmedMessage)) {
-      return buildCheapServiceAnswer(services);
+      return buildCheapServiceAnswer(services, budget);
     }
 
     throw lastError;

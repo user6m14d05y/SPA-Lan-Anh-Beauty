@@ -35,6 +35,20 @@ export const getCategoryTree = async (req, res) => {
   }
 };
 
+export const createCategory = async (req, res) => {
+  try {
+    const category = await catalogService.createCategory(req.body);
+
+    res.status(201).json({
+      success: true,
+      message: 'Tạo danh mục dịch vụ thành công.',
+      data: category,
+    });
+  } catch (error) {
+    handleError(res, error, 'Không thể tạo danh mục dịch vụ.');
+  }
+};
+
 export const getServices = async (req, res) => {
   try {
     const services = await catalogService.getServices(req.query);

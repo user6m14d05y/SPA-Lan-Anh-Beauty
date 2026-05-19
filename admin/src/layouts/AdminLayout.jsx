@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
 // Icon
-import { LayoutDashboard, Calendar, CalendarOff, Users, Sparkles, Mail, MessageCircle, LogOut, User } from '../icons.jsx';
+import { LayoutDashboard, Calendar, CalendarOff, Users, Sparkles, Mail, MessageCircle, LogOut, User, ShieldCheck, ChevronDown, List } from '../icons.jsx';
 import { useAuth } from '../context/AuthContext';
 import styles from './AdminLayout.module.css';
 
@@ -12,6 +12,16 @@ export default function AdminLayout() {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
+
+  const [openMenus, setOpenMenus] = useState({
+    accounts: ['/users', '/staffs', '/customers'].includes(location.pathname),
+    appointments: ['/bookings', '/closed-periods'].includes(location.pathname),
+    services: ['/services', '/category-services'].includes(location.pathname)
+  });
+
+  const toggleMenu = (menu) => {
+    setOpenMenus(prev => ({ ...prev, [menu]: !prev[menu] }));
+  };
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -31,7 +41,7 @@ export default function AdminLayout() {
       case '/customers': return 'Khách hàng';
       case '/staffs': return 'Quản lý Nhân viên';
       case '/users': return 'Quản lý tài khoản';
-      case '/appointments': return 'Lịch hẹn';
+      case '/bookings': return 'Lịch hẹn';
       case '/closed-periods': return 'Ngày nghỉ';
       case '/services': return 'Dịch vụ';
       case '/category-services': return 'Danh mục dịch vụ';
@@ -58,72 +68,152 @@ export default function AdminLayout() {
               Tổng quan
             </NavLink>
           </li>
-          <li>
-            {hasRole('ADMIN') && (
-              <NavLink
-                to="/users"
-                className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
-              >
-                <span className={styles.navIcon}><User size={20} /></span>
+          <li className={styles.navGroup}>
+            <div 
+              className={styles.navLink} 
+              onClick={() => toggleMenu('accounts')}
+              style={{ cursor: 'pointer', justifyContent: 'space-between' }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <span className={styles.navIcon}><Users size={20} /></span>
                 Quản lý tài khoản
-              </NavLink>
-            )}
+              </div>
+              <span style={{ 
+                display: 'flex',
+                transform: openMenus.accounts ? 'rotate(180deg)' : 'rotate(0deg)', 
+                transition: 'transform 0.3s' 
+              }}>
+                <ChevronDown size={16} />
+              </span>
+            </div>
+            
+            <div style={{
+              display: 'grid',
+              gridTemplateRows: openMenus.accounts ? '1fr' : '0fr',
+              transition: 'grid-template-rows 0.3s ease-in-out',
+            }}>
+              <ul style={{ 
+                listStyle: 'none', 
+                paddingLeft: '24px', 
+                margin: 0,
+                overflow: 'hidden'
+              }}>
+              {hasRole('ADMIN') && (
+                <>
+                  <li>
+                    <NavLink to="/users" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
+                      <span className={styles.navIcon}><ShieldCheck size={18} /></span>
+                      Tài khoản hệ thống
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink to="/staffs" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
+                      <span className={styles.navIcon}><User size={18} /></span>
+                      Quản lý nhân viên
+                    </NavLink>
+                  </li>
+                </>
+              )}
+              <li>
+                <NavLink to="/customers" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
+                  <span className={styles.navIcon}><Users size={18} /></span>
+                  Khách hàng
+                </NavLink>
+              </li>
+              </ul>
+            </div>
           </li>
-          <li>
-            {hasRole('ADMIN') && (
-              <NavLink
-                to="/staffs"
-                className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
-              >
-                <span className={styles.navIcon}><User size={20} /></span>
-                Quản lý nhân viên
-              </NavLink>
-            )}
-          </li>
-          <li>
-            <NavLink
-              to="/appointments"
-              className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
+
+          <li className={styles.navGroup}>
+            <div 
+              className={styles.navLink} 
+              onClick={() => toggleMenu('appointments')}
+              style={{ cursor: 'pointer', justifyContent: 'space-between' }}
             >
-              <span className={styles.navIcon}><Calendar size={20} /></span>
-              Lịch hẹn
-            </NavLink>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <span className={styles.navIcon}><Calendar size={20} /></span>
+                Quản lý lịch hẹn
+              </div>
+              <span style={{ 
+                display: 'flex',
+                transform: openMenus.appointments ? 'rotate(180deg)' : 'rotate(0deg)', 
+                transition: 'transform 0.3s' 
+              }}>
+                <ChevronDown size={16} />
+              </span>
+            </div>
+            
+            <div style={{
+              display: 'grid',
+              gridTemplateRows: openMenus.appointments ? '1fr' : '0fr',
+              transition: 'grid-template-rows 0.3s ease-in-out',
+            }}>
+              <ul style={{ 
+                listStyle: 'none', 
+                paddingLeft: '24px', 
+                margin: 0,
+                overflow: 'hidden'
+              }}>
+                <li>
+                  <NavLink to="/bookings" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
+                  <span className={styles.navIcon}><Calendar size={18} /></span>
+                  Lịch hẹn
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/closed-periods" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
+                  <span className={styles.navIcon}><CalendarOff size={18} /></span>
+                  Ngày nghỉ
+                </NavLink>
+              </li>
+              </ul>
+            </div>
           </li>
-          <li>
-            <NavLink
-              to="/closed-periods"
-              className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
+
+          <li className={styles.navGroup}>
+            <div 
+              className={styles.navLink} 
+              onClick={() => toggleMenu('services')}
+              style={{ cursor: 'pointer', justifyContent: 'space-between' }}
             >
-              <span className={styles.navIcon}><CalendarOff size={20} /></span>
-              Ngày nghỉ
-            </NavLink>
-          </li>
-          <li>
-            <NavLink 
-              to="/customers" 
-              className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
-            >
-              <span className={styles.navIcon}><Users size={20} /></span>
-              Khách hàng
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/services"
-              className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
-            >
-              <span className={styles.navIcon}><Sparkles size={20} /></span>
-              Dịch vụ
-            </NavLink>
-          </li>
-          <li>
-            <NavLink
-              to="/category-services"
-              className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
-            >
-              <span className={styles.navIcon}><Sparkles size={20} /></span>
-              Danh mục dịch vụ
-            </NavLink>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <span className={styles.navIcon}><Sparkles size={20} /></span>
+                Quản lý dịch vụ
+              </div>
+              <span style={{ 
+                display: 'flex',
+                transform: openMenus.services ? 'rotate(180deg)' : 'rotate(0deg)', 
+                transition: 'transform 0.3s' 
+              }}>
+                <ChevronDown size={16} />
+              </span>
+            </div>
+            
+            <div style={{
+              display: 'grid',
+              gridTemplateRows: openMenus.services ? '1fr' : '0fr',
+              transition: 'grid-template-rows 0.3s ease-in-out',
+            }}>
+              <ul style={{ 
+                listStyle: 'none', 
+                paddingLeft: '24px', 
+                margin: 0,
+                overflow: 'hidden'
+              }}>
+              <li>
+                <NavLink to="/services" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
+                  <span className={styles.navIcon}><Sparkles size={18} /></span>
+                  Dịch vụ
+                </NavLink>
+              </li>
+              <li>
+                <NavLink to="/category-services" className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}>
+                  <span className={styles.navIcon}><List size={18} /></span>
+                  Danh mục dịch vụ
+                </NavLink>
+              </li>
+              </ul>
+            </div>
           </li>
           <li>
             <NavLink

@@ -17,9 +17,9 @@ export default function Home() {
             </p>
             <div className={styles.heroButtons}>
               <a href="#services" className={styles.btnPrimary}>
-                Xem Dịch Vục
+                Xem Dịch Vụ
               </a>
-              <a href="#book" className={styles.btnSecondary}>
+              <a href="/booking" className={styles.btnSecondary}>
                 Đặt Lịch Ngay
               </a>
             </div>

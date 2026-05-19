@@ -34,6 +34,20 @@ export const listConversations = async (req, res) => {
   }
 };
 
+export const closeConversation = async (req, res) => {
+  try {
+    const conversation = await chatService.closeConversation(req.params.id);
+
+    res.status(200).json({
+      success: true,
+      message: 'Đã kết thúc hội thoại.',
+      data: conversation,
+    });
+  } catch (error) {
+    handleError(res, error, 'Không thể kết thúc hội thoại.');
+  }
+};
+
 export const getConversationMessages = async (req, res) => {
   try {
     const result = await chatService.getMessages(req.params.id, { markStaffRead: true });
