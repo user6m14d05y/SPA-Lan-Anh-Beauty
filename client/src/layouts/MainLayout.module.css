@@ -35,6 +35,151 @@
     padding: 0;
 }
 
+.navItemHasDropdown {
+    position: relative;
+}
+
+.navDropdownTrigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.navDropdownTrigger svg {
+    transition: var(--transition);
+}
+
+.navItemHasDropdown:hover .navDropdownTrigger svg,
+.navItemHasDropdown:focus-within .navDropdownTrigger svg {
+    transform: rotate(180deg);
+}
+
+.servicesDropdown {
+    position: absolute;
+    top: calc(100% + 16px);
+    left: 0;
+    width: 260px;
+    transform: translateY(10px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: var(--transition);
+    background: var(--white);
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(17, 24, 39, 0.12), 0 0 1px rgba(119, 89, 50, 0.15);
+    padding: 10px;
+}
+
+.navItemHasDropdown::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    height: 16px;
+}
+
+.navItemHasDropdown:hover .servicesDropdown,
+.navItemHasDropdown:focus-within .servicesDropdown {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+.dropdownMenu {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dropdownItem {
+    position: relative;
+}
+
+.dropdownParent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: var(--text-dark) !important;
+    font-size: 0.9rem !important;
+    font-weight: 600 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+}
+
+.dropdownParent:hover,
+.dropdownItem:focus-within .dropdownParent,
+.dropdownItem:hover .dropdownParent {
+    background: rgba(119, 89, 50, 0.08);
+    color: var(--primary) !important;
+}
+
+.dropdownSubmenu {
+    position: absolute;
+    top: 0;
+    left: calc(100% + 10px);
+    width: 240px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateX(8px);
+    transition: var(--transition);
+    background: var(--white);
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 15px 35px rgba(17, 24, 39, 0.1), 0 0 1px rgba(119, 89, 50, 0.15);
+    padding: 10px;
+}
+
+.dropdownItem:hover .dropdownSubmenu,
+.dropdownItem:focus-within .dropdownSubmenu {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(0);
+}
+
+.dropdownSubmenu::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 100%;
+    width: 10px;
+    height: 100%;
+}
+
+.dropdownSubmenuTitle {
+    color: var(--primary) !important;
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    padding: 10px 12px 8px;
+}
+
+.dropdownSubmenu a:not(.dropdownSubmenuTitle) {
+    border-radius: 10px;
+    color: var(--text-muted) !important;
+    font-size: 0.84rem !important;
+    letter-spacing: 0 !important;
+    padding: 9px 12px;
+    text-transform: none !important;
+}
+
+.dropdownSubmenu a:not(.dropdownSubmenuTitle):hover {
+    background: rgba(119, 89, 50, 0.07);
+    color: var(--primary) !important;
+}
+
 .navActions {
     display: flex;
     align-items: center;
@@ -463,6 +608,10 @@
 }
 
 @media (max-width: 900px) {
+    .servicesDropdown {
+        display: none;
+    }
+
     .navbar {
         gap: 1rem;
         padding: 0 1rem;
@@ -513,6 +662,18 @@
 }
 
 @media (max-width: 576px) {
+    .quickContactWidget {
+        right: 12px;
+        bottom: 80px;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .quickContactWidget a {
+        width: 40px;
+        height: 40px;
+    }
+
     .modalPanel {
         padding: 1.5rem 1rem;
         border-radius: 18px;
@@ -619,6 +780,63 @@
 .mainContent {
     flex-grow: 1;
     padding-top: 80px; /* Offset for fixed navbar */
+}
+
+.pageTransition {
+    animation: pageFadeIn 420ms cubic-bezier(0.165, 0.84, 0.44, 1) both;
+    will-change: opacity, transform;
+}
+
+@keyframes pageFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(16px) scale(0.995);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pageTransition {
+        animation: none;
+        will-change: auto;
+    }
+}
+
+.quickContactWidget {
+    position: fixed;
+    right: 20px;
+    bottom: 82px;
+    z-index: 1190;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+}
+
+.quickContactWidget a {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 45px;
+    height: 45px;
+    border: 1px solid rgba(119, 89, 50, 0.2);
+    border-radius: 50%;
+    background: var(--white);
+    color: var(--primary);
+    box-shadow: 0 10px 30px rgba(17, 24, 39, 0.12);
+    padding: 0;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.quickContactWidget a:hover {
+    background: var(--primary);
+    color: var(--white);
+    transform: translateY(-4px);
 }
 
 .chat {
