@@ -34,6 +34,15 @@ const getImageUrl = (path) => {
   return `${ASSET_URL}${path}`;
 };
 
+const formatCurrency = (value) => {
+  if (value === null || value === undefined || value === '') return 'Chưa có giá';
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+    maximumFractionDigits: 0,
+  }).format(Number(value || 0));
+};
+
 export default function Appointments() {
   const { authFetch } = useAuth();
   const [appointments, setAppointments] = useState([]);
@@ -159,6 +168,7 @@ export default function Appointments() {
                 <th>Khách hàng</th>
                 <th>SĐT</th>
                 <th>Dịch vụ</th>
+                <th>Giá</th>
                 <th>Ngày</th>
                 <th>Giờ</th>
                 <th>Trạng thái</th>
@@ -173,6 +183,7 @@ export default function Appointments() {
                   <td className={styles.customerName}>{appointment.customerName}</td>
                   <td>{appointment.customerPhone}</td>
                   <td>{appointment.serviceName}</td>
+                  <td className={styles.priceText}>{formatCurrency(appointment.servicePrice)}</td>
                   <td>{appointment.bookingDate}</td>
                   <td>{String(appointment.bookingTime).slice(0, 5)}</td>
                   <td>
@@ -231,6 +242,7 @@ export default function Appointments() {
             <div className={styles.detailGrid}>
               <div><span>Số điện thoại</span><strong>{selectedAppointment.customerPhone}</strong></div>
               <div><span>Dịch vụ</span><strong>{selectedAppointment.serviceName}</strong></div>
+              <div><span>Giá dịch vụ</span><strong>{formatCurrency(selectedAppointment.servicePrice)}</strong></div>
               <div><span>Ngày hẹn</span><strong>{selectedAppointment.bookingDate}</strong></div>
               <div><span>Giờ hẹn</span><strong>{String(selectedAppointment.bookingTime).slice(0, 5)}</strong></div>
               <div><span>Trạng thái</span><strong>{statusLabels[selectedAppointment.status] || selectedAppointment.status}</strong></div>

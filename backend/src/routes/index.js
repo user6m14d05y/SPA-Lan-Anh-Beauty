@@ -6,6 +6,8 @@ import catalogRoutes from './catalog.Routes.js';
 import closedPeriodRoutes from './closedPeriod.Routes.js';
 import chatbotRoutes from './chatbot.Routes.js';
 import chatRoutes from './chat.Routes.js';
+import customerRoutes from './customer.Routes.js';
+import dashboardRoutes from './dashboard.Routes.js';
 
 const router = express.Router();
 
@@ -16,6 +18,8 @@ router.use('/catalog', catalogRoutes);
 router.use('/closed-periods', closedPeriodRoutes);
 router.use('/chatbot', chatbotRoutes);
 router.use('/chat', chatRoutes);
+router.use('/customers', customerRoutes);
+router.use('/dashboard', dashboardRoutes);
 
 // Test
 router.get('/', (req, res) => {

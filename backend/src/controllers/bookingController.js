@@ -1,6 +1,7 @@
 import { Op } from 'sequelize';
 import Booking from '../models/Booking.js';
 import ClosedPeriod from '../models/ClosedPeriod.js';
+import Service from '../models/Service.js';
 import { BOOKING_SLOTS, SLOT_CAPACITY } from '../config/bookingAvailability.js';
 
 const activeBookingStatuses = ['PENDING', 'CONFIRMED', 'COMPLETED'];
@@ -118,6 +119,31 @@ const handleError = (res, error, fallbackMessage = 'Có lỗi xảy ra') => {
   });
 };
 
+const getEffectiveServicePrice = (service) => {
+  if (!service?.price) return null;
+  const discountPercent = Number(service.discountPercent || 0);
+  return discountPercent > 0
+    ? Math.round(Number(service.price) * (100 - discountPercent) / 100)
+    : Number(service.price);
+};
+
+const enrichBookingWithServicePrice = async (booking) => {
+  if (!booking) return booking;
+
+  const plainBooking = typeof booking.toJSON === 'function' ? booking.toJSON() : booking;
+  const service = await Service.findOne({ where: { name: plainBooking.serviceName } });
+  const servicePrice = getEffectiveServicePrice(service);
+
+  return {
+    ...plainBooking,
+    servicePrice,
+    servicePriceLabel: service?.priceLabel || (servicePrice ? `${servicePrice.toLocaleString('vi-VN')}đ` : null),
+    serviceDiscountPercent: service?.discountPercent || 0,
+  };
+};
+
+const enrichBookingsWithServicePrice = async (bookings) => Promise.all(bookings.map(enrichBookingWithServicePrice));
+
 const buildBookingPayload = (body, file) => ({
   customerName: body.customerName?.trim(),
   customerPhone: body.customerPhone?.trim(),
@@ -231,7 +257,7 @@ export const bookingController = {
       res.status(200).json({
         success: true,
         message: 'Lấy danh sách lịch hẹn thành công.',
-        data: rows,
+        data: await enrichBookingsWithServicePrice(rows),
         pagination: {
           page,
           limit,
@@ -255,7 +281,7 @@ export const bookingController = {
       res.status(200).json({
         success: true,
         message: 'Lấy thông tin lịch hẹn thành công.',
-        data: booking,
+        data: await enrichBookingWithServicePrice(booking),
       });
     } catch (error) {
       handleError(res, error, 'Không thể lấy thông tin lịch hẹn.');
@@ -286,7 +312,7 @@ export const bookingController = {
       res.status(200).json({
         success: true,
         message: 'Cập nhật lịch hẹn thành công.',
-        data: booking,
+        data: await enrichBookingWithServicePrice(booking),
       });
     } catch (error) {
       handleError(res, error, 'Không thể cập nhật lịch hẹn.');

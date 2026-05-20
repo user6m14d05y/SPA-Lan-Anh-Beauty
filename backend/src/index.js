@@ -7,6 +7,7 @@ import { Server } from 'socket.io';
 import { connectDB } from './config/database.js';
 import router from './routes/index.js';
 import { setupChatSocket } from './socket/chatSocket.js';
+import { startScheduler } from './services/schedulerService.js';
 
 // Load biến môi trường từ file .env
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
@@ -46,6 +47,8 @@ const PORT = process.env.PORT || 5000;
 
 const startServer = async () => {
   await connectDB();
+
+  startScheduler();
 
   httpServer.listen(PORT, () => {
     console.log(`Server đang chạy tại http://localhost:${PORT}`);

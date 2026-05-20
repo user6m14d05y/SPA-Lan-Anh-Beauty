@@ -1,9 +1,9 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useLocation } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import styles from "./MainLayout.module.css";
 import logoImg from "../../public/Logo.png";
-import { Chat, Paperclip } from "../icons";
+import { Chat, ChevronDown, Paperclip, Calendar, Facebook, Zalo, TikTok, Instagram } from "../icons";
 
 const API_URL = 'http://localhost:5000/api';
 const SOCKET_URL = 'http://localhost:5000';
@@ -54,6 +54,7 @@ const readImageFile = (file) => new Promise((resolve, reject) => {
 });
 
 export default function MainLayout() {
+  const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [activeChatTab, setActiveChatTab] = useState("bot");
@@ -65,6 +66,7 @@ export default function MainLayout() {
   const [staffConversation, setStaffConversation] = useState(null);
   const [staffConnected, setStaffConnected] = useState(false);
   const [startingNewConversation, setStartingNewConversation] = useState(false);
+  const [serviceCategories, setServiceCategories] = useState([]);
   const isStaffConversationClosed = staffConversation?.status === 'CLOSED';
   const [chatMessages, setChatMessages] = useState([
     {
@@ -85,6 +87,23 @@ export default function MainLayout() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  useEffect(() => {
+    const fetchServiceCategories = async () => {
+      try {
+        const response = await fetch(`${API_URL}/catalog/tree`);
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          setServiceCategories(result.data || []);
+        }
+      } catch {
+        setServiceCategories([]);
+      }
+    };
+
+    fetchServiceCategories();
   }, []);
 
   useEffect(() => {
@@ -310,10 +329,34 @@ export default function MainLayout() {
               <Link to="/">Trang Chủ</Link>
             </li>
             <li>
-              <Link to="/services">Dịch Vụ</Link>
+              <Link to="/about">Về Chúng Tôi</Link>
+            </li>
+            <li className={styles.navItemHasDropdown}>
+              <Link to="/services" className={styles.navDropdownTrigger}>
+                Dịch Vụ
+                <ChevronDown size={14} />
+              </Link>
+              <div className={styles.servicesDropdown}>
+                <div className={styles.dropdownMenu}>
+                  {serviceCategories.length > 0 ? serviceCategories.map((category) => (
+                    <div key={category.id} className={styles.dropdownItem}>
+                      <Link className={styles.dropdownParent} to={`/services?category=${category.slug}`}>{category.name}</Link>
+                      {(category.children || []).length > 0 && (
+                        <div className={styles.dropdownSubmenu}>
+                          {(category.children || []).map((child) => (
+                            <Link key={child.id} to={`/services?category=${child.slug}`}>{child.name}</Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )) : (
+                    <Link className={styles.dropdownParent} to="/services">Xem tất cả dịch vụ</Link>
+                  )}
+                </div>
+              </div>
             </li>
             <li>
-              <Link to="/about">Về Chúng Tôi</Link>
+              <Link to="/blog">Bài Viết</Link>
             </li>
             <li>
               <Link to="/contact">Liên Hệ</Link>
@@ -329,7 +372,15 @@ export default function MainLayout() {
       </header>
 
       <main className={styles.mainContent}>
-        <Outlet />
+        <div key={`${location.pathname}${location.search}`} className={styles.pageTransition}>
+          <Outlet />
+        </div>
+        <div className={styles.quickContactWidget} aria-label="Liên hệ nhanh">
+          <Link to="/booking" title="Đặt lịch"><Calendar size={20} /></Link>
+          <a href="https://www.facebook.com/05.thanh" title="Facebook"><Facebook size={20} /></a>
+          <a href="https://zalo.me" title="Zalo"><Zalo size={20} /></a>
+          <a href="https://www.tiktok.com/@user6m14d05y" title="TikTok"><TikTok size={20} /></a>
+        </div>
         <button
           type="button"
           className={styles.chat}
@@ -434,10 +485,10 @@ export default function MainLayout() {
                     <div
                       key={message.id}
                       className={`${styles.chatBubble} ${message.senderType === "CUSTOMER"
-                          ? styles.userBubble
-                          : message.senderType === "SYSTEM"
-                            ? styles.systemBubble
-                            : styles.botBubble
+                        ? styles.userBubble
+                        : message.senderType === "SYSTEM"
+                          ? styles.systemBubble
+                          : styles.botBubble
                         }`}
                     >
                       {(() => {
@@ -491,9 +542,10 @@ export default function MainLayout() {
         <div className={styles.footerContainer}>
           <h2 className={styles.footerTitle}>LAN ANH BEAUTY</h2>
           <div className={styles.socialLinks}>
-            <a href="#">Facebook</a>
-            <a href="#">Instagram</a>
-            <a href="#">Zalo</a>
+            <a href="https://www.facebook.com/05.thanh" title="Facebook"><Facebook size={40} /></a>
+            <a href="https://www.tiktok.com/@user6m14d05y" title="TikTok"><TikTok size={40} /></a>
+            <a href="https://zalo.me" title="Zalo"><Zalo size={40} /></a>
+            <a href="https://instagram.com/05.thanh" title="Instagram"><Instagram size={40} /></a>
           </div>
           <p className={styles.copyright}>© 2026 Lan Anh Beauty SPA. All rights reserved.</p>
         </div>

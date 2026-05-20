@@ -57,6 +57,65 @@ export const emailService = {
       `,
     });
   },
+
+  async sendExpiredClosedPeriodNotification({ adminEmails, periods }) {
+    if (!adminEmails || adminEmails.length === 0) return;
+
+    const transporter = createTransporter();
+
+    const shiftLabel = (shift) => {
+      if (shift === 'MORNING') return 'Ca sáng';
+      if (shift === 'AFTERNOON') return 'Ca chiều';
+      return 'Cả ngày';
+    };
+
+    const formatDate = (dateStr) => {
+      const [y, m, d] = dateStr.split('-');
+      return `${d}/${m}/${y}`;
+    };
+
+    const rows = periods.map((p) => `
+      <tr>
+        <td style="padding: 8px 12px; border-bottom: 1px solid #f0e8df;">${formatDate(p.date)}</td>
+        <td style="padding: 8px 12px; border-bottom: 1px solid #f0e8df;">${shiftLabel(p.shift)}</td>
+        <td style="padding: 8px 12px; border-bottom: 1px solid #f0e8df; color: #888;">${escapeHtml(p.reason || '—')}</td>
+      </tr>
+    `).join('');
+
+    const subject = `[Lan Anh Beauty] Tự động xóa ${periods.length} ngày nghỉ đã hết hạn`;
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #222; max-width: 600px; margin: 0 auto;">
+        <div style="background: #775932; color: #fff; padding: 20px 24px; border-radius: 8px 8px 0 0;">
+          <h2 style="margin: 0; font-size: 1.2rem;">🗑️ Lan Anh Beauty — Thông báo xóa ngày nghỉ</h2>
+        </div>
+        <div style="background: #fff; border: 1px solid #e8ddd3; border-top: none; padding: 24px; border-radius: 0 0 8px 8px;">
+          <p>Hệ thống đã <strong>tự động xóa</strong> các ngày nghỉ đã hết hạn sau (buổi sáng đã kết thúc):</p>
+          <table style="width: 100%; border-collapse: collapse; font-size: 0.92rem;">
+            <thead>
+              <tr style="background: #f8f1e8;">
+                <th style="padding: 10px 12px; text-align: left; color: #775932;">Ngày</th>
+                <th style="padding: 10px 12px; text-align: left; color: #775932;">Ca nghỉ</th>
+                <th style="padding: 10px 12px; text-align: left; color: #775932;">Lý do</th>
+              </tr>
+            </thead>
+            <tbody>${rows}</tbody>
+          </table>
+          <p style="margin-top: 20px; color: #888; font-size: 0.85rem;">
+            Đây là email tự động từ hệ thống Lan Anh Beauty. Vui lòng không trả lời email này.
+          </p>
+        </div>
+      </div>
+    `;
+
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM,
+      to: adminEmails.join(', '),
+      subject,
+      text: `Hệ thống đã tự động xóa ${periods.length} ngày nghỉ ca sáng đã hết hạn. Chi tiết: ${periods.map(p => `${p.date} - ${shiftLabel(p.shift)} - ${p.reason || 'Không có lý do'}`).join('; ')}`,
+      html,
+    });
+  },
 };
 
 export default emailService;
