@@ -1,0 +1,130 @@
+@import '../Staffs/Staffs.module.css';
+
+.userInfo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.userName {
+  font-weight: 700;
+  color: #1C1612;
+  font-size: 0.95rem;
+}
+
+.userId {
+  color: #9E9083;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.subtleText,
+.dateCell {
+  color: #6B5E52;
+  font-size: 0.86rem;
+}
+
+.roleBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.roleAdmin {
+  background: rgba(197, 155, 99, 0.12);
+  color: #9A7543;
+  border: 1px solid rgba(197, 155, 99, 0.3);
+}
+
+.roleStaff {
+  background: rgba(59, 130, 246, 0.1);
+  color: #1d4ed8;
+  border: 1px solid rgba(59, 130, 246, 0.25);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 14px;
+  border-radius: 9999px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+}
+
+.statusActive {
+  background: rgba(34, 197, 94, 0.1);
+  color: #15803d;
+  border: 1px solid rgba(34, 197, 94, 0.25);
+}
+
+.statusInactive {
+  background: rgba(239, 68, 68, 0.1);
+  color: #991b1b;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.actionEdit {
+  color: #9A7543;
+  background: rgba(197, 155, 99, 0.1);
+  border-color: rgba(197, 155, 99, 0.25);
+}
+
+.actionEdit:hover {
+  background: rgba(197, 155, 99, 0.2);
+  transform: translateY(-1px);
+}
+
+.emptyState,
+.errorState,
+.emptyRow {
+  text-align: center;
+  padding: 36px 20px;
+  color: #6B5E52;
+  font-size: 0.95rem;
+}
+
+.errorState,
+.formError {
+  color: #dc2626;
+}
+
+.formError {
+  margin-bottom: 18px;
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid rgba(239, 68, 68, 0.25);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-weight: 600;
+}
+
+.auditBox {
+  margin-top: 20px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  background: #FAF7F2;
+  border: 1px solid #E8E2D9;
+  color: #1C1612;
+  display: grid;
+  gap: 8px;
+  font-size: 0.88rem;
+}

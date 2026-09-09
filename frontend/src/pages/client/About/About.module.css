@@ -1,0 +1,208 @@
+.aboutWrapper {
+    min-height: 100vh;
+    background: var(--bg-silk);
+}
+
+.hero {
+    padding: 140px 0 90px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(180deg, #FAF7F2 0%, #F5EFE6 100%);
+    border-bottom: 1px solid var(--border-silk);
+}
+
+.heroOverlay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 1.5rem;
+}
+
+.heroTitle {
+    font-family: var(--font-serif);
+    font-size: clamp(2.6rem, 5vw, 4rem);
+    line-height: 1.15;
+    color: var(--text-main);
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.heroSubtitle {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    max-width: 700px;
+    line-height: 1.75;
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+.storySection {
+    padding: 100px 0;
+}
+
+.storySection .container {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.storyContent {
+    flex: 1;
+}
+
+.sectionTitle {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 3.5vw, 2.8rem);
+    color: var(--text-main);
+    margin-bottom: 1.25rem;
+    font-weight: 700;
+}
+
+.sectionDesc {
+    font-size: 0.98rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: 1.25rem;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    margin-top: 2.5rem;
+    padding-top: 2.5rem;
+    border-top: 1px solid var(--border-silk-light);
+}
+
+.statItem h3 {
+    font-size: 2.8rem;
+    color: var(--primary-gold-dark);
+    margin-bottom: 0.25rem;
+    font-family: var(--font-serif);
+    font-weight: 700;
+}
+
+.statItem p {
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.storyImg {
+    width: 100%;
+    height: 480px;
+    object-fit: cover;
+    border-radius: calc(var(--radius-lg) - 6px);
+}
+
+.valuesSection {
+    padding: 100px 0;
+    background: #FFFFFF;
+    border-top: 1px solid var(--border-silk-light);
+}
+
+.valuesHeader {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.valuesGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+
+.valueCard {
+    background: var(--bg-silk);
+    border: 1px solid var(--border-silk-light);
+    padding: 3.5rem 2rem;
+    border-radius: var(--radius-lg);
+    text-align: center;
+    transition: var(--transition-smooth);
+}
+
+.valueCard:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-luxury);
+    background: #FFFFFF;
+    border-color: var(--border-silk);
+}
+
+.valueIcon {
+    color: var(--primary-gold-dark);
+    margin-bottom: 1.25rem;
+    display: flex;
+    justify-content: center;
+}
+
+.valueCard h3 {
+    font-size: 1.35rem;
+    color: var(--text-main);
+    margin-bottom: 0.75rem;
+    font-family: var(--font-serif);
+    font-weight: 700;
+}
+
+.valueCard p {
+    color: var(--text-muted);
+    line-height: 1.65;
+    font-size: 0.92rem;
+}
+
+
+@media (max-width: 900px) {
+    .storySection .container {
+        flex-direction: column;
+    }
+    .valuesGrid {
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 1.5rem;
+        padding-bottom: 1.5rem;
+        -webkit-overflow-scrolling: touch;
+    }
+    .valuesGrid::-webkit-scrollbar {
+        height: 6px;
+    }
+    .valuesGrid::-webkit-scrollbar-track {
+        background: var(--bg);
+        border-radius: 4px;
+    }
+    .valuesGrid::-webkit-scrollbar-thumb {
+        background: rgba(119, 89, 50, 0.5);
+        border-radius: 4px;
+    }
+    .valueCard {
+        flex: 0 0 calc(50% - 1rem);
+        scroll-snap-align: start;
+    }
+}
+
+@media (max-width: 600px) {
+    .heroTitle {
+        font-size: 2.5rem;
+    }
+    .sectionTitle {
+        font-size: 2rem;
+    }
+    .valueCard {
+        flex: 0 0 85%;
+    }
+    .statsGrid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
