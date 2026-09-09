@@ -1,4 +1,10 @@
 # Environment files - KHÔNG commit lên GitHub
 .env
 backend/.env
+frontend/.env
 node_modules
+**/node_modules
+frontend/dist
+skills-lock.json
+.agents
+.playwright-mcp

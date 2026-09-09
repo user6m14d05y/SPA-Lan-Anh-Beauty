@@ -1,0 +1,86 @@
+name: CI / CD Pipeline - SPA Lan Anh Beauty
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  lint-and-build:
+    name: 🧪 Lint & Build Verification
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: 📦 Install Backend Dependencies
+        run: |
+          cd backend
+          npm ci --prefer-offline --no-audit
+
+      - name: ⚡ Check Frontend Build
+        run: |
+          cd frontend
+          npm ci --prefer-offline --no-audit
+          npm run build
+
+  docker-build-test:
+    name: 🐳 Docker Build Verification
+    runs-on: ubuntu-latest
+    needs: lint-and-build
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔧 Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: 🏗️ Build Backend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: false
+          tags: spa-backend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: 🏗️ Build Frontend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: false
+          tags: spa-frontend:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy-to-vps:
+    name: 🚀 Auto Deploy to VPS
+    runs-on: ubuntu-latest
+    needs: docker-build-test
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: 📥 Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔑 Trigger VPS Deployment via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script: |
+            cd /var/www/SPA-Lan-Anh-Beauty || cd ~/SPA-Lan-Anh-Beauty
+            bash scripts/deploy.sh
