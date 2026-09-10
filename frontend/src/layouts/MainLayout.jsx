@@ -21,8 +21,7 @@ import {
   XMarkIcon
 } from "../icons";
 
-const API_URL = 'http://localhost:5000/api';
-const SOCKET_URL = 'http://localhost:5000';
+import { API_URL, SOCKET_URL } from "../config";
 const VISITOR_ID_KEY = 'spa_staff_chat_visitor_id';
 
 const getVisitorId = () => {

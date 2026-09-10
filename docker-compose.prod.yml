@@ -53,6 +53,8 @@ services:
       - SMTP_FROM=${SMTP_FROM}
       - GEMINI_KEY=${GEMINI_KEY}
       - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.5-flash}
+      - SEPAY_API_KEY=${SEPAY_API_KEY}
+      - SEPAY_SECRET_KEY=${SEPAY_SECRET_KEY}
     depends_on:
       mysql:
         condition: service_healthy
@@ -66,11 +68,17 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        - VITE_API_URL=${VITE_API_URL:-/api}
+        - VITE_SOCKET_URL=${VITE_SOCKET_URL:-}
+        - VITE_TINY_MCE_API_KEY=${VITE_TINY_MCE_API_KEY}
     container_name: spa_prod_frontend
     restart: always
     expose:
       - "5173"
     environment:
+      - VITE_API_URL=${VITE_API_URL:-/api}
+      - VITE_SOCKET_URL=${VITE_SOCKET_URL:-}
       - VITE_TINY_MCE_API_KEY=${VITE_TINY_MCE_API_KEY}
     deploy:
       resources:
