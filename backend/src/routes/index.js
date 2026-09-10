@@ -22,6 +22,8 @@ router.use('/chat', chatRoutes);
 router.use('/customers', customerRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/payment', paymentRoutes);
+router.use('/sepay-webhook', paymentRoutes);
+router.use('/webhook', paymentRoutes);
 
 // Test
 router.get('/', (req, res) => {

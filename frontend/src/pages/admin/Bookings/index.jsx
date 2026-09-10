@@ -30,8 +30,19 @@ const getStatusClass = (status) => {
 
 const getImageUrl = (path) => {
     if (!path) return '';
-    if (path.startsWith('http')) return path;
-    return `${ASSET_URL}${path}`;
+    const firstPath = String(path).split(',')[0].trim();
+    if (firstPath.startsWith('http')) return firstPath;
+    return `${ASSET_URL}${firstPath}`;
+};
+
+const getImageUrls = (path) => {
+    if (!path) return [];
+    if (Array.isArray(path)) return path.map((p) => (p.startsWith('http') ? p : `${ASSET_URL}${p}`));
+    return String(path)
+        .split(',')
+        .map((p) => p.trim())
+        .filter(Boolean)
+        .map((p) => (p.startsWith('http') ? p : `${ASSET_URL}${p}`));
 };
 
 const CustomSelect = ({ value, onChange, options, placeholder = "Chọn" }) => {
@@ -153,9 +164,9 @@ export default function Bookings() {
 
     const handleStatusUpdate = async (appointment, status) => {
         const confirmMessages = {
-            CONFIRMED: `Xác nhận lịch hẹn #${appointment.id} của ${appointment.customerName}?`,
-            COMPLETED: `Đánh dấu lịch hẹn #${appointment.id} là đã hoàn thành?`,
-            CANCELLED: `Hủy lịch hẹn #${appointment.id} của ${appointment.customerName}?`,
+            CONFIRMED: `Xác nhận lịch hẹn ${appointment.id} của ${appointment.customerName}?`,
+            COMPLETED: `Đánh dấu lịch hẹn ${appointment.id} là đã hoàn thành?`,
+            CANCELLED: `Hủy lịch hẹn ${appointment.id} của ${appointment.customerName}?`,
         };
 
         if (confirmMessages[status] && !window.confirm(confirmMessages[status])) return;
@@ -244,7 +255,6 @@ export default function Bookings() {
                                 <th className="w-[80px] px-5 py-4 bg-[rgba(119,89,50,0.05)] text-[var(--primary)] font-semibold border-b border-[var(--border)] whitespace-nowrap">Mã LH</th>
                                 <th className="w-[170px] px-5 py-4 bg-[rgba(119,89,50,0.05)] text-[var(--primary)] font-semibold border-b border-[var(--border)] whitespace-nowrap">Khách hàng</th>
                                 <th className="w-[130px] px-5 py-4 bg-[rgba(119,89,50,0.05)] text-[var(--primary)] font-semibold border-b border-[var(--border)] whitespace-nowrap">SĐT</th>
-                                <th className="w-[200px] px-5 py-4 bg-[rgba(119,89,50,0.05)] text-[var(--primary)] font-semibold border-b border-[var(--border)]">Email</th>
                                 <th className="w-[240px] px-5 py-4 bg-[rgba(119,89,50,0.05)] text-[var(--primary)] font-semibold border-b border-[var(--border)]">Dịch vụ</th>
                                 <th className="w-[110px] px-5 py-4 bg-[rgba(119,89,50,0.05)] text-[var(--primary)] font-semibold border-b border-[var(--border)] whitespace-nowrap">Ngày</th>
                                 <th className="w-[80px] px-5 py-4 bg-[rgba(119,89,50,0.05)] text-[var(--primary)] font-semibold border-b border-[var(--border)] whitespace-nowrap">Giờ</th>
@@ -255,10 +265,9 @@ export default function Bookings() {
                         <tbody>
                             {filteredAppointments.map((appointment) => (
                                 <tr key={appointment.id} className="hover:bg-[rgba(119,89,50,0.035)] transition-colors group">
-                                    <td className="px-5 py-4 border-b border-[var(--border)] text-[0.95rem] text-[var(--text-muted)] group-last:border-none">#{appointment.id}</td>
+                                    <td className="px-5 py-4 border-b border-[var(--border)] text-[0.75rem] text-[var(--text-muted)] group-last:border-none font-mono tracking-widest whitespace-nowrap">{appointment.id}</td>
                                     <td className="px-5 py-4 border-b border-[var(--border)] text-[0.95rem] font-semibold text-[var(--text-dark)] group-last:border-none"><div className="truncate" title={appointment.customerName}>{appointment.customerName}</div></td>
                                     <td className="px-5 py-4 border-b border-[var(--border)] text-[0.95rem] text-[var(--text-dark)] group-last:border-none whitespace-nowrap">{appointment.customerPhone}</td>
-                                    <td className="px-5 py-4 border-b border-[var(--border)] text-[0.95rem] text-[var(--text-dark)] group-last:border-none"><div className="truncate" title={appointment.customerEmail || 'Không có'}>{appointment.customerEmail || 'Không có'}</div></td>
                                     <td className="px-5 py-4 border-b border-[var(--border)] text-[0.95rem] text-[var(--text-dark)] group-last:border-none"><div className="line-clamp-2 leading-relaxed" title={appointment.serviceName}>{appointment.serviceName}</div></td>
                                     <td className="px-5 py-4 border-b border-[var(--border)] text-[0.95rem] text-[var(--text-dark)] group-last:border-none">{appointment.bookingDate}</td>
                                     <td className="px-5 py-4 border-b border-[var(--border)] text-[0.95rem] text-[var(--text-dark)] group-last:border-none">{String(appointment.bookingTime).slice(0, 5)}</td>
@@ -381,8 +390,8 @@ export default function Bookings() {
                                                 <Mail size={14} className="text-[var(--primary)]" /> {selectedAppointment.customerEmail}
                                             </span>
                                         )}
-                                        <span className="text-[0.75rem] font-bold px-2 py-0.5 rounded-md bg-black/5 text-[var(--text-muted)]">
-                                            Mã #{selectedAppointment.id}
+                                        <span className="text-[0.72rem] font-bold px-2.5 py-0.5 rounded-md bg-black/5 text-[var(--text-muted)] font-mono tracking-widest">
+                                            {selectedAppointment.id}
                                         </span>
                                     </div>
                                 </div>
@@ -445,22 +454,31 @@ export default function Bookings() {
 
                                 </div>
 
-                                {/* Right Column: Attached Image Direct View (No wrapper box) */}
+                                {/* Right Column: Attached Customer Images Gallery */}
                                 {selectedAppointment.customerImage && (
                                     <div className="lg:col-span-5 flex flex-col justify-start">
-                                        <span className="block text-[0.72rem] font-bold uppercase tracking-wider text-[var(--primary)] mb-2">Ảnh khách đính kèm</span>
-                                        <div 
-                                            className="relative overflow-hidden rounded-2xl border border-[var(--border)] shadow-sm group cursor-pointer transition-all duration-300 hover:shadow-lg"
-                                            onClick={() => setPreviewImage(getImageUrl(selectedAppointment.customerImage))}
-                                        >
-                                            <img
-                                                src={getImageUrl(selectedAppointment.customerImage)}
-                                                alt="Ảnh khách gửi"
-                                                className="w-full max-h-[280px] object-cover rounded-2xl transition-transform duration-500 ease-out group-hover:scale-105"
-                                            />
-                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white text-xs font-semibold backdrop-blur-[2px]">
-                                                <Eye size={18} className="mr-1.5" /> Click để xem full ảnh
-                                            </div>
+                                        <span className="block text-[0.72rem] font-bold uppercase tracking-wider text-[var(--primary)] mb-2">
+                                            Ảnh khách đính kèm ({getImageUrls(selectedAppointment.customerImage).length} ảnh)
+                                        </span>
+                                        <div className="grid grid-cols-2 gap-2.5 max-h-[320px] overflow-y-auto pr-1">
+                                            {getImageUrls(selectedAppointment.customerImage).map((imgUrl, idx) => (
+                                                <div 
+                                                    key={idx}
+                                                    className="relative overflow-hidden rounded-2xl border border-[var(--border)] shadow-xs group cursor-pointer transition-all duration-300 hover:shadow-md aspect-square bg-stone-100"
+                                                    onClick={() => setPreviewImage(imgUrl)}
+                                                    title={`Bấm để mở ảnh full HD #${idx + 1}`}
+                                                >
+                                                    <img
+                                                        src={imgUrl}
+                                                        alt={`Ảnh khách gửi ${idx + 1}`}
+                                                        className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+                                                    />
+                                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center text-white text-xs font-semibold backdrop-blur-[1px]">
+                                                        <Eye size={20} className="mb-1" />
+                                                        <span>Full HD #{idx + 1}</span>
+                                                    </div>
+                                                </div>
+                                            ))}
                                         </div>
                                     </div>
                                 )}

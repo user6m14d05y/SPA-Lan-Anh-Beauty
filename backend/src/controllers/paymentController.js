@@ -1,25 +1,27 @@
 import Booking from '../models/Booking.js';
 import { Op } from 'sequelize';
 
-const SEPAY_API_KEY = process.env.SEPAY_API_KEY || 'api_key_lananhbeauty_1414062005';
-const SEPAY_SECRET_KEY = process.env.SEPAY_SECRET_KEY || 'thanhbtdev-sepay-key';
-
 export const paymentController = {
   // Webhook received from SePay IPN
   async handleSepayWebhook(req, res) {
     try {
-      const authHeader = req.headers['authorization'] || req.headers['x-api-key'] || '';
-      const querySecret = req.query.secret || '';
-      
+      const authHeader = String(req.headers['authorization'] || req.headers['x-api-key'] || req.headers['x-sepay-secret'] || '');
+      const querySecret = String(req.query.secret || req.query.api_key || '');
+
+      const apiKey = process.env.SEPAY_API_KEY || 'api_key_lananhbeauty_1414062005';
+      const secretKey = process.env.SEPAY_SECRET_KEY || 'thanhbtdev-sepay-key';
+
+      // Verify Authorization header or query secret against configured keys
       const isAuthorized = 
-        !authHeader || 
-        authHeader.includes(SEPAY_API_KEY) || 
-        authHeader.includes(SEPAY_SECRET_KEY) || 
-        querySecret === SEPAY_SECRET_KEY ||
-        querySecret === SEPAY_API_KEY;
+        (!authHeader && !querySecret) ||
+        authHeader.toLowerCase().includes(apiKey.toLowerCase()) || 
+        authHeader.toLowerCase().includes(secretKey.toLowerCase()) || 
+        querySecret.toLowerCase() === secretKey.toLowerCase() ||
+        querySecret.toLowerCase() === apiKey.toLowerCase();
 
       if (!isAuthorized) {
-        return res.status(401).json({ success: false, message: 'Xác thực webhook SePay không hợp lệ.' });
+        console.warn(`[SePay Webhook Unauthorized] Header: "${authHeader}", QuerySecret: "${querySecret}"`);
+        return res.status(401).json({ success: false, message: 'Xác thực Webhook SePay không hợp lệ.' });
       }
 
       const {
@@ -35,40 +37,82 @@ export const paymentController = {
       const paidAmount = Number(transferAmount || amountIn || 0);
       const transferContent = String(content || '').trim();
 
-      console.log(`[SePay Webhook Received] Transaction #${id} - Amount: ${paidAmount}đ - Content: "${transferContent}"`);
+      console.log(`[SePay Webhook Received] Transaction #${id || 'N/A'} - Amount: ${paidAmount}đ - Content: "${transferContent}"`);
 
-      // Extract 12-digit booking code or 10-digit phone number
-      const codeMatch = transferContent.match(/\d{12}/);
-      const phoneMatch = transferContent.match(/0\d{9}/);
+      if (!transferContent && paidAmount === 0) {
+        return res.status(400).json({ success: false, message: 'Dữ liệu webhook rỗng.' });
+      }
 
-      const extractedCode = codeMatch ? codeMatch[0] : null;
-      const extractedPhone = phoneMatch ? phoneMatch[0] : null;
-
+      /**
+       * VietQR / Banks can strip hyphens, add spaces, or format content differently.
+       * DB stores: DH-6686-9615-8207
+       * Webhook content may be: "DH668696158207", "DH 6686 9615 8207", "DH-6686-9615-8207", etc.
+       */
       let matchedBooking = null;
 
-      if (extractedCode) {
+      // Extract 12 digits following DH/LAB prefix, ignoring spaces, hyphens, and dots
+      const dhMatch = transferContent.match(/(?:DH|LAB)[\s._-]*(\d{4})[\s._-]*(\d{4})[\s._-]*(\d{4})/i) ||
+                      transferContent.match(/(?:DH|LAB)[\s._-]*(\d{12})/i);
+
+      if (dhMatch) {
+        const digits12 = dhMatch[1].length === 12 
+          ? dhMatch[1] 
+          : `${dhMatch[1]}${dhMatch[2]}${dhMatch[3]}`;
+        const reconstructedId = `DH-${digits12.slice(0, 4)}-${digits12.slice(4, 8)}-${digits12.slice(8, 12)}`;
+        console.log(`[SePay Webhook] Matched prefix DH! Reconstructed ID: ${reconstructedId}`);
+
         matchedBooking = await Booking.findOne({
           where: {
-            [Op.or]: [
-              { notes: { [Op.like]: `%${extractedCode}%` } },
-            ],
+            id: reconstructedId,
             status: { [Op.in]: ['PENDING', 'CONFIRMED'] },
           },
-          order: [['createdAt', 'DESC']],
         });
       }
 
-      if (!matchedBooking && extractedPhone) {
-        matchedBooking = await Booking.findOne({
-          where: {
-            customerPhone: extractedPhone,
-            status: { [Op.in]: ['PENDING', 'CONFIRMED'] },
-          },
-          order: [['createdAt', 'DESC']],
-        });
+      // Secondary: Try matching any 12 continuous or grouped digits in content if DH prefix was omitted by user
+      if (!matchedBooking) {
+        const any12DigitsMatch = transferContent.replace(/[\s._-]/g, '').match(/\d{12}/);
+        if (any12DigitsMatch) {
+          const d12 = any12DigitsMatch[0];
+          const reconId = `DH-${d12.slice(0, 4)}-${d12.slice(4, 8)}-${d12.slice(8, 12)}`;
+          matchedBooking = await Booking.findOne({
+            where: {
+              id: reconId,
+              status: { [Op.in]: ['PENDING', 'CONFIRMED'] },
+            },
+          });
+        }
       }
 
-      // Fallback: match latest pending booking if no code/phone match
+      // Tertiary: Legacy notes search for 10-11 digits
+      if (!matchedBooking) {
+        const legacyPrefixMatch = transferContent.match(/(?:DH|LAB)[_\s-]*(\d{10,11})/i);
+        if (legacyPrefixMatch && legacyPrefixMatch[1]) {
+          matchedBooking = await Booking.findOne({
+            where: {
+              notes: { [Op.like]: `%${legacyPrefixMatch[1]}%` },
+              status: { [Op.in]: ['PENDING', 'CONFIRMED'] },
+            },
+            order: [['createdAt', 'DESC']],
+          });
+        }
+      }
+
+      // Quaternary: Match customer phone number in transfer content
+      if (!matchedBooking) {
+        const phoneMatch = transferContent.match(/0\d{9}/);
+        if (phoneMatch) {
+          matchedBooking = await Booking.findOne({
+            where: {
+              customerPhone: phoneMatch[0],
+              status: { [Op.in]: ['PENDING', 'CONFIRMED'] },
+            },
+            order: [['createdAt', 'DESC']],
+          });
+        }
+      }
+
+      // Fallback: Match latest PENDING booking
       if (!matchedBooking) {
         matchedBooking = await Booking.findOne({
           where: { status: 'PENDING' },
@@ -82,7 +126,7 @@ export const paymentController = {
           notes: `${matchedBooking.notes ? matchedBooking.notes + ' | ' : ''}Đã nhận chuyển khoản ${paidAmount > 0 ? paidAmount.toLocaleString('vi-VN') + 'đ' : ''} qua ${gateway || 'MBBank/SePay'} (Mã GD: ${id || code || 'N/A'}) lúc ${transactionDate || new Date().toLocaleString('vi-VN')}`,
         });
 
-        console.log(`[SePay Webhook] Auto confirmed booking #${matchedBooking.id} with 12-digit code ${extractedCode || 'N/A'}`);
+        console.log(`[SePay Webhook] Auto confirmed booking ${matchedBooking.id} via content: "${transferContent}"`);
       }
 
       return res.status(200).json({
@@ -104,22 +148,39 @@ export const paymentController = {
     try {
       const { phone, code, bookingId } = req.query;
 
-      const where = {};
-      const targetCode = code || bookingId;
+      const rawTargetCode = String(code || bookingId || '').trim();
 
-      if (targetCode) {
-        where[Op.or] = [
-          { notes: { [Op.like]: `%${targetCode}%` } },
-          { id: targetCode }
-        ];
-      } else if (phone) {
-        where.customerPhone = phone;
-      } else {
+      const conditions = [];
+
+      if (rawTargetCode) {
+        // Direct id match
+        conditions.push({ id: rawTargetCode });
+
+        // Normalize (strip non-alphanumeric except DH prefix)
+        const cleaned = rawTargetCode.replace(/[\s._-]/g, '');
+        const dhMatch = cleaned.match(/^(?:DH|LAB)?(\d{12})$/i);
+        if (dhMatch) {
+          const d = dhMatch[1];
+          const reconId = `DH-${d.slice(0, 4)}-${d.slice(4, 8)}-${d.slice(8, 12)}`;
+          conditions.push({ id: reconId });
+        }
+
+        // Legacy: notes search for any numeric part
+        const numericPart = rawTargetCode.replace(/\D/g, '');
+        if (numericPart.length >= 10) {
+          conditions.push({ notes: { [Op.like]: `%${numericPart}%` } });
+        }
+      }
+      if (phone) {
+        conditions.push({ customerPhone: phone.trim() });
+      }
+
+      if (conditions.length === 0) {
         return res.status(400).json({ success: false, message: 'Thiếu thông tin tra cứu.' });
       }
 
       const booking = await Booking.findOne({
-        where,
+        where: { [Op.or]: conditions },
         order: [['createdAt', 'DESC']],
       });
 
@@ -127,7 +188,7 @@ export const paymentController = {
         return res.status(404).json({ success: false, message: 'Không tìm thấy lịch hẹn.' });
       }
 
-      const isPaid = booking.status === 'CONFIRMED' || (booking.notes && booking.notes.toLowerCase().includes('chuyển khoản'));
+      const isPaid = booking.status === 'CONFIRMED' || (booking.notes && (booking.notes.toLowerCase().includes('chuyển khoản') || booking.notes.toLowerCase().includes('sepay')));
 
       return res.status(200).json({
         success: true,
@@ -144,22 +205,35 @@ export const paymentController = {
   async simulateSuccess(req, res) {
     try {
       const { phone, code, bookingId } = req.body || {};
-      const where = {};
-      const targetCode = code || bookingId;
+      const rawTargetCode = String(code || bookingId || '').trim();
 
-      if (targetCode) {
-        where[Op.or] = [
-          { notes: { [Op.like]: `%${targetCode}%` } },
-          { id: targetCode }
-        ];
-      } else if (phone) {
-        where.customerPhone = phone;
-      } else {
-        return res.status(400).json({ success: false, message: 'Thiếu SĐT hoặc mã booking 12 số.' });
+      const conditions = [];
+      if (rawTargetCode) {
+        conditions.push({ id: rawTargetCode });
+
+        const cleaned = rawTargetCode.replace(/[\s._-]/g, '');
+        const dhMatch = cleaned.match(/^(?:DH|LAB)?(\d{12})$/i);
+        if (dhMatch) {
+          const d = dhMatch[1];
+          const reconId = `DH-${d.slice(0, 4)}-${d.slice(4, 8)}-${d.slice(8, 12)}`;
+          conditions.push({ id: reconId });
+        }
+
+        const numericPart = rawTargetCode.replace(/\D/g, '');
+        if (numericPart.length >= 10) {
+          conditions.push({ notes: { [Op.like]: `%${numericPart}%` } });
+        }
+      }
+      if (phone) {
+        conditions.push({ customerPhone: phone.trim() });
+      }
+
+      if (conditions.length === 0) {
+        return res.status(400).json({ success: false, message: 'Thiếu mã booking hoặc số điện thoại.' });
       }
 
       const booking = await Booking.findOne({
-        where,
+        where: { [Op.or]: conditions },
         order: [['createdAt', 'DESC']],
       });
 

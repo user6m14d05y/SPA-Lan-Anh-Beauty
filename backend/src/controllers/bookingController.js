@@ -144,11 +144,14 @@ const enrichBookingWithServicePrice = async (booking) => {
 
 const enrichBookingsWithServicePrice = async (bookings) => Promise.all(bookings.map(enrichBookingWithServicePrice));
 
-const generate12DigitCode = () => {
-  const now = new Date();
-  const dateStr = now.toISOString().slice(2, 10).replace(/-/g, ''); // YYMMDD 6 digits
-  const randStr = Math.floor(100000 + Math.random() * 900000).toString(); // 6 digits
-  return `${dateStr}${randStr}`; // 12 digits
+/**
+ * Generate a unique booking ID in format: DH-XXXX-XXXX-XXXX
+ * 12 random digits grouped into 3 groups of 4 for readability.
+ * Example: DH-8312-4957-0621
+ */
+const generateBookingId = () => {
+  const part = () => Math.floor(1000 + Math.random() * 9000).toString(); // 4 digits, never starts with 0
+  return `DH-${part()}-${part()}-${part()}`;
 };
 
 const buildBookingPayload = (body, files, file) => {
@@ -159,20 +162,7 @@ const buildBookingPayload = (body, files, file) => {
     imagePaths = [`/uploads/img/${file.filename}`];
   }
 
-  let bookingCode = body.bookingCode?.trim();
-  const existingNotes = body.notes?.trim() || '';
-
-  const codeInNotesMatch = existingNotes.match(/\b\d{12}\b/);
-  if (codeInNotesMatch) {
-    bookingCode = codeInNotesMatch[0];
-  } else if (!bookingCode || !/^\d{12}$/.test(bookingCode)) {
-    bookingCode = generate12DigitCode();
-  }
-
-  let finalNotes = existingNotes;
-  if (!finalNotes.includes(bookingCode)) {
-    finalNotes = finalNotes ? `[Mã đơn: ${bookingCode}] | ${finalNotes}` : `[Mã đơn: ${bookingCode}]`;
-  }
+  const notes = body.notes?.trim() || '';
 
   return {
     customerName: body.customerName?.trim(),
@@ -181,9 +171,8 @@ const buildBookingPayload = (body, files, file) => {
     serviceName: body.serviceName?.trim(),
     bookingDate: body.bookingDate,
     bookingTime: normalizeTime(body.bookingTime),
-    notes: finalNotes,
+    notes: notes || null,
     customerImage: imagePaths.length > 0 ? imagePaths.join(',') : null,
-    bookingCode,
   };
 };
 
@@ -242,6 +231,43 @@ export const bookingController = {
         });
       }
 
+      // Check if this exact customer already created a PENDING booking for this date & slot (e.g. switched payment method)
+      const targetBookingId = req.body.existingBookingId || req.body.bookingId;
+      let existingPending = null;
+
+      if (targetBookingId) {
+        existingPending = await Booking.findOne({
+          where: { id: targetBookingId, status: 'PENDING' },
+        });
+      }
+
+      if (!existingPending) {
+        existingPending = await Booking.findOne({
+          where: {
+            customerPhone: payload.customerPhone,
+            bookingDate: payload.bookingDate,
+            bookingTime: payload.bookingTime,
+            status: 'PENDING',
+          },
+          order: [['createdAt', 'DESC']],
+        });
+      }
+
+      if (existingPending) {
+        await existingPending.update(payload);
+        const bookingJson = typeof existingPending.toJSON === 'function' ? existingPending.toJSON() : existingPending;
+
+        return res.status(200).json({
+          success: true,
+          message: 'Cập nhật phương thức và thông tin đặt lịch thành công.',
+          data: {
+            ...bookingJson,
+            id: existingPending.id,
+            code: existingPending.id,
+          },
+        });
+      }
+
       const booked = await countBookingsForSlot(payload.bookingDate, payload.bookingTime);
 
       if (booked >= SLOT_CAPACITY) {
@@ -251,8 +277,17 @@ export const bookingController = {
         });
       }
 
-      const { bookingCode, ...createData } = payload;
-      const newBooking = await Booking.create(createData);
+      // Generate unique DH-XXXX-XXXX-XXXX id, retry on collision (extremely rare)
+      let bookingId;
+      let attempts = 0;
+      do {
+        bookingId = generateBookingId();
+        const existing = await Booking.findByPk(bookingId);
+        if (!existing) break;
+        attempts += 1;
+      } while (attempts < 5);
+
+      const newBooking = await Booking.create({ id: bookingId, ...payload });
       const bookingJson = typeof newBooking.toJSON === 'function' ? newBooking.toJSON() : newBooking;
 
       res.status(201).json({
@@ -260,7 +295,7 @@ export const bookingController = {
         message: 'Đặt lịch thành công. Chúng tôi sẽ liên hệ sớm nhất để xác nhận.',
         data: {
           ...bookingJson,
-          bookingCode,
+          bookingCode: bookingJson.id, // id IS the booking code now
         },
       });
     } catch (error) {

@@ -194,16 +194,16 @@ export default function CustomDatePicker({
         </div>
       )}
 
-      {/* Main Trigger Field - Clean Single Left Icon & Formatted Text */}
+      {/* Main Trigger Field - Taller Luxury Capsule Pill Input */}
       <div
-        className={`flex items-center justify-between px-3.5 py-2.5 bg-white border border-stone-300 rounded-lg cursor-pointer hover:border-[#C59B63] transition-all shadow-xs ${
-          isOpen ? 'border-[#C59B63] ring-1 ring-amber-300' : ''
+        className={`flex items-center justify-between px-4 py-3 min-h-[48px] bg-[#FAF7F2] hover:bg-white border border-[#E5DECD] rounded-full cursor-pointer hover:border-[#C59B63] transition-all shadow-xs ${
+          isOpen ? 'border-[#C59B63] ring-2 ring-amber-300/40 bg-white shadow-sm' : ''
         } ${disabled ? 'opacity-50 cursor-not-allowed bg-stone-100' : ''}`}
         onClick={() => !disabled && setIsOpen(!isOpen)}
       >
-        <div className="flex items-center gap-2 truncate min-w-0">
-          <CalendarIcon className="w-4 h-4 text-[#C59B63] shrink-0" />
-          <span className={`text-sm ${value ? 'text-stone-900 font-medium' : 'text-stone-400'} truncate`}>
+        <div className="flex items-center gap-2.5 truncate min-w-0">
+          <CalendarIcon className="w-5 h-5 text-[#C59B63] shrink-0" />
+          <span className={`text-[0.92rem] ${value ? 'text-stone-900 font-semibold' : 'text-stone-400 font-medium'} truncate`}>
             {value ? formatVNText(value, compact) : placeholder}
           </span>
         </div>
@@ -211,14 +211,14 @@ export default function CustomDatePicker({
         {clearable && value && (
           <button
             type="button"
-            className="p-0.5 hover:bg-stone-100 rounded text-stone-400 hover:text-stone-600 transition-colors ml-1 shrink-0"
+            className="p-1 hover:bg-stone-200/60 rounded-full text-stone-400 hover:text-stone-600 transition-colors ml-1 shrink-0"
             onClick={(e) => {
               e.stopPropagation();
               onChange('');
             }}
             title="Xóa ngày đã chọn"
           >
-            <XMarkIcon className="w-3.5 h-3.5" />
+            <XMarkIcon className="w-4 h-4" />
           </button>
         )}
       </div>

@@ -6,6 +6,7 @@ const logoImg = "/Logo.png";
 import { 
   Chat, 
   ChevronDown, 
+  ChevronRight,
   Paperclip, 
   Calendar, 
   Facebook, 
@@ -515,7 +516,12 @@ export default function MainLayout() {
                   <div className={styles.dropdownMenu}>
                     {serviceCategories.length > 0 ? serviceCategories.map((category) => (
                       <div key={category.id} className={styles.dropdownItem}>
-                        <Link className={styles.dropdownParent} to={`/services?category=${category.slug}`} onClick={() => setMobileMenuOpen(false)}>{category.name}</Link>
+                        <Link className={styles.dropdownParent} to={`/services?category=${category.slug}`} onClick={() => setMobileMenuOpen(false)}>
+                          <span>{category.name}</span>
+                          {(category.children || []).length > 0 && (
+                            <ChevronRight size={14} className={styles.categoryChevron} />
+                          )}
+                        </Link>
                         {(category.children || []).length > 0 && (
                           <div className={styles.dropdownSubmenu}>
                             {(category.children || []).map((child) => (
@@ -765,7 +771,7 @@ export default function MainLayout() {
                   <MapPinIcon className="w-4 h-4 inline-block text-[var(--primary-gold-dark)] mr-1" />
                   Địa chỉ:
                 </span>
-                <p>123 Đường Sắc Đẹp, Quận Hoàn Kiếm, Hà Nội</p>
+                <p>Buôn Ea Sang - Xã Cư M'gar - Đắk Lắk</p>
               </div>
               <div className={styles.footerContactItem}>
                 <span className={styles.footerContactLabel}>

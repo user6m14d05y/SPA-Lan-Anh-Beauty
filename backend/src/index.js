@@ -6,6 +6,7 @@ import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { connectDB } from './config/database.js';
 import router from './routes/index.js';
+import paymentRoutes from './routes/payment.Routes.js';
 import { setupChatSocket } from './socket/chatSocket.js';
 import { startScheduler } from './services/schedulerService.js';
 
@@ -19,19 +20,36 @@ const httpServer = createServer(app);
 
 // Middlewares
 app.use(cors({
-  origin: true, // Cho phép mọi origin gọi và nhận credential (hoặc chỉ định http://localhost:5173)
+  origin: true, // Cho phép mọi origin gọi và nhận credential
   credentials: true
 }));
 app.use(express.json({ limit: '25mb' })); // Để parse body dạng JSON
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 app.use('/uploads/img', express.static(path.join(process.cwd(), 'uploads', 'img')));
 
+// Request logger for incoming Webhook / API debugging
+app.use((req, res, next) => {
+  if (req.url.includes('webhook') || req.url.includes('sepay') || req.url.includes('payment')) {
+    console.log(`[Webhook Request] ${req.method} ${req.url} - Body:`, JSON.stringify(req.body || {}));
+  }
+  next();
+});
+
+// Root-level & Alias mounts for SePay Webhooks (prevents 404 regardless of URL configured in SePay)
+app.use('/sepay-webhook', paymentRoutes);
+app.use('/webhook', paymentRoutes);
+app.use('/sepay', paymentRoutes);
+app.use('/api/sepay-webhook', paymentRoutes);
+app.use('/api/webhook', paymentRoutes);
+app.post('/', paymentRoutes);
+
+// API routes
 app.use('/api', router);
 
-// Cấu hình Socket.io cho realtime (thông báo lịch hẹn, chat...)
+// Cấu hình Socket.io cho realtime
 const io = new Server(httpServer, {
   cors: {
-    origin: '*', // Trong thực tế nên giới hạn domain của client/admin
+    origin: '*',
     methods: ['GET', 'POST']
   }
 });

@@ -142,14 +142,14 @@ export default function HeroBanner() {
 
             <div className="mt-4 flex items-center gap-3">
               <Link
-                to="/booking"
+                to={current ? `/booking?service=${encodeURIComponent(current.slug || current.name)}` : '/booking'}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#C59B63] hover:bg-[#9A7543] text-white text-xs sm:text-sm font-medium transition-all shadow-lg hover:shadow-xl"
               >
                 <span>Đặt Lịch Trực Tuyến</span>
                 <ArrowUpRightIcon className="w-4 h-4" />
               </Link>
               <Link
-                to={`/services/${current.slug}`}
+                to={`/services/Detail/${current.slug}`}
                 className="text-xs text-white/60 hover:text-white underline underline-offset-4 transition-colors"
               >
                 Xem chi tiết
