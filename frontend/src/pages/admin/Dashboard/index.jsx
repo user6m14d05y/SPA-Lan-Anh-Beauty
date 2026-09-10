@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Calendar, CircleDollarSign, Users, Star, ShieldCheck, CheckCircle } from '../../../icons.jsx';
 import { useAuth } from '../../../context/AuthContext.jsx';
+import CustomDatePicker from '../../../components/common/CustomDatePicker.jsx';
 import styles from './Dashboard.module.css';
 
 const API_URL = 'http://localhost:5000/api';
@@ -147,13 +148,21 @@ export default function Dashboard() {
           <option value="year">Theo năm</option>
           <option value="range">Khoảng ngày</option>
         </select>
-        {period === 'day' && <input type="date" value={date} onChange={(event) => setDate(event.target.value)} />}
+        {period === 'day' && (
+          <div className="min-w-[160px]">
+            <CustomDatePicker value={date} onChange={setDate} placeholder="Chọn ngày..." compact={true} />
+          </div>
+        )}
         {period === 'month' && <input type="month" value={month} onChange={(event) => setMonth(event.target.value)} />}
         {period === 'year' && <input type="number" min="2020" max="2100" value={year} onChange={(event) => setYear(event.target.value)} />}
         {period === 'range' && (
           <>
-            <input type="date" value={startDate} onChange={(event) => setStartDate(event.target.value)} />
-            <input type="date" value={endDate} onChange={(event) => setEndDate(event.target.value)} />
+            <div className="min-w-[150px]">
+              <CustomDatePicker value={startDate} onChange={setStartDate} placeholder="Từ ngày..." compact={true} />
+            </div>
+            <div className="min-w-[150px]">
+              <CustomDatePicker value={endDate} onChange={setEndDate} placeholder="Đến ngày..." compact={true} />
+            </div>
           </>
         )}
         <span>Số tiền được ước tính theo giá dịch vụ hiện tại.</span>

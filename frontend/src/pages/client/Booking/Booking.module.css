@@ -52,7 +52,8 @@
     z-index: 3;
     position: relative;
     display: flex;
-    overflow: hidden;
+    border-radius: 24px;
+    overflow: visible;
 }
 
 .bookingInfo {
@@ -63,6 +64,8 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    border-top-left-radius: 24px;
+    border-bottom-left-radius: 24px;
 }
 
 .infoTitle {
@@ -161,6 +164,10 @@
     flex: 1.5;
     padding: 3rem;
     background: var(--white);
+    position: relative;
+    z-index: 5;
+    border-top-right-radius: 24px;
+    border-bottom-right-radius: 24px;
 }
 
 .stepLineActive {
@@ -559,6 +566,18 @@
         flex-direction: column;
         margin-top: -40px;
         width: 95%;
+    }
+    .bookingInfo {
+        border-top-left-radius: 24px;
+        border-top-right-radius: 24px;
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+    }
+    .bookingFormCard {
+        border-top-right-radius: 0;
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 24px;
+        border-bottom-right-radius: 24px;
     }
     .heroTitle {
         font-size: 2.5rem;

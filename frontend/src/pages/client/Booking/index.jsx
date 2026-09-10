@@ -16,6 +16,7 @@ import {
 } from '../../../icons';
 import { useToast } from '../../../context/ToastContext';
 import styles from './Booking.module.css';
+import CustomDatePicker from '../../../components/common/CustomDatePicker';
 
 const API_URL = 'http://localhost:5000/api';
 const MAX_IMAGE_SIZE = 3 * 1024 * 1024;
@@ -553,18 +554,14 @@ export default function Booking() {
 
                     {/* Date Picker */}
                     <div className={`${styles.formGroup} ${styles.fullWidth}`}>
-                      <label htmlFor="date">Ngày Hẹn Mong Muốn *</label>
-                      {/* đổi test chọn ngày */}
-                      <input 
-                        type="date" 
-                        id="date" 
-                        name="date" 
-                        min={today} 
-                        max={maxBookingDate} 
-                        value={formData.date} 
-                        placeholder='Chọn ngày'
-                        onChange={handleChange} 
-                        required 
+                      <label>Ngày Hẹn Mong Muốn *</label>
+                      <CustomDatePicker
+                        value={formData.date}
+                        onChange={(selectedDate) => setFormData((current) => ({ ...current, date: selectedDate }))}
+                        minDate={today}
+                        maxDate={maxBookingDate}
+                        placeholder="Bấm chọn ngày hẹn mong muốn..."
+                        showQuickPills={true}
                       />
                     </div>
 

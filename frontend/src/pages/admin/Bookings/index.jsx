@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState, useRef } from 'react';
 import { Eye, CheckCircle, ShieldCheck, X, ChevronDown, Calendar, Clock, Phone, Mail, Sparkles } from '../../../icons.jsx';
 import { useAuth } from '../../../context/AuthContext';
+import CustomDatePicker from '../../../components/common/CustomDatePicker';
 
 const API_URL = 'http://localhost:5000/api';
 const ASSET_URL = 'http://localhost:5000';
@@ -211,12 +212,15 @@ export default function Bookings() {
                     onChange={setSortOrder} 
                     options={sortOptions} 
                 />
-                <input
-                    type="date"
-                    className="px-[12px] py-[10px] border border-[var(--border)] rounded-lg outline-none bg-[var(--bg-light)] text-[var(--text-dark)] cursor-pointer"
-                    value={dateFilter}
-                    onChange={(event) => setDateFilter(event.target.value)}
-                />
+                <div className="min-w-[160px]">
+                    <CustomDatePicker
+                        value={dateFilter}
+                        onChange={setDateFilter}
+                        clearable={true}
+                        compact={true}
+                        placeholder="Lọc theo ngày..."
+                    />
+                </div>
                 <button
                     type="button"
                     className="px-5 py-2.5 bg-[var(--primary)] text-[var(--white)] font-medium rounded-lg hover:bg-[var(--primary-light)] transition-all hover:-translate-y-0.5 shadow-[0_4px_12px_rgba(119,89,50,0.2)] cursor-pointer"

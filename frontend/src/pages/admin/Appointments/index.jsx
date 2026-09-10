@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Eye, X } from '../../../icons.jsx';
 import { useAuth } from '../../../context/AuthContext';
+import CustomDatePicker from '../../../components/common/CustomDatePicker';
 import styles from './Appointments.module.css';
 
 const API_URL = 'http://localhost:5000/api';
@@ -149,7 +150,14 @@ export default function Appointments() {
             <option key={option.value} value={option.value}>{option.label}</option>
           ))}
         </select>
-        <input type="date" value={dateFilter} onChange={(event) => setDateFilter(event.target.value)} />
+        <div className="min-w-[190px]">
+          <CustomDatePicker
+            value={dateFilter}
+            onChange={setDateFilter}
+            clearable={true}
+            placeholder="Lọc theo ngày..."
+          />
+        </div>
         <button type="button" className={styles.btnPrimary} onClick={fetchAppointments}>Làm mới</button>
       </div>
 
