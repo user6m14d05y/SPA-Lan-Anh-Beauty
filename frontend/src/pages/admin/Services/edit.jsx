@@ -248,7 +248,7 @@ export default function EditService() {
       }
 
       alert('Cập nhật dịch vụ thành công.');
-      navigate('/services');
+      navigate('/admin/services');
     } catch (error) {
       const message = error.message || 'Không thể lưu dịch vụ.';
       setError(message);
@@ -266,7 +266,7 @@ export default function EditService() {
     <div className={styles.formPage}>
       <div className={styles.formPageHeader}>
         <div>
-          <Link to="/services" className={styles.backLink}>← Quay lại danh sách dịch vụ</Link>
+          <Link to="/admin/services" className={styles.backLink}>← Quay lại danh sách dịch vụ</Link>
           <h2 className={styles.pageTitle}>Cập nhật dịch vụ</h2>
           <p className={styles.pageDescription}>Nhập đầy đủ thông tin, hình ảnh và trạng thái để dịch vụ hiển thị rõ ràng trên website khách hàng.</p>
         </div>
@@ -436,7 +436,7 @@ export default function EditService() {
         </div>
 
         <div className={`${styles.formActionsSticky} shadow-lg transition-all duration-300`}>
-          <Link to="/services" className={`${styles.btnSecondary} inline-flex items-center justify-center transition duration-200`}>Hủy</Link>
+          <Link to="/admin/services" className={`${styles.btnSecondary} inline-flex items-center justify-center transition duration-200`}>Hủy</Link>
           <button type="submit" className={`${styles.btnPrimary} inline-flex items-center justify-center transition duration-200 disabled:opacity-60`} disabled={submitting}>{submitting ? 'Đang lưu...' : 'Cập nhật dịch vụ'}</button>
         </div>
       </form>
