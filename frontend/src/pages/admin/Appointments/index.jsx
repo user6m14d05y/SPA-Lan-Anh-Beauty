@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Eye, X } from '../../../icons.jsx';
 import { useAuth } from '../../../context/AuthContext';
+import CustomDatePicker from '../../../components/common/CustomDatePicker';
 import styles from './Appointments.module.css';
 
 const API_URL = 'http://localhost:5000/api';
@@ -30,8 +31,19 @@ const getStatusClass = (status) => {
 
 const getImageUrl = (path) => {
   if (!path) return '';
-  if (path.startsWith('http')) return path;
-  return `${ASSET_URL}${path}`;
+  const firstPath = String(path).split(',')[0].trim();
+  if (firstPath.startsWith('http')) return firstPath;
+  return `${ASSET_URL}${firstPath}`;
+};
+
+const getImageUrls = (path) => {
+  if (!path) return [];
+  if (Array.isArray(path)) return path.map((p) => (p.startsWith('http') ? p : `${ASSET_URL}${p}`));
+  return String(path)
+    .split(',')
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => (p.startsWith('http') ? p : `${ASSET_URL}${p}`));
 };
 
 const formatCurrency = (value) => {
@@ -149,7 +161,14 @@ export default function Appointments() {
             <option key={option.value} value={option.value}>{option.label}</option>
           ))}
         </select>
-        <input type="date" value={dateFilter} onChange={(event) => setDateFilter(event.target.value)} />
+        <div className="min-w-[190px]">
+          <CustomDatePicker
+            value={dateFilter}
+            onChange={setDateFilter}
+            clearable={true}
+            placeholder="Lọc theo ngày..."
+          />
+        </div>
         <button type="button" className={styles.btnPrimary} onClick={fetchAppointments}>Làm mới</button>
       </div>
 
@@ -258,8 +277,19 @@ export default function Appointments() {
 
             {selectedAppointment.customerImage && (
               <div className={styles.imageBox}>
-                <span>Ảnh khách gửi</span>
-                <img src={getImageUrl(selectedAppointment.customerImage)} alt="Ảnh khách gửi" />
+                <span>Ảnh khách gửi ({getImageUrls(selectedAppointment.customerImage).length} ảnh)</span>
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  {getImageUrls(selectedAppointment.customerImage).map((imgUrl, idx) => (
+                    <img 
+                      key={idx} 
+                      src={imgUrl} 
+                      alt={`Ảnh khách gửi ${idx + 1}`} 
+                      className="w-full h-28 object-cover rounded-xl border border-stone-200 cursor-pointer hover:opacity-90 transition-opacity"
+                      onClick={() => window.open(imgUrl, '_blank')}
+                      title="Bấm để xem ảnh tab mới"
+                    />
+                  ))}
+                </div>
               </div>
             )}
           </div>

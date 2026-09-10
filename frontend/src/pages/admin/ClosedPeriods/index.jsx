@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { CalendarOff, Moon, Sun, Trash2 } from '../../../icons.jsx';
 import { useAuth } from '../../../context/AuthContext';
+import CustomDatePicker from '../../../components/common/CustomDatePicker';
 import styles from './ClosedPeriods.module.css';
 
 const API_URL = 'http://localhost:5000/api';
@@ -137,7 +138,12 @@ export default function ClosedPeriods() {
           </div>
 
           <label>Ngày nghỉ</label>
-          <input type="date" name="date" min={getToday()} value={formData.date} onChange={handleChange} required />
+          <CustomDatePicker
+            value={formData.date}
+            onChange={(selectedDate) => setFormData((current) => ({ ...current, date: selectedDate }))}
+            minDate={getToday()}
+            placeholder="Chọn ngày nghỉ..."
+          />
 
           <label>Loại nghỉ</label>
           <select name="shift" value={formData.shift} onChange={handleChange}>

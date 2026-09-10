@@ -8,6 +8,7 @@ import chatbotRoutes from './chatbot.Routes.js';
 import chatRoutes from './chat.Routes.js';
 import customerRoutes from './customer.Routes.js';
 import dashboardRoutes from './dashboard.Routes.js';
+import paymentRoutes from './payment.Routes.js';
 
 const router = express.Router();
 
@@ -20,6 +21,9 @@ router.use('/chatbot', chatbotRoutes);
 router.use('/chat', chatRoutes);
 router.use('/customers', customerRoutes);
 router.use('/dashboard', dashboardRoutes);
+router.use('/payment', paymentRoutes);
+router.use('/sepay-webhook', paymentRoutes);
+router.use('/webhook', paymentRoutes);
 
 // Test
 router.get('/', (req, res) => {

@@ -144,16 +144,37 @@ const enrichBookingWithServicePrice = async (booking) => {
 
 const enrichBookingsWithServicePrice = async (bookings) => Promise.all(bookings.map(enrichBookingWithServicePrice));
 
-const buildBookingPayload = (body, file) => ({
-  customerName: body.customerName?.trim(),
-  customerPhone: body.customerPhone?.trim(),
-  customerEmail: body.customerEmail?.trim(),
-  serviceName: body.serviceName?.trim(),
-  bookingDate: body.bookingDate,
-  bookingTime: normalizeTime(body.bookingTime),
-  notes: body.notes?.trim() || null,
-  customerImage: file ? `/uploads/img/${file.filename}` : null,
-});
+/**
+ * Generate a unique booking ID in format: DH-XXXX-XXXX-XXXX
+ * 12 random digits grouped into 3 groups of 4 for readability.
+ * Example: DH-8312-4957-0621
+ */
+const generateBookingId = () => {
+  const part = () => Math.floor(1000 + Math.random() * 9000).toString(); // 4 digits, never starts with 0
+  return `DH-${part()}-${part()}-${part()}`;
+};
+
+const buildBookingPayload = (body, files, file) => {
+  let imagePaths = [];
+  if (Array.isArray(files) && files.length > 0) {
+    imagePaths = files.map((f) => `/uploads/img/${f.filename}`);
+  } else if (file) {
+    imagePaths = [`/uploads/img/${file.filename}`];
+  }
+
+  const notes = body.notes?.trim() || '';
+
+  return {
+    customerName: body.customerName?.trim(),
+    customerPhone: body.customerPhone?.trim(),
+    customerEmail: body.customerEmail?.trim(),
+    serviceName: body.serviceName?.trim(),
+    bookingDate: body.bookingDate,
+    bookingTime: normalizeTime(body.bookingTime),
+    notes: notes || null,
+    customerImage: imagePaths.length > 0 ? imagePaths.join(',') : null,
+  };
+};
 
 const validateCreatePayload = (payload) => {
   if (!payload.customerName) return 'Vui lòng nhập họ tên.';
@@ -192,7 +213,7 @@ export const bookingController = {
 
   async create(req, res) {
     try {
-      const payload = buildBookingPayload(req.body, req.file);
+      const payload = buildBookingPayload(req.body, req.files, req.file);
       const validationError = validateCreatePayload(payload);
 
       if (validationError) {
@@ -210,6 +231,43 @@ export const bookingController = {
         });
       }
 
+      // Check if this exact customer already created a PENDING booking for this date & slot (e.g. switched payment method)
+      const targetBookingId = req.body.existingBookingId || req.body.bookingId;
+      let existingPending = null;
+
+      if (targetBookingId) {
+        existingPending = await Booking.findOne({
+          where: { id: targetBookingId, status: 'PENDING' },
+        });
+      }
+
+      if (!existingPending) {
+        existingPending = await Booking.findOne({
+          where: {
+            customerPhone: payload.customerPhone,
+            bookingDate: payload.bookingDate,
+            bookingTime: payload.bookingTime,
+            status: 'PENDING',
+          },
+          order: [['createdAt', 'DESC']],
+        });
+      }
+
+      if (existingPending) {
+        await existingPending.update(payload);
+        const bookingJson = typeof existingPending.toJSON === 'function' ? existingPending.toJSON() : existingPending;
+
+        return res.status(200).json({
+          success: true,
+          message: 'Cập nhật phương thức và thông tin đặt lịch thành công.',
+          data: {
+            ...bookingJson,
+            id: existingPending.id,
+            code: existingPending.id,
+          },
+        });
+      }
+
       const booked = await countBookingsForSlot(payload.bookingDate, payload.bookingTime);
 
       if (booked >= SLOT_CAPACITY) {
@@ -219,11 +277,26 @@ export const bookingController = {
         });
       }
 
-      const newBooking = await Booking.create(payload);
+      // Generate unique DH-XXXX-XXXX-XXXX id, retry on collision (extremely rare)
+      let bookingId;
+      let attempts = 0;
+      do {
+        bookingId = generateBookingId();
+        const existing = await Booking.findByPk(bookingId);
+        if (!existing) break;
+        attempts += 1;
+      } while (attempts < 5);
+
+      const newBooking = await Booking.create({ id: bookingId, ...payload });
+      const bookingJson = typeof newBooking.toJSON === 'function' ? newBooking.toJSON() : newBooking;
+
       res.status(201).json({
         success: true,
         message: 'Đặt lịch thành công. Chúng tôi sẽ liên hệ sớm nhất để xác nhận.',
-        data: newBooking,
+        data: {
+          ...bookingJson,
+          bookingCode: bookingJson.id, // id IS the booking code now
+        },
       });
     } catch (error) {
       handleError(res, error, 'Không thể đặt lịch.');

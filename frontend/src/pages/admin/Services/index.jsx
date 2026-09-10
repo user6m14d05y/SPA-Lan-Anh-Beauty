@@ -125,7 +125,7 @@ export default function Services() {
           <span>Thời gian: {service.durationMinutes || '--'} phút</span>
         </div>
         <div className={styles.serviceFooter}>
-          <button className={`${styles.actionBtn} ${styles.actionEdit}`} onClick={() => navigate(`/services/edit/${service.id}`)}>
+          <button className={`${styles.actionBtn} ${styles.actionEdit}`} onClick={() => navigate(`/admin/services/edit/${service.id}`)}>
             <Edit size={16} /> Sửa
           </button>
           <button
@@ -146,7 +146,7 @@ export default function Services() {
           <h2 className={styles.pageTitle}>Dịch vụ</h2>
           <p className={styles.pageDescription}>Quản lý dịch vụ hiển thị trên website, bao gồm ảnh, giá, giảm giá và trạng thái hiển thị.</p>
         </div>
-        <button className={styles.btnPrimary} style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => navigate('/services/add')}>
+        <button className={styles.btnPrimary} style={{ display: 'flex', alignItems: 'center', gap: '8px' }} onClick={() => navigate('/admin/services/add')}>
           <Plus size={18} /> Thêm dịch vụ
         </button>
       </div>

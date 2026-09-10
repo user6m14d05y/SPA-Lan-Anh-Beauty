@@ -7,9 +7,11 @@ import {
   ArrowPathIcon,
   ArrowUpRightIcon
 } from '../../../icons';
+import { useToast } from '../../../context/ToastContext';
 import styles from './Contact.module.css';
 
 export default function Contact() {
+  const toast = useToast();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -17,8 +19,6 @@ export default function Contact() {
     message: ''
   });
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   // Captcha state
   const [requireCaptcha, setRequireCaptcha] = useState(false);
@@ -34,10 +34,11 @@ export default function Contact() {
       setCaptchaToken(data.token);
       setCaptchaCode('');
     } catch {
-      // nếu không lấy được thì bỏ trống
       setCaptchaSvg('');
     }
   };
+
+  const [errors, setErrors] = useState({});
 
   const refreshCaptcha = () => fetchCaptcha();
 
@@ -47,13 +48,47 @@ export default function Contact() {
       ...prev,
       [name]: value
     }));
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const trimmedName = formData.name.trim();
+    const trimmedPhone = formData.phone.trim();
+    const trimmedEmail = formData.email.trim();
+    const trimmedMessage = formData.message.trim();
+    const newErrors = {};
+
+    if (!trimmedName) {
+      newErrors.name = 'Vui lòng nhập họ và tên của bạn.';
+    }
+
+    if (!trimmedPhone) {
+      newErrors.phone = 'Vui lòng nhập số điện thoại.';
+    } else if (!/^0\d{9,10}$/.test(trimmedPhone)) {
+      newErrors.phone = 'Số điện thoại không hợp lệ (ví dụ đúng: 0987654321).';
+    }
+
+    if (!trimmedEmail) {
+      newErrors.email = 'Vui lòng nhập địa chỉ email.';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
+      newErrors.email = 'Địa chỉ email không đúng định dạng (ví dụ đúng: name@gmail.com).';
+    }
+
+    if (!trimmedMessage) {
+      newErrors.message = 'Vui lòng nhập nội dung cần tư vấn.';
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setErrors({});
     setSubmitting(true);
-    setError('');
-    setSuccess('');
 
     try {
       const payload = requireCaptcha
@@ -80,14 +115,14 @@ export default function Contact() {
         throw new Error(result.message || 'Không thể gửi liên hệ. Vui lòng thử lại.');
       }
 
-      setSuccess(result.message || 'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.');
+      toast.success(result.message || 'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.');
       setRequireCaptcha(false);
       setCaptchaCode('');
       setCaptchaSvg('');
       setCaptchaToken('');
       setFormData({ name: '', email: '', phone: '', message: '' });
     } catch (error) {
-      setError(error.message || 'Không thể gửi liên hệ. Vui lòng thử lại.');
+      toast.error(error.message || 'Không thể gửi liên hệ. Vui lòng thử lại.');
     } finally {
       setSubmitting(false);
     }
@@ -177,8 +212,9 @@ export default function Contact() {
                     value={formData.name}
                     onChange={handleChange}
                     placeholder="Nhập họ và tên"
-                    required
+                    className={errors.name ? 'border-red-500 ring-1 ring-red-400 bg-red-50/20' : ''}
                   />
+                  {errors.name && <span className="text-xs text-red-500 font-semibold mt-1 block">* {errors.name}</span>}
                 </div>
                 <div className={styles.formGroup}>
                   <label htmlFor="phone">Số Điện Thoại *</label>
@@ -189,8 +225,9 @@ export default function Contact() {
                     value={formData.phone}
                     onChange={handleChange}
                     placeholder="Nhập số điện thoại"
-                    required
+                    className={errors.phone ? 'border-red-500 ring-1 ring-red-400 bg-red-50/20' : ''}
                   />
+                  {errors.phone && <span className="text-xs text-red-500 font-semibold mt-1 block">* {errors.phone}</span>}
                 </div>
                 <div className={styles.formGroup}>
                   <label htmlFor="email">Email *</label>
@@ -201,8 +238,9 @@ export default function Contact() {
                     value={formData.email}
                     onChange={handleChange}
                     placeholder="Nhập địa chỉ email"
-                    required
+                    className={errors.email ? 'border-red-500 ring-1 ring-red-400 bg-red-50/20' : ''}
                   />
+                  {errors.email && <span className="text-xs text-red-500 font-semibold mt-1 block">* {errors.email}</span>}
                 </div>
                 <div className={styles.formGroup}>
                   <label htmlFor="message">Nội Dung Cần Tư Vấn *</label>
@@ -212,8 +250,9 @@ export default function Contact() {
                     value={formData.message}
                     onChange={handleChange}
                     placeholder="Nhập thắc mắc hoặc yêu cầu riêng của bạn..."
-                    required
+                    className={errors.message ? 'border-red-500 ring-1 ring-red-400 bg-red-50/20' : ''}
                   ></textarea>
+                  {errors.message && <span className="text-xs text-red-500 font-semibold mt-1 block">* {errors.message}</span>}
                 </div>
 
                 {requireCaptcha && (
@@ -241,8 +280,7 @@ export default function Contact() {
                   </div>
                 )}
 
-                {success && <div className={styles.successMessage}>{success}</div>}
-                {error && <div className={styles.errorMessage}>{error}</div>}
+
 
                 <button type="submit" className="btn-luxury-primary w-full text-center justify-center py-4" disabled={submitting}>
                   {submitting ? 'Đang Gửi...' : (

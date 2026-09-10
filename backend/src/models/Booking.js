@@ -3,9 +3,9 @@ import sequelize from "../config/database.js";
 
 const Booking = sequelize.define("Booking", {
   id: {
-    type: Sequelize.INTEGER,
+    type: Sequelize.STRING(20),
     primaryKey: true,
-    autoIncrement: true,
+    allowNull: false,
   },
   customerName: {
     type: Sequelize.STRING,

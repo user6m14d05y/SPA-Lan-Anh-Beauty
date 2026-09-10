@@ -1,3 +1,4 @@
+import { Op } from 'sequelize';
 import Service from '../models/Service.js';
 import ServiceCategory from '../models/ServiceCategory.js';
 import { createAppError } from './userService.js';
@@ -234,7 +235,7 @@ export const catalogService = {
     return categories.map(normalizeCategory);
   },
 
-  async getServices({ categorySlug, featured, active = 'true' } = {}) {
+  async getServices({ categorySlug, featured, active = 'true', search, sort, limit, cursor } = {}) {
     const where = {};
     const include = [{
       model: ServiceCategory,
@@ -251,13 +252,63 @@ export const catalogService = {
       where.isFeatured = toBoolean(featured, false);
     }
 
-    const services = await Service.findAll({
+    if (search && String(search).trim()) {
+      const query = `%${String(search).trim()}%`;
+      where[Op.or] = [
+        { name: { [Op.like]: query } },
+        { shortDescription: { [Op.like]: query } },
+        { description: { [Op.like]: query } },
+      ];
+    }
+
+    if (cursor) {
+      const parsedCursor = Number(cursor);
+      if (parsedCursor) {
+        where.id = { [Op.gt]: parsedCursor };
+      }
+    }
+
+    let order = serviceOrder;
+    if (sort === 'price-asc') {
+      order = [['price', 'ASC'], ['id', 'ASC']];
+    } else if (sort === 'price-desc') {
+      order = [['price', 'DESC'], ['id', 'ASC']];
+    } else if (sort === 'name-asc') {
+      order = [['name', 'ASC'], ['id', 'ASC']];
+    } else if (sort === 'name-desc') {
+      order = [['name', 'DESC'], ['id', 'ASC']];
+    } else if (sort === 'newest') {
+      order = [['createdAt', 'DESC'], ['id', 'DESC']];
+    }
+
+    const queryOptions = {
       where,
       include,
-      order: serviceOrder,
-    });
+      order,
+    };
 
-    return services.map(enrichService);
+    const parsedLimit = limit ? Math.min(Math.max(Number(limit), 1), 100) : null;
+    if (parsedLimit) {
+      queryOptions.limit = parsedLimit + 1;
+    }
+
+    const services = await Service.findAll(queryOptions);
+    const enriched = services.map(enrichService);
+
+    if (parsedLimit) {
+      const hasMore = enriched.length > parsedLimit;
+      const data = hasMore ? enriched.slice(0, parsedLimit) : enriched;
+      const nextCursor = data.length > 0 ? data[data.length - 1].id : null;
+
+      return {
+        items: data,
+        nextCursor,
+        hasMore,
+        total: data.length,
+      };
+    }
+
+    return enriched;
   },
 
   async getServiceBySlug(slug) {

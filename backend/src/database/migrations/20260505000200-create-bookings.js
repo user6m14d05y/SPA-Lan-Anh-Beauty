@@ -2,9 +2,8 @@ export default {
   async up(queryInterface, Sequelize) {
     await queryInterface.createTable('bookings', {
       id: {
-        type: Sequelize.INTEGER,
+        type: Sequelize.STRING(50),
         primaryKey: true,
-        autoIncrement: true,
         allowNull: false,
       },
       customerName: {

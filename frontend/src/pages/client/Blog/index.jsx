@@ -87,22 +87,22 @@ export default function Blog() {
     <div className="min-h-screen bg-[var(--bg-silk)]">
       {/* Hero Section */}
       <section 
-        className="relative py-28 flex items-center justify-center px-5 overflow-hidden bg-center bg-cover bg-no-repeat border-b border-[var(--border-silk)]"
+        className="relative py-28 flex items-center justify-center px-5 overflow-hidden bg-center bg-cover bg-no-repeat min-h-[400px]"
         style={{ backgroundImage: `url(${heroImg})` }}
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-[#FAF7F2]/95 to-[#F5EFE6]/90 flex flex-col items-center justify-center text-center px-5">
-          <span className="eyebrow-badge mb-3">Cẩm Nang Sắc Đẹp</span>
-          <h1 className="font-serif text-[2.6rem] md:text-[3.8rem] leading-[1.15] text-[var(--text-main)] mb-4 z-10 font-bold">
+        <div className="absolute inset-0 bg-gradient-to-b from-[#0E0B09]/85 via-[#1C1612]/88 to-[#1C1612]/95 flex flex-col items-center justify-center text-center px-5 pt-28 pb-14">
+          <span className="eyebrow-badge bg-white/20 text-white border-white/30 mb-3 z-10">Cẩm Nang Sắc Đẹp</span>
+          <h1 className="font-serif text-[2.5rem] md:text-[3.8rem] leading-[1.15] text-white mb-4 z-10 font-bold drop-shadow-lg">
             Bài Viết & Bí Quyết
           </h1>
-          <p className="text-[1.1rem] text-[var(--text-muted)] max-w-[700px] z-10 leading-[1.75]">
+          <p className="text-[1.1rem] text-white/85 max-w-[720px] z-10 leading-[1.75]">
             Cập nhật những xu hướng làm đẹp chuẩn khoa học, mẹo chăm sóc da tại nhà và tư vấn chuyên sâu từ bác sĩ Lan Anh Beauty.
           </p>
         </div>
       </section>
 
       {/* Main Content */}
-      <section className="py-20 max-w-[1320px] mx-auto px-5">
+      <section className="py-16 max-w-[1560px] mx-auto px-5">
         
         {/* Category Cards */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-14">
@@ -139,65 +139,63 @@ export default function Blog() {
           </p>
         </div>
 
-        {/* Blog Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {/* Blog Grid - 5 Columns */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
           {filteredPosts.map((post) => (
             <article 
               key={post.id} 
-              className="bezel-shell"
+              className="bg-white rounded-[18px] overflow-hidden border border-[var(--border-silk)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-luxury)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col h-full"
             >
-              <div className="bezel-inner overflow-hidden flex flex-col h-full">
-                {/* Thumbnail */}
-                <div className="relative h-[240px] w-full overflow-hidden bg-stone-100">
-                  <Link to={`/blog`}>
-                    <img 
-                      src={post.imageUrl} 
-                      alt={post.title} 
-                      className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
-                    />
+              {/* Thumbnail */}
+              <div className="relative h-[180px] w-full overflow-hidden bg-stone-100">
+                <Link to={`/blog`}>
+                  <img 
+                    src={post.imageUrl} 
+                    alt={post.title} 
+                    className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+                  />
+                </Link>
+                <div className="absolute top-3 left-3 bg-[var(--primary-gold)] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-md uppercase tracking-wide">
+                  {post.category}
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-4 sm:p-5 flex flex-col flex-grow">
+                {/* Title */}
+                <h3 className="text-base text-[var(--text-main)] mb-2 line-clamp-2 font-serif font-bold leading-snug">
+                  <Link to={`/blog`} className="hover:text-[var(--primary-gold-dark)] transition-colors">
+                    {post.title}
                   </Link>
-                  <div className="absolute top-4 left-4 bg-[var(--primary-gold)] text-white text-xs font-bold px-3.5 py-1.5 rounded-full shadow-md uppercase tracking-wide">
-                    {post.category}
-                  </div>
+                </h3>
+
+                {/* Meta info */}
+                <div className="flex items-center text-[11px] text-[var(--primary-gold-dark)] font-semibold mb-3 space-x-3">
+                  <span className="flex items-center">
+                    <CalendarIcon className="w-3 h-3 mr-1 inline-block" />
+                    {post.date}
+                  </span>
+                  <span className="flex items-center">
+                    <PencilSquareIcon className="w-3 h-3 mr-1 inline-block" />
+                    {post.author}
+                  </span>
                 </div>
 
-                {/* Content */}
-                <div className="p-7 flex flex-col flex-grow">
-                  {/* Title */}
-                  <h3 className="text-[1.3rem] text-[var(--text-main)] mb-3 line-clamp-2 font-serif font-bold leading-snug">
-                    <Link to={`/blog`} className="hover:text-[var(--primary-gold-dark)] transition-colors">
-                      {post.title}
-                    </Link>
-                  </h3>
+                {/* Excerpt */}
+                <p className="text-[var(--text-muted)] text-xs leading-[1.6] mb-4 line-clamp-2 flex-grow">
+                  {post.excerpt}
+                </p>
 
-                  {/* Meta info */}
-                  <div className="flex items-center text-xs text-[var(--primary-gold-dark)] font-semibold mb-4 space-x-4">
-                    <span className="flex items-center">
-                      <CalendarIcon className="w-3.5 h-3.5 mr-1 inline-block" />
-                      {post.date}
-                    </span>
-                    <span className="flex items-center">
-                      <PencilSquareIcon className="w-3.5 h-3.5 mr-1 inline-block" />
-                      {post.author}
-                    </span>
-                  </div>
-
-                  {/* Excerpt */}
-                  <p className="text-[var(--text-muted)] text-sm leading-[1.65] mb-6 line-clamp-3 flex-grow">
-                    {post.excerpt}
-                  </p>
-
-                  {/* Action */}
-                  <div className="mt-auto pt-4 border-t border-[var(--border-silk-light)] flex items-center justify-between">
-                    <Link 
-                      to={`/blog`} 
-                      className="btn-luxury-secondary text-xs px-5 py-2 inline-flex items-center"
-                    >
-                      <span>Đọc Bài Viết</span>
-                      <ArrowUpRightIcon className="w-3.5 h-3.5 ml-1" />
-                    </Link>
-                    <span className="text-xs text-[var(--text-light)]">5 phút đọc</span>
-                  </div>
+                {/* Action */}
+                <div className="mt-auto pt-3 border-t border-[var(--border-silk-light)] flex items-center justify-between">
+                  <Link 
+                    to={`/blog`} 
+                    className="btn-luxury-secondary text-[11px] px-3 py-1.5 whitespace-nowrap inline-flex items-center"
+                  >
+                    <span>Đọc bài</span>
+                    <ArrowUpRightIcon className="w-3 h-3 ml-0.5" />
+                  </Link>
+                  <span className="text-[11px] text-[var(--text-light)]">5 phút</span>
                 </div>
               </div>
             </article>
