@@ -41,6 +41,42 @@ export const ArrowUpRightIcon = ({ className = "w-6 h-6" }) => (
   </svg>
 );
 
+export const CheckCircleIcon = ({ className = "w-6 h-6" }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+  </svg>
+);
+
+export const ExclamationTriangleIcon = ({ className = "w-6 h-6" }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+  </svg>
+);
+
+export const InformationCircleIcon = ({ className = "w-6 h-6" }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+  </svg>
+);
+
+export const BanknotesIcon = ({ className = "w-6 h-6" }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-6h6m-7.5-6h15a1.5 1.5 0 0 1 1.5 1.5v12a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 19.5v-12A1.5 1.5 0 0 1 4.5 6Z" />
+  </svg>
+);
+
+export const CreditCardIcon = ({ className = "w-6 h-6" }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+  </svg>
+);
+
+export const QrCodeIcon = ({ className = "w-6 h-6" }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 4.5h3.75v3.75H3.75V4.5Zm0 11.25h3.75v3.75H3.75v-3.75Zm11.25-11.25h3.75v3.75h-3.75V4.5Zm0 11.25h3.75v3.75h-3.75v-3.75ZM6 6h-.75v.75H6V6Zm0 11.25h-.75v.75H6v-.75Zm11.25-11.25h-.75v.75h.75V6Zm0 11.25h-.75v.75h.75v-.75Z" />
+  </svg>
+);
+
 export const MagnifyingGlassIcon = ({ className = "w-6 h-6" }) => (
   <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
     <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />

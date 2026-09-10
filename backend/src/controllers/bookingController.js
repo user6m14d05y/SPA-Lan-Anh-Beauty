@@ -144,16 +144,48 @@ const enrichBookingWithServicePrice = async (booking) => {
 
 const enrichBookingsWithServicePrice = async (bookings) => Promise.all(bookings.map(enrichBookingWithServicePrice));
 
-const buildBookingPayload = (body, file) => ({
-  customerName: body.customerName?.trim(),
-  customerPhone: body.customerPhone?.trim(),
-  customerEmail: body.customerEmail?.trim(),
-  serviceName: body.serviceName?.trim(),
-  bookingDate: body.bookingDate,
-  bookingTime: normalizeTime(body.bookingTime),
-  notes: body.notes?.trim() || null,
-  customerImage: file ? `/uploads/img/${file.filename}` : null,
-});
+const generate12DigitCode = () => {
+  const now = new Date();
+  const dateStr = now.toISOString().slice(2, 10).replace(/-/g, ''); // YYMMDD 6 digits
+  const randStr = Math.floor(100000 + Math.random() * 900000).toString(); // 6 digits
+  return `${dateStr}${randStr}`; // 12 digits
+};
+
+const buildBookingPayload = (body, files, file) => {
+  let imagePaths = [];
+  if (Array.isArray(files) && files.length > 0) {
+    imagePaths = files.map((f) => `/uploads/img/${f.filename}`);
+  } else if (file) {
+    imagePaths = [`/uploads/img/${file.filename}`];
+  }
+
+  let bookingCode = body.bookingCode?.trim();
+  const existingNotes = body.notes?.trim() || '';
+
+  const codeInNotesMatch = existingNotes.match(/\b\d{12}\b/);
+  if (codeInNotesMatch) {
+    bookingCode = codeInNotesMatch[0];
+  } else if (!bookingCode || !/^\d{12}$/.test(bookingCode)) {
+    bookingCode = generate12DigitCode();
+  }
+
+  let finalNotes = existingNotes;
+  if (!finalNotes.includes(bookingCode)) {
+    finalNotes = finalNotes ? `[Mã đơn: ${bookingCode}] | ${finalNotes}` : `[Mã đơn: ${bookingCode}]`;
+  }
+
+  return {
+    customerName: body.customerName?.trim(),
+    customerPhone: body.customerPhone?.trim(),
+    customerEmail: body.customerEmail?.trim(),
+    serviceName: body.serviceName?.trim(),
+    bookingDate: body.bookingDate,
+    bookingTime: normalizeTime(body.bookingTime),
+    notes: finalNotes,
+    customerImage: imagePaths.length > 0 ? imagePaths.join(',') : null,
+    bookingCode,
+  };
+};
 
 const validateCreatePayload = (payload) => {
   if (!payload.customerName) return 'Vui lòng nhập họ tên.';
@@ -192,7 +224,7 @@ export const bookingController = {
 
   async create(req, res) {
     try {
-      const payload = buildBookingPayload(req.body, req.file);
+      const payload = buildBookingPayload(req.body, req.files, req.file);
       const validationError = validateCreatePayload(payload);
 
       if (validationError) {
@@ -219,11 +251,17 @@ export const bookingController = {
         });
       }
 
-      const newBooking = await Booking.create(payload);
+      const { bookingCode, ...createData } = payload;
+      const newBooking = await Booking.create(createData);
+      const bookingJson = typeof newBooking.toJSON === 'function' ? newBooking.toJSON() : newBooking;
+
       res.status(201).json({
         success: true,
         message: 'Đặt lịch thành công. Chúng tôi sẽ liên hệ sớm nhất để xác nhận.',
-        data: newBooking,
+        data: {
+          ...bookingJson,
+          bookingCode,
+        },
       });
     } catch (error) {
       handleError(res, error, 'Không thể đặt lịch.');

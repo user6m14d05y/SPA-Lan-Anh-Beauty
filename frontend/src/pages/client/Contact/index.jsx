@@ -7,9 +7,11 @@ import {
   ArrowPathIcon,
   ArrowUpRightIcon
 } from '../../../icons';
+import { useToast } from '../../../context/ToastContext';
 import styles from './Contact.module.css';
 
 export default function Contact() {
+  const toast = useToast();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -17,8 +19,6 @@ export default function Contact() {
     message: ''
   });
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   // Captcha state
   const [requireCaptcha, setRequireCaptcha] = useState(false);
@@ -34,7 +34,6 @@ export default function Contact() {
       setCaptchaToken(data.token);
       setCaptchaCode('');
     } catch {
-      // nếu không lấy được thì bỏ trống
       setCaptchaSvg('');
     }
   };
@@ -52,8 +51,6 @@ export default function Contact() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
-    setError('');
-    setSuccess('');
 
     try {
       const payload = requireCaptcha
@@ -80,14 +77,14 @@ export default function Contact() {
         throw new Error(result.message || 'Không thể gửi liên hệ. Vui lòng thử lại.');
       }
 
-      setSuccess(result.message || 'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.');
+      toast.success(result.message || 'Cảm ơn bạn đã liên hệ! Chúng tôi sẽ phản hồi trong thời gian sớm nhất.');
       setRequireCaptcha(false);
       setCaptchaCode('');
       setCaptchaSvg('');
       setCaptchaToken('');
       setFormData({ name: '', email: '', phone: '', message: '' });
     } catch (error) {
-      setError(error.message || 'Không thể gửi liên hệ. Vui lòng thử lại.');
+      toast.error(error.message || 'Không thể gửi liên hệ. Vui lòng thử lại.');
     } finally {
       setSubmitting(false);
     }
@@ -241,8 +238,7 @@ export default function Contact() {
                   </div>
                 )}
 
-                {success && <div className={styles.successMessage}>{success}</div>}
-                {error && <div className={styles.errorMessage}>{error}</div>}
+
 
                 <button type="submit" className="btn-luxury-primary w-full text-center justify-center py-4" disabled={submitting}>
                   {submitting ? 'Đang Gửi...' : (

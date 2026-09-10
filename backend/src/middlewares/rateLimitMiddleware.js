@@ -108,3 +108,16 @@ export const chatbotRateLimiter = rateLimit({
     });
   },
 });
+
+export const bookingRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 phút
+  max: 100,                   // Tối đa 5 lần đặt lịch / 15 phút
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (_req, res) => {
+    res.status(429).json({
+      success: false,
+      message: 'Bạn đã thực hiện quá nhiều thao tác đặt lịch. Vui lòng thử lại sau 15 phút.',
+    });
+  },
+});

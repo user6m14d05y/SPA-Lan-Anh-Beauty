@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { ToastProvider } from "./context/ToastContext";
 
 // Layouts
 import MainLayout from "./layouts/MainLayout";
@@ -36,7 +37,8 @@ import UsersPage from "./pages/admin/Users";
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <ToastProvider>
+        <BrowserRouter>
         <Routes>
           {/* Public Client Routes */}
           <Route path="/" element={<MainLayout />}>
@@ -77,7 +79,8 @@ function App() {
           </Route>
         </Routes>
       </BrowserRouter>
-    </AuthProvider>
+    </ToastProvider>
+  </AuthProvider>
   );
 }
 
