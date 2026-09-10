@@ -1,9 +1,9 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { API_URL } from '../config';
 
 const AuthContext = createContext(null);
 
 const STORAGE_KEY = 'spa_auth';
-const API_URL = 'http://localhost:5000/api';
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);

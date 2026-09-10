@@ -16,7 +16,7 @@ import serviceImg1 from '../../../assets/images/service1.png';
 import serviceImg2 from '../../../assets/images/service2.png';
 import serviceImg3 from '../../../assets/images/service3.png';
 
-const API_URL = 'http://localhost:5000/api';
+import { API_URL } from '../../../config';
 const fallbackImages = [serviceImg1, serviceImg2, serviceImg3];
 
 const feedbackItems = [

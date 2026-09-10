@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { SparklesIcon, ArrowUpRightIcon } from '../../icons';
 
-const API_URL = 'http://localhost:5000/api';
+import { API_URL } from '../../config';
 
 // Fallback placeholder gradient backgrounds when service has no image
 const FALLBACK_GRADIENTS = [
