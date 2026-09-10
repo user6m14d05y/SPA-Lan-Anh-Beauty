@@ -225,51 +225,43 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Categories Section — Lấy từ API */}
-      <section id="services" className="bg-[#0E0C0A] text-white min-h-screen flex flex-col justify-center">
+      {/* Categories Section — 1 Row Accordion (Edge-to-Edge) */}
+      <section id="services" className={styles.categorySection}>
         <div
           ref={categoriesInView.ref}
-          className={`grid grid-cols-1 transition-all duration-1000 ease-out ${
-            categories.length > 0
-              ? `md:grid-cols-${Math.min(categories.length, 4)}`
-              : 'md:grid-cols-3'
-          } ${
+          className={`${styles.categoryAccordionContainer} transition-all duration-1000 ease-out ${
             categoriesInView.isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'
           }`}
-          style={{
-            gridTemplateColumns: categories.length > 0
-              ? `repeat(${Math.min(categories.length, 4)}, 1fr)`
-              : undefined,
-          }}
         >
           {loadingCategories
-            ? /* Skeleton placeholders */ [0, 1, 2].map((i) => (
+            ? /* Skeleton placeholders */ [0, 1, 2, 3, 4, 5, 6].map((i) => (
               <div
                 key={i}
-                className="relative min-h-[400px] md:min-h-[750px] bg-[#1A1612] animate-pulse"
+                className={`${styles.categoryAccordionCard} animate-pulse bg-[#1A1612]`}
               />
             ))
             : categories.map((cat, index) => {
-              // Get thumbnail: category imageUrl → first service image → gradient fallback
               const allServices = [
                 ...(cat.services || []),
                 ...(cat.children || []).flatMap((c) => c.services || []),
               ];
               const thumbUrl = cat.imageUrl || allServices.find((s) => s.thumbnailUrl)?.thumbnailUrl || null;
 
-              // Gradient fallbacks per index
               const gradients = [
                 'linear-gradient(135deg, #2A1F16 0%, #1C1612 100%)',
                 'linear-gradient(135deg, #1A1A2E 0%, #16213E 100%)',
                 'linear-gradient(135deg, #1B2838 0%, #0D1B2A 100%)',
                 'linear-gradient(135deg, #1C1612 0%, #2A211B 100%)',
+                'linear-gradient(135deg, #231913 0%, #1A1410 100%)',
+                'linear-gradient(135deg, #182026 0%, #11171A 100%)',
+                'linear-gradient(135deg, #2D1E2F 0%, #170E1A 100%)',
               ];
 
               return (
                 <div
                   key={cat.id}
-                  className="relative flex flex-col justify-between items-start p-6 sm:p-8 md:p-12 min-h-[400px] sm:min-h-[500px] md:min-h-[750px] overflow-hidden group transition-all duration-700 cursor-pointer"
-                  style={{ transitionDelay: `${index * 120}ms` }}
+                  className={styles.categoryAccordionCard}
+                  style={{ transitionDelay: `${index * 50}ms` }}
                   onClick={() => navigate(`/services?category=${cat.slug}`)}
                 >
                   {/* Background image or gradient */}
@@ -277,52 +269,82 @@ export default function Home() {
                     <img
                       src={thumbUrl}
                       alt={cat.name}
-                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] group-hover:scale-105"
+                      className={styles.categoryBgImg}
                     />
                   ) : (
                     <div
-                      className="absolute inset-0"
+                      className={styles.categoryBgImg}
                       style={{ background: gradients[index % gradients.length] }}
                     />
                   )}
 
                   {/* Dark overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10 group-hover:from-black/70 transition-all duration-500" />
+                  <div className={styles.categoryOverlay} />
 
-                  {/* Gold accent line on hover */}
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-[#C59B63] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                  {/* Category name — vertical */}
-                  <h2
-                    className="relative z-10 text-5xl sm:text-6xl md:text-7xl font-medium group-hover:-translate-y-2 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] select-none text-white"
-                    style={{ writingMode: 'vertical-lr', transform: 'rotate(180deg)' }}
-                  >
+                  {/* Vertical Category Title */}
+                  <h2 className={styles.categoryTitleVertical}>
                     {cat.name}
                   </h2>
 
-                  {/* Bottom info */}
-                  <div className="relative z-10 mt-auto w-full">
-                    {/* Service count badge */}
+                  {/* Bottom Info: Service Count Badge & Button */}
+                  <div className={styles.categoryBottomInfo}>
                     {allServices.length > 0 && (
-                      <span className="inline-block mb-3 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-[#DFBF91] border border-[#C59B63]/40 rounded-full bg-black/30 backdrop-blur-sm">
+                      <span className={styles.categoryCountBadge}>
                         {allServices.length} dịch vụ
                       </span>
                     )}
                     <button
                       type="button"
-                      className="btn-primary flex items-center gap-2 px-7 py-3 bg-white/10 hover:bg-[#C59B63] border border-white/30 hover:border-[#C59B63] text-white rounded-full text-sm font-medium backdrop-blur-sm transition-all duration-300"
-                      onClick={(e) => { e.stopPropagation(); navigate(`/services?category=${cat.slug}`); }}
+                      className={styles.categoryBtnExplore}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/services?category=${cat.slug}`);
+                      }}
                     >
-                      Khám phá
+                      <span>Khám phá</span>
                     </button>
                   </div>
+
+                  {/* Gold accent line on hover */}
+                  <div className={styles.categoryGoldAccentLine} />
                 </div>
               );
             })}
         </div>
       </section>
 
-      {/* Customer Feedback Section */}
+     
+
+      {/* Articles & Tips Section */}
+      <section className={styles.articleSection}>
+        <div className={styles.sectionHeader}>
+          <span className="eyebrow-badge">Cẩm Nang Làm Đẹp</span>
+          <h2>Bài Viết & Bí Quyết</h2>
+          <p>Cập nhật những xu hướng chăm sóc da chuẩn khoa học từ đội ngũ chuyên gia.</p>
+        </div>
+        <div className={styles.articleGrid}>
+          {articleItems.map((item) => (
+            <article key={item.title} className={styles.articleCard}>
+              <div className={styles.articleHeader}>
+                <span className={styles.articleTag}>{item.tag}</span>
+                <span className={styles.readTime}>• 5 phút đọc</span>
+              </div>
+              <h3 className={styles.articleTitle}>{item.title}</h3>
+              <p className={styles.articleExcerpt}>{item.excerpt}</p>
+              <Link to="/blog" className={styles.articleLink}>
+                <span>Đọc bài viết</span>
+                <ArrowUpRightIcon className="w-4 h-4 inline ml-1" />
+              </Link>
+            </article>
+          ))}
+        </div>
+        <div className={styles.articleMore}>
+          <Link to="/blog" className="btn-luxury-secondary">Xem Thêm Bài Viết Kinh Nghiệm</Link>
+        </div>
+      </section>
+
+      
+       {/* Customer Feedback Section */}
       <section className={styles.feedbackSection}>
         <div className={styles.sectionHeader}>
           <span className="eyebrow-badge">Đánh Giá Thực Tế</span>
@@ -356,34 +378,6 @@ export default function Home() {
               </div>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* Articles & Tips Section */}
-      <section className={styles.articleSection}>
-        <div className={styles.sectionHeader}>
-          <span className="eyebrow-badge">Cẩm Nang Làm Đẹp</span>
-          <h2>Bài Viết & Bí Quyết</h2>
-          <p>Cập nhật những xu hướng chăm sóc da chuẩn khoa học từ đội ngũ chuyên gia.</p>
-        </div>
-        <div className={styles.articleGrid}>
-          {articleItems.map((item) => (
-            <article key={item.title} className={styles.articleCard}>
-              <div className={styles.articleHeader}>
-                <span className={styles.articleTag}>{item.tag}</span>
-                <span className={styles.readTime}>• 5 phút đọc</span>
-              </div>
-              <h3 className={styles.articleTitle}>{item.title}</h3>
-              <p className={styles.articleExcerpt}>{item.excerpt}</p>
-              <Link to="/blog" className={styles.articleLink}>
-                <span>Đọc bài viết</span>
-                <ArrowUpRightIcon className="w-4 h-4 inline ml-1" />
-              </Link>
-            </article>
-          ))}
-        </div>
-        <div className={styles.articleMore}>
-          <Link to="/blog" className="btn-luxury-secondary">Xem Thêm Bài Viết Kinh Nghiệm</Link>
         </div>
       </section>
 

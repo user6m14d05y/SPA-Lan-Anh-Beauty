@@ -1,9 +1,24 @@
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link, useLocation, useSearchParams } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import styles from "./MainLayout.module.css";
 const logoImg = "/Logo.png";
-import { Chat, ChevronDown, Paperclip, Calendar, Facebook, Zalo, TikTok, Instagram, MapPinIcon, PhoneIcon, ClockIcon, ArrowUpRightIcon } from "../icons";
+import { 
+  Chat, 
+  ChevronDown, 
+  Paperclip, 
+  Calendar, 
+  Facebook, 
+  Zalo, 
+  TikTok, 
+  Instagram, 
+  MapPinIcon, 
+  PhoneIcon, 
+  ClockIcon, 
+  ArrowUpRightIcon,
+  MagnifyingGlassIcon,
+  XMarkIcon
+} from "../icons";
 
 const API_URL = 'http://localhost:5000/api';
 const SOCKET_URL = 'http://localhost:5000';
@@ -80,9 +95,13 @@ export default function MainLayout() {
   const staffSocketRef = useRef(null);
   const visitorIdRef = useRef(getVisitorId());
 
+  const [scrolledPastTools, setScrolledPastTools] = useState(false);
+
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      const y = window.scrollY;
+      setScrolled(y > 50);
+      setScrolledPastTools(y > 570);
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -318,6 +337,68 @@ export default function MainLayout() {
   };
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const isFilterPage = location.pathname === '/services' || location.pathname === '/blog';
+  const [stickySortOpen, setStickySortOpen] = useState(false);
+  const [stickyCatOpen, setStickyCatOpen] = useState(false);
+  const stickySortRef = useRef(null);
+  const stickyCatRef = useRef(null);
+
+  const activeCategorySlug = searchParams.get('category') || '';
+  const activeSearchQuery = searchParams.get('q') || '';
+  const activeSortBy = searchParams.get('sort') || 'default';
+
+  const sortOptions = [
+    { value: 'default', label: 'Sắp xếp: Mặc định' },
+    { value: 'price-asc', label: 'Giá: Thấp đến Cao' },
+    { value: 'price-desc', label: 'Giá: Cao đến Thấp' },
+    { value: 'discount', label: 'Ưu đãi tốt nhất' },
+    { value: 'duration', label: 'Thời lượng' },
+  ];
+
+  const currentSortLabel = sortOptions.find((o) => o.value === activeSortBy)?.label || 'Sắp xếp: Mặc định';
+
+  const categoriesList = serviceCategories.length > 0 ? serviceCategories : [
+    { id: 1, name: 'Chăm sóc da', slug: 'cham-soc-da' },
+    { id: 2, name: 'Mỹ phẩm', slug: 'my-pham' },
+    { id: 3, name: 'Xu hướng', slug: 'xu-huong' },
+    { id: 4, name: 'Gội đầu', slug: 'goi-dau' },
+    { id: 5, name: 'Phun xăm', slug: 'phun-xam' },
+  ];
+
+  const activeCategoryName = (() => {
+    if (!activeCategorySlug) return 'Tất cả';
+    const found = categoriesList.find((c) => c.slug === activeCategorySlug);
+    if (found) return found.name;
+    for (const c of categoriesList) {
+      const child = (c.children || []).find((ch) => ch.slug === activeCategorySlug);
+      if (child) return child.name;
+    }
+    return activeCategorySlug;
+  })();
+
+  const updateSearchParam = (key, value) => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (value) {
+      nextParams.set(key, value);
+    } else {
+      nextParams.delete(key);
+    }
+    setSearchParams(nextParams);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (stickySortRef.current && !stickySortRef.current.contains(event.target)) {
+        setStickySortOpen(false);
+      }
+      if (stickyCatRef.current && !stickyCatRef.current.contains(event.target)) {
+        setStickyCatOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -343,50 +424,126 @@ export default function MainLayout() {
             <span className={`${styles.hamburgerLine} ${mobileMenuOpen ? styles.hamburgerActive : ''}`}></span>
           </button>
 
-          <ul className={`${styles.navLinks} ${mobileMenuOpen ? styles.mobileNavOpen : ""}`}>
-            <li>
-              <Link to="/" onClick={() => setMobileMenuOpen(false)}>Trang Chủ</Link>
-            </li>
-            <li>
-              <Link to="/about" onClick={() => setMobileMenuOpen(false)}>Về Chúng Tôi</Link>
-            </li>
-            <li className={styles.navItemHasDropdown}>
-              <Link to="/services" className={styles.navDropdownTrigger}>
-                Dịch Vụ
-                <ChevronDown size={14} />
-              </Link>
-              <div className={styles.servicesDropdown}>
-                <div className={styles.dropdownMenu}>
-                  {serviceCategories.length > 0 ? serviceCategories.map((category) => (
-                    <div key={category.id} className={styles.dropdownItem}>
-                      <Link className={styles.dropdownParent} to={`/services?category=${category.slug}`} onClick={() => setMobileMenuOpen(false)}>{category.name}</Link>
-                      {(category.children || []).length > 0 && (
-                        <div className={styles.dropdownSubmenu}>
-                          {(category.children || []).map((child) => (
-                            <Link key={child.id} to={`/services?category=${child.slug}`} onClick={() => setMobileMenuOpen(false)}>{child.name}</Link>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )) : (
-                    <Link className={styles.dropdownParent} to="/services" onClick={() => setMobileMenuOpen(false)}>Xem tất cả dịch vụ</Link>
-                  )}
-                </div>
+          {isFilterPage && scrolledPastTools ? (
+            <div className={styles.stickyHeaderToolbar}>
+              {/* Left: Sort */}
+              <div className={styles.stickySortWrap} ref={stickySortRef}>
+                <button
+                  type="button"
+                  className={styles.stickySortTrigger}
+                  onClick={() => setStickySortOpen(!stickySortOpen)}
+                >
+                  <span>{currentSortLabel}</span>
+                  <ChevronDown size={14} />
+                </button>
+                {stickySortOpen && (
+                  <div className={styles.stickySortMenu}>
+                    {sortOptions.map((opt) => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        className={activeSortBy === opt.value ? styles.activeSortOpt : ''}
+                        onClick={() => {
+                          updateSearchParam('sort', opt.value === 'default' ? '' : opt.value);
+                          setStickySortOpen(false);
+                        }}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
-            </li>
-            <li>
-              <Link to="/blog" onClick={() => setMobileMenuOpen(false)}>Bài Viết</Link>
-            </li>
-            <li>
-              <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>Liên Hệ</Link>
-            </li>
-            <li className={styles.mobileBookLi}>
-              <Link to="/booking" className={styles.mobileBtnBook} onClick={() => setMobileMenuOpen(false)}>
-                <span>Đặt Lịch Ngay</span>
-                <ArrowUpRightIcon className="w-3.5 h-3.5 inline-block ml-1" />
-              </Link>
-            </li>
-          </ul>
+
+              {/* Center: Search */}
+              <div className={styles.stickySearchWrap}>
+                <MagnifyingGlassIcon className={styles.stickySearchIcon} />
+                <input
+                  type="text"
+                  className={styles.stickySearchInput}
+                  placeholder={location.pathname === '/blog' ? "Tìm kiếm bài viết..." : "Tìm kiếm dịch vụ..."}
+                  value={activeSearchQuery}
+                  onChange={(e) => updateSearchParam('q', e.target.value)}
+                />
+                {activeSearchQuery && (
+                  <button
+                    type="button"
+                    className={styles.stickyClearSearch}
+                    onClick={() => updateSearchParam('q', '')}
+                    title="Xóa tìm kiếm"
+                  >
+                    <XMarkIcon className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+
+              {/* Right: Show ALL Category Pills */}
+              <div className={styles.stickyCategoriesScroll}>
+                <button
+                  type="button"
+                  className={`${styles.stickyCatPill} ${!activeCategorySlug ? styles.activeStickyCatPill : ''}`}
+                  onClick={() => updateSearchParam('category', '')}
+                >
+                  Tất cả
+                </button>
+                {categoriesList.map((cat) => {
+                  const isActive = activeCategorySlug === cat.slug;
+                  return (
+                    <button
+                      key={cat.id || cat.slug}
+                      type="button"
+                      className={`${styles.stickyCatPill} ${isActive ? styles.activeStickyCatPill : ''}`}
+                      onClick={() => updateSearchParam('category', isActive ? '' : cat.slug)}
+                    >
+                      {cat.name}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <ul className={`${styles.navLinks} ${mobileMenuOpen ? styles.mobileNavOpen : ""}`}>
+              <li>
+                <Link to="/about" onClick={() => setMobileMenuOpen(false)}>Về Chúng Tôi</Link>
+              </li>
+              <li className={styles.navItemHasDropdown}>
+                <Link to="/services" className={styles.navDropdownTrigger}>
+                  Dịch Vụ
+                  <ChevronDown size={14} />
+                </Link>
+                <div className={styles.servicesDropdown}>
+                  <div className={styles.dropdownMenu}>
+                    {serviceCategories.length > 0 ? serviceCategories.map((category) => (
+                      <div key={category.id} className={styles.dropdownItem}>
+                        <Link className={styles.dropdownParent} to={`/services?category=${category.slug}`} onClick={() => setMobileMenuOpen(false)}>{category.name}</Link>
+                        {(category.children || []).length > 0 && (
+                          <div className={styles.dropdownSubmenu}>
+                            {(category.children || []).map((child) => (
+                              <Link key={child.id} to={`/services?category=${child.slug}`} onClick={() => setMobileMenuOpen(false)}>{child.name}</Link>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )) : (
+                      <Link className={styles.dropdownParent} to="/services" onClick={() => setMobileMenuOpen(false)}>Xem tất cả dịch vụ</Link>
+                    )}
+                  </div>
+                </div>
+              </li>
+              <li>
+                <Link to="/blog" onClick={() => setMobileMenuOpen(false)}>Bài Viết</Link>
+              </li>
+              <li>
+                <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>Liên Hệ</Link>
+              </li>
+              <li className={styles.mobileBookLi}>
+                <Link to="/booking" className={styles.mobileBtnBook} onClick={() => setMobileMenuOpen(false)}>
+                  <span>Đặt Lịch Ngay</span>
+                  <ArrowUpRightIcon className="w-3.5 h-3.5 inline-block ml-1" />
+                </Link>
+              </li>
+            </ul>
+          )}
 
           <div className={styles.navActions}>
             <Link to="/booking" className="btn-luxury-primary text-xs px-5 py-2.5">
@@ -583,7 +740,6 @@ export default function MainLayout() {
             <div className={styles.footerCol}>
               <h3 className={styles.footerColTitle}>Khám Phá</h3>
               <ul className={styles.footerNavList}>
-                <li><Link to="/">Trang Chủ</Link></li>
                 <li><Link to="/about">Về Chúng Tôi</Link></li>
                 <li><Link to="/services">Tất Cả Dịch Vụ</Link></li>
                 <li><Link to="/blog">Kinh Nghiệm Làm Đẹp</Link></li>

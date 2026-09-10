@@ -16,7 +16,7 @@ import serviceImg2 from '../../../assets/images/service2.png';
 import serviceImg3 from '../../../assets/images/service3.png';
 
 const fallbackImages = [serviceImg1, serviceImg2, serviceImg3];
-const SERVICES_PER_PAGE = 9;
+const SERVICES_PER_PAGE = 10;
 
 const collectServices = (category) => [
   ...(category.services || []),
@@ -451,10 +451,9 @@ export default function Services() {
                 </div>
               ) : (
                 <>
-                  <div className={styles.servicesGrid}>
-                    {visibleServices.map((service, index) => (
-                      <div key={service.id} className={`${styles.serviceCard} bezel-shell`}>
-                        <div className="bezel-inner overflow-hidden flex flex-col h-full">
+                    <div className={styles.servicesGrid}>
+                      {visibleServices.map((service, index) => (
+                        <div key={service.id} className={styles.serviceCard}>
                           <div className={styles.serviceImg}>
                             <img
                               src={service.thumbnailUrl || service.imageUrl || fallbackImages[index % fallbackImages.length]}
@@ -500,9 +499,8 @@ export default function Services() {
                             </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
                   {hasMoreServices && (
                     <div className={styles.loadMoreWrap}>
                       <button

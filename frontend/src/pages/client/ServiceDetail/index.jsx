@@ -104,7 +104,7 @@ export default function ServiceDetail() {
   return (
     <div className={styles.detailPage}>
       <section className={styles.hero}>
-        <div className={styles.container}>
+        <div className={styles.heroOverlay}>
           <div className={styles.breadcrumbNav}>
             <Link to="/services" className={styles.backLink}>
               <ArrowLeftIcon className="w-4 h-4 inline-block mr-1" /> Dịch Vụ
@@ -121,25 +121,23 @@ export default function ServiceDetail() {
         <div className={styles.container}>
           <div className={styles.detailGrid}>
             <div className={styles.galleryColumn}>
-              <div className={`${styles.gallery} bezel-shell`}>
-                <div className="bezel-inner p-3">
-                  <div className={styles.galleryFrame}>
-                    <div className={styles.thumbnails}>
-                      {galleryImages.map((image) => (
-                        <button
-                          key={image}
-                          type="button"
-                          className={image === activeImage ? styles.thumbnailActive : ''}
-                          onClick={() => setActiveImage(image)}
-                        >
-                          <img src={image} alt={service.name} />
-                        </button>
-                      ))}
-                    </div>
-                    <div className={styles.mainImage}>
-                      <img src={activeImage || galleryImages[0]} alt={service.name} />
-                      {service.discountPercent > 0 && <span>-{service.discountPercent}% OFF</span>}
-                    </div>
+              <div className={styles.gallery}>
+                <div className={styles.galleryFrame}>
+                  <div className={styles.thumbnails}>
+                    {galleryImages.map((image) => (
+                      <button
+                        key={image}
+                        type="button"
+                        className={image === activeImage ? styles.thumbnailActive : ''}
+                        onClick={() => setActiveImage(image)}
+                      >
+                        <img src={image} alt={service.name} />
+                      </button>
+                    ))}
+                  </div>
+                  <div className={styles.mainImage}>
+                    <img src={activeImage || galleryImages[0]} alt={service.name} />
+                    {service.discountPercent > 0 && <span>-{service.discountPercent}% OFF</span>}
                   </div>
                 </div>
               </div>

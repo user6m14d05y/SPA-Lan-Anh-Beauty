@@ -52,7 +52,7 @@
   --shadow-luxury: 0 20px 40px -15px rgba(28, 22, 18, 0.1);
   --shadow-gold: 0 12px 35px -8px rgba(197, 155, 99, 0.25);
   
-  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
   --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
   
   --radius-sm: 10px;

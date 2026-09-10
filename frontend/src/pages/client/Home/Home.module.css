@@ -769,3 +769,183 @@
     }
 }
 
+/* Category 1-Row Expanding Accordion (Edge-to-Edge Layout) */
+.categorySection {
+    background: #0E0C0A;
+    color: #FFFFFF;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+}
+
+.categoryAccordionContainer {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+    min-height: 500px;
+}
+
+@media (min-width: 768px) {
+    .categoryAccordionContainer {
+        flex-direction: row;
+        min-height: 750px;
+        height: 100vh;
+    }
+}
+
+.categoryAccordionCard {
+    position: relative;
+    flex: 1 1 0%;
+    min-width: 0;
+    height: 350px;
+    border-radius: 0;
+    overflow: hidden;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: flex-grow 0.7s cubic-bezier(0.25, 1, 0.5, 1),
+                height 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 24px;
+}
+
+@media (min-width: 768px) {
+    .categoryAccordionCard {
+        height: 100%;
+        padding: 48px 32px;
+        border-bottom: none;
+        border-right: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .categoryAccordionCard:last-child {
+        border-right: none;
+    }
+
+    .categoryAccordionCard:hover {
+        flex-grow: 3.5;
+    }
+}
+
+.categoryBgImg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.7s cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+.categoryAccordionCard:hover .categoryBgImg {
+    transform: scale(1.05);
+}
+
+.categoryOverlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0.8) 100%);
+    transition: background 0.5s ease;
+}
+
+.categoryAccordionCard:hover .categoryOverlay {
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.25) 50%, rgba(0, 0, 0, 0.7) 100%);
+}
+
+.categoryTitleVertical {
+    position: relative;
+    z-index: 10;
+    font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+    font-size: clamp(2.6rem, 5vw, 4.8rem);
+    font-weight: 600;
+    color: #FFFFFF;
+    letter-spacing: 0.04em;
+    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    select: none;
+    user-select: none;
+    transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), color 0.4s ease, text-shadow 0.4s ease;
+    white-space: nowrap;
+}
+
+@media (min-width: 768px) {
+    .categoryTitleVertical {
+        writing-mode: vertical-lr;
+        transform: rotate(180deg);
+    }
+
+    .categoryAccordionCard:hover .categoryTitleVertical {
+        transform: rotate(180deg) translateY(8px);
+        color: #FFFFFF;
+        text-shadow: 0 8px 24px rgba(197, 155, 99, 0.5);
+    }
+}
+
+.categoryBottomInfo {
+    position: relative;
+    z-index: 10;
+    margin-top: auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.categoryCountBadge {
+    display: inline-block;
+    padding: 4px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #DFBF91;
+    border: 1px solid rgba(197, 155, 99, 0.4);
+    border-radius: 9999px;
+    background: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
+    white-space: nowrap;
+}
+
+.categoryBtnExplore {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 28px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #FFFFFF;
+    border-radius: 9999px;
+    font-size: 14px;
+    font-weight: 500;
+    backdrop-filter: blur(8px);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.categoryAccordionCard:hover .categoryBtnExplore {
+    background: #C59B63;
+    border-color: #C59B63;
+}
+
+.categoryGoldAccentLine {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent 0%, #C59B63 50%, transparent 100%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.categoryAccordionCard:hover .categoryGoldAccentLine {
+    opacity: 1;
+}
+
+
+

@@ -54,9 +54,9 @@ export default function AdminLayout() {
   return (
     <div className={styles.adminContainer}>
       <aside className={styles.sidebar}>
-        <div className={styles.sidebarHeader}>
+        <NavLink to="/" className={styles.sidebarHeader}>
           ADMIN
-        </div>
+        </NavLink>
         <ul className={styles.navList}>
           <li>
             <NavLink 

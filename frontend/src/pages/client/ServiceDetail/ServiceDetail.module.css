@@ -10,20 +10,36 @@
 }
 
 .hero {
-    padding: 140px 0 70px;
-    background: linear-gradient(180deg, #FAF7F2 0%, #F5EFE6 100%);
-    border-bottom: 1px solid var(--border-silk);
+    min-height: 380px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: url('../../../assets/images/hero.png') center/cover no-repeat;
+}
+
+.heroOverlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(14, 11, 9, 0.85) 0%, rgba(28, 22, 18, 0.92) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 120px 5% 50px;
 }
 
 .breadcrumbNav {
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-bottom: 20px;
+    margin-bottom: 16px;
+    z-index: 2;
 }
 
 .backLink {
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
     font-weight: 600;
     font-size: 0.9rem;
@@ -31,15 +47,15 @@
 }
 
 .backLink:hover {
-    color: var(--primary-gold-dark);
+    color: var(--primary-gold-light);
 }
 
 .breadcrumbSep {
-    color: var(--text-light);
+    color: rgba(255, 255, 255, 0.4);
 }
 
 .category {
-    color: var(--primary-gold-dark);
+    color: var(--primary-gold-light);
     font-weight: 600;
     font-size: 0.9rem;
 }
@@ -47,17 +63,20 @@
 .hero h1 {
     font-family: var(--font-serif);
     font-size: clamp(2.4rem, 4vw, 3.6rem);
-    color: var(--text-main);
+    color: #FFFFFF;
     margin: 0 0 16px;
     font-weight: 700;
+    z-index: 2;
+    text-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
 }
 
 .hero p {
-    color: var(--text-muted);
+    color: rgba(255, 255, 255, 0.85);
     font-size: 1.1rem;
     line-height: 1.75;
     max-width: 760px;
     margin: 0;
+    z-index: 2;
 }
 
 .contentSection {
@@ -145,7 +164,11 @@
 
 
 .gallery {
-    padding: 18px;
+    background: #FFFFFF;
+    border: 1px solid var(--border-silk);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    box-shadow: var(--shadow-soft);
 }
 
 .galleryFrame {
@@ -157,7 +180,7 @@
 .mainImage {
     position: relative;
     height: 520px;
-    border-radius: 14px;
+    border-radius: 16px;
     overflow: hidden;
     background: #f4eee8;
 }
@@ -170,30 +193,38 @@
 
 .mainImage span {
     position: absolute;
-    top: 18px;
-    left: 18px;
+    top: 16px;
+    left: 16px;
     background: #b91c1c;
     color: var(--white);
     border-radius: 999px;
-    padding: 8px 14px;
+    padding: 6px 14px;
     font-weight: 700;
+    font-size: 0.8rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .thumbnails {
-    display: grid;
-    grid-template-columns: 1fr;
-    align-content: start;
+    display: flex;
+    flex-direction: column;
     gap: 12px;
 }
 
 .thumbnails button {
     height: 92px;
+    width: 100%;
     padding: 0;
     border: 2px solid transparent;
-    border-radius: 10px;
+    border-radius: 12px;
     overflow: hidden;
     background: transparent;
     cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.thumbnails button:hover {
+    transform: scale(1.03);
+    border-color: rgba(197, 155, 99, 0.4);
 }
 
 .thumbnails img {
@@ -203,7 +234,8 @@
 }
 
 .thumbnailActive {
-    border-color: var(--primary) !important;
+    border-color: var(--primary-gold-dark, #C59B63) !important;
+    box-shadow: 0 4px 12px rgba(197, 155, 99, 0.25);
 }
 
 .infoPanel,
@@ -214,66 +246,71 @@
 
 .infoPanel h2,
 .descriptionCard h2,
-.relatedSection h2 {
-    font-family: 'Playfair Display', serif;
-    color: var(--text-dark);
+.relatedSection h2,
+.procedureCard h2 {
+    font-family: var(--font-serif);
+    color: var(--text-main);
     font-size: 2rem;
-    margin: 0;
+    margin: 8px 0 16px;
+    font-weight: 700;
 }
 
 .priceBox {
-    background: var(--bg);
-    border-radius: 14px;
+    background: rgba(197, 155, 99, 0.08);
+    border: 1px solid rgba(197, 155, 99, 0.2);
+    border-radius: 16px;
     padding: 22px;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    margin: 24px 0;
+    margin: 20px 0;
 }
 
 .priceBox strong {
-    color: var(--primary);
-    font-size: 1.8rem;
+    color: var(--primary-gold-dark);
+    font-size: 2rem;
+    font-family: var(--font-serif);
 }
 
 .priceBox small {
     color: #b91c1c;
     font-weight: 600;
+    font-size: 0.82rem;
 }
 
 .oldPrice {
     color: var(--text-muted);
     text-decoration: line-through;
-    font-size: 1rem;
+    font-size: 1.05rem;
 }
 
 .metaList {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 14px;
-    margin-bottom: 28px;
+    gap: 12px;
+    margin-bottom: 24px;
 }
 
 .metaList div {
-    border: 1px solid #eadfd8;
-    border-radius: 12px;
-    padding: 16px;
+    border: 1px solid var(--border-silk);
+    border-radius: 14px;
+    padding: 14px;
+    background: rgba(250, 247, 242, 0.5);
 }
 
-.metaList span,
-.sectionHeaderCompact span,
-.sectionHeaderRow span {
+.metaList span {
     display: block;
-    color: var(--primary);
-    font-size: 0.82rem;
-    font-weight: 800;
+    color: var(--primary-gold-dark);
+    font-size: 0.75rem;
+    font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .metaList strong {
-    color: var(--text-dark);
+    color: var(--text-main);
+    font-size: 0.95rem;
 }
 
 .sectionHeaderRow {
@@ -285,14 +322,21 @@
 }
 
 .sectionHeaderRow button {
-    border: 1px solid var(--primary);
-    color: var(--primary);
+    border: 1px solid var(--primary-gold-dark);
+    color: var(--primary-gold-dark);
     background: transparent;
     border-radius: 999px;
-    padding: 9px 14px;
+    padding: 8px 16px;
     cursor: pointer;
-    font-weight: 700;
+    font-weight: 600;
+    font-size: 0.85rem;
     flex-shrink: 0;
+    transition: var(--transition-smooth);
+}
+
+.sectionHeaderRow button:hover {
+    background: var(--primary-gold-dark);
+    color: #FFFFFF;
 }
 
 .descriptionContent {
@@ -325,8 +369,8 @@
 .descriptionContent h2,
 .descriptionContent h3,
 .descriptionContent h4 {
-    color: var(--primary);
-    font-family: 'Playfair Display', serif;
+    color: var(--primary-gold-dark);
+    font-family: var(--font-serif);
     margin: 22px 0 10px;
 }
 
@@ -342,9 +386,10 @@
 }
 
 .actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
 }
 
 .btnPrimary,
