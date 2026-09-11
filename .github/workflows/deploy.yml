@@ -56,19 +56,21 @@ jobs:
 
             # 3. Setup project directory & repository
             DEPLOY_DIR="${{ secrets.DEPLOY_PATH || '/var/www/spa-lan-anh-beauty' }}"
+            CURRENT_USER=$(whoami)
             echo "📂 Ensuring project directory exists at: $DEPLOY_DIR"
             sudo mkdir -p "$DEPLOY_DIR"
-            sudo chown -R $USER:$USER "$DEPLOY_DIR"
+            sudo chown -R $CURRENT_USER:$CURRENT_USER "$DEPLOY_DIR"
             cd "$DEPLOY_DIR"
 
             if [ ! -d ".git" ]; then
-              echo "📦 Repository not found on EC2. Cloning repository..."
-              git clone https://github.com/${{ github.repository }}.git .
-            else
-              echo "🔄 Fetching latest code from main branch..."
-              git fetch origin main
-              git reset --hard origin/main
+              echo "📦 Initializing repository on EC2..."
+              git init
+              git remote add origin https://github.com/${{ github.repository }}.git || git remote set-url origin https://github.com/${{ github.repository }}.git
             fi
+
+            echo "🔄 Fetching latest code from main branch..."
+            git fetch origin main
+            git reset --hard origin/main
 
             # 4. Setup .env configuration
             if [ ! -f .env ]; then
