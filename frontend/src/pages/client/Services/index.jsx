@@ -290,28 +290,28 @@ export default function Services() {
             <>
               {/* Explorer / Filter controls */}
               <div className={styles.explorerPanel}>
-                <div className={styles.searchAndSort}>
-                  <div className={styles.searchWrapper}>
-                    <MagnifyingGlassIcon className={styles.searchIcon} />
-                    <input
-                      type="text"
-                      className={styles.searchInput}
-                      placeholder="Tìm kiếm dịch vụ..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                    />
-                    {searchQuery && (
-                      <button 
-                        type="button" 
-                        className={styles.clearSearch} 
-                        onClick={() => setSearchQuery('')}
-                        title="Xóa tìm kiếm"
-                      >
-                        <XMarkIcon className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
+                <div className={styles.searchWrapper}>
+                  <MagnifyingGlassIcon className={styles.searchIcon} />
+                  <input
+                    type="text"
+                    className={styles.searchInput}
+                    placeholder="Tìm kiếm dịch vụ..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  {searchQuery && (
+                    <button 
+                      type="button" 
+                      className={styles.clearSearch} 
+                      onClick={() => setSearchQuery('')}
+                      title="Xóa tìm kiếm"
+                    >
+                      <XMarkIcon className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
 
+                <div className={styles.categoriesAndSortRow}>
                   <div className={styles.sortWrapper} ref={sortRef}>
                     <button
                       type="button"
@@ -339,60 +339,60 @@ export default function Services() {
                       </div>
                     )}
                   </div>
-                </div>
 
-                <div className={styles.categoryPillsContainer}>
-                  {/* Left fade and arrow */}
-                  <div className={`${styles.pillsFadeLeft} ${showLeftArrow ? styles.pillsFadeVisible : ''}`}></div>
-                  <button
-                    type="button"
-                    className={`${styles.scrollBtn} ${styles.scrollBtnLeft} ${showLeftArrow ? styles.scrollBtnActive : ''}`}
-                    onClick={() => scrollPills('left')}
-                    aria-label="Cuộn trái"
-                  >
-                    <ChevronLeftIcon className="w-5 h-5 text-[var(--text-main)]" />
-                  </button>
-
-                  <div 
-                    className={styles.categoryPills} 
-                    ref={pillsRef}
-                    onScroll={checkScrollLimits}
-                  >
+                  <div className={styles.categoryPillsContainer}>
+                    {/* Left fade and arrow */}
+                    <div className={`${styles.pillsFadeLeft} ${showLeftArrow ? styles.pillsFadeVisible : ''}`}></div>
                     <button
                       type="button"
-                      className={`${styles.categoryPill} ${!selectedCategorySlug ? styles.categoryPillActive : ''}`}
-                      onClick={handleSelectAll}
+                      className={`${styles.scrollBtn} ${styles.scrollBtnLeft} ${showLeftArrow ? styles.scrollBtnActive : ''}`}
+                      onClick={() => scrollPills('left')}
+                      aria-label="Cuộn trái"
                     >
-                      Tất cả <span className={styles.pillCount}>{allServices.length}</span>
+                      <ChevronLeftIcon className="w-5 h-5 text-[var(--text-main)]" />
                     </button>
-                    {categories.map((category) => {
-                      const isChildActive = (category.children || []).some(
-                        (child) => child.slug === selectedCategorySlug
-                      );
-                      const isActive = selectedCategorySlug === category.slug || isChildActive;
-                      return (
-                        <button
-                          key={category.id}
-                          type="button"
-                          className={`${styles.categoryPill} ${isActive ? styles.categoryPillActive : ''}`}
-                          onClick={() => handleSelectCategory(category.slug)}
-                        >
-                          {category.name} <span className={styles.pillCount}>{collectServices(category).length}</span>
-                        </button>
-                      );
-                    })}
-                  </div>
 
-                  {/* Right fade and arrow */}
-                  <div className={`${styles.pillsFadeRight} ${showRightArrow ? styles.pillsFadeVisible : ''}`}></div>
-                  <button
-                    type="button"
-                    className={`${styles.scrollBtn} ${styles.scrollBtnRight} ${showRightArrow ? styles.scrollBtnActive : ''}`}
-                    onClick={() => scrollPills('right')}
-                    aria-label="Cuộn phải"
-                  >
-                    <ChevronRightIcon className="w-5 h-5 text-[var(--text-main)]" />
-                  </button>
+                    <div 
+                      className={styles.categoryPills} 
+                      ref={pillsRef}
+                      onScroll={checkScrollLimits}
+                    >
+                      <button
+                        type="button"
+                        className={`${styles.categoryPill} ${!selectedCategorySlug ? styles.categoryPillActive : ''}`}
+                        onClick={handleSelectAll}
+                      >
+                        Tất cả <span className={styles.pillCount}>{allServices.length}</span>
+                      </button>
+                      {categories.map((category) => {
+                        const isChildActive = (category.children || []).some(
+                          (child) => child.slug === selectedCategorySlug
+                        );
+                        const isActive = selectedCategorySlug === category.slug || isChildActive;
+                        return (
+                          <button
+                            key={category.id}
+                            type="button"
+                            className={`${styles.categoryPill} ${isActive ? styles.categoryPillActive : ''}`}
+                            onClick={() => handleSelectCategory(category.slug)}
+                          >
+                            {category.name} <span className={styles.pillCount}>{collectServices(category).length}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Right fade and arrow */}
+                    <div className={`${styles.pillsFadeRight} ${showRightArrow ? styles.pillsFadeVisible : ''}`}></div>
+                    <button
+                      type="button"
+                      className={`${styles.scrollBtn} ${styles.scrollBtnRight} ${showRightArrow ? styles.scrollBtnActive : ''}`}
+                      onClick={() => scrollPills('right')}
+                      aria-label="Cuộn phải"
+                    >
+                      <ChevronRightIcon className="w-5 h-5 text-[var(--text-main)]" />
+                    </button>
+                  </div>
                 </div>
 
                 {/* Subcategory Pills Row */}

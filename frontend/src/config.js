@@ -16,3 +16,9 @@ export const SOCKET_URL = isLocalhost
 export const ASSET_URL = isLocalhost 
   ? (import.meta.env.VITE_DEV_ASSET_URL || 'http://localhost:5000')
   : (import.meta.env.VITE_ASSET_URL || '');
+
+export default {
+  API_URL,
+  SOCKET_URL,
+  ASSET_URL,
+};

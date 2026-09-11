@@ -58,7 +58,7 @@
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(16px);
     border: 1px solid rgba(197, 155, 99, 0.25);
-    border-radius: 24px;
+    border-radius: 0;
     padding: 28px 32px;
     margin-bottom: 45px;
     box-shadow: 0 16px 40px rgba(28, 22, 18, 0.06);
@@ -67,10 +67,10 @@
     gap: 20px;
 }
 
-.searchAndSort {
+.categoriesAndSortRow {
     display: flex;
-    gap: 16px;
     align-items: center;
+    gap: 16px;
     width: 100%;
 }
 
@@ -95,7 +95,7 @@
     width: 100%;
     padding: 13px 44px 13px 48px;
     border: 1.5px solid rgba(197, 155, 99, 0.2);
-    border-radius: 9999px;
+    border-radius: 0;
     background: #FAF7F2;
     color: var(--text-main);
     font-family: inherit;
@@ -125,7 +125,7 @@
     border: none;
     width: 24px;
     height: 24px;
-    border-radius: 50%;
+    border-radius: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -143,7 +143,7 @@
 
 .sortWrapper {
     position: relative;
-    width: 250px;
+    width: 220px;
     flex-shrink: 0;
     z-index: 10;
 }
@@ -155,7 +155,7 @@
     width: 100%;
     padding: 13px 20px;
     border: 1.5px solid rgba(197, 155, 99, 0.2);
-    border-radius: 9999px;
+    border-radius: 0;
     background: #FAF7F2;
     color: var(--text-main);
     font-family: inherit;
@@ -199,9 +199,9 @@
     left: 0;
     width: 100%;
     background: var(--white);
-    border-radius: 16px;
+    border-radius: 0;
     box-shadow: 0 15px 35px rgba(17, 24, 39, 0.12), 0 0 1px rgba(119, 89, 50, 0.15);
-    border: none;
+    border: 1px solid rgba(197, 155, 99, 0.2);
     padding: 8px;
     display: flex;
     flex-direction: column;
@@ -226,7 +226,7 @@
     padding: 10px 14px;
     border: none;
     background: transparent;
-    border-radius: 10px;
+    border-radius: 0;
     color: var(--text-muted);
     font-family: inherit;
     font-size: 0.88rem;
@@ -249,7 +249,8 @@
 
 .categoryPillsContainer {
     position: relative;
-    width: 100%;
+    flex: 1;
+    min-width: 0;
     display: flex;
     align-items: center;
     padding: 0 42px;
@@ -345,7 +346,7 @@
     padding: 10px 20px;
     background: #FAF7F2;
     border: 1.5px solid rgba(197, 155, 99, 0.2);
-    border-radius: 9999px;
+    border-radius: 0;
     color: var(--text-muted);
     font-family: inherit;
     font-size: 0.88rem;
@@ -377,7 +378,7 @@
     font-size: 0.75rem;
     font-weight: 700;
     padding: 2px 8px;
-    border-radius: 20px;
+    border-radius: 0;
     transition: var(--transition-smooth);
 }
 
@@ -413,7 +414,7 @@
     padding: 7px 16px;
     background: var(--bg);
     border: 1px solid rgba(119, 89, 50, 0.1);
-    border-radius: 20px;
+    border-radius: 0;
     color: var(--text-muted);
     font-family: inherit;
     font-size: 0.8rem;
@@ -519,7 +520,7 @@
 
 .serviceCard {
     background: var(--white);
-    border-radius: 18px;
+    border-radius: 0;
     overflow: hidden;
     transition: var(--transition-smooth);
     box-shadow: 0 10px 30px rgba(28, 22, 18, 0.05);
@@ -561,7 +562,7 @@
     backdrop-filter: blur(8px);
     color: var(--primary-gold-dark);
     padding: 6px 12px;
-    border-radius: 30px;
+    border-radius: 0;
     font-weight: 700;
     font-size: 0.82rem;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
@@ -578,7 +579,7 @@
     background: #b91c1c;
     color: var(--white);
     padding: 5px 10px;
-    border-radius: 999px;
+    border-radius: 0;
     font-weight: 700;
     font-size: 0.78rem;
     box-shadow: 0 4px 12px rgba(0,0,0,0.12);
@@ -645,7 +646,7 @@
     font-size: 0.70rem;
     font-weight: 600;
     padding: 3px 8px;
-    border-radius: 999px;
+    border-radius: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -676,7 +677,7 @@
     letter-spacing: 0.1px;
     font-size: 0.70rem;
     font-weight: 700;
-    border-radius: 9999px;
+    border-radius: 0;
     white-space: nowrap !important;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -722,7 +723,7 @@
     gap: 10px;
     padding: 14px 28px;
     border: 1px solid var(--primary);
-    border-radius: 999px;
+    border-radius: 0;
     background: var(--white);
     color: var(--primary);
     font-family: inherit;
@@ -749,7 +750,7 @@
 .ctaBox {
     background: var(--primary);
     padding: 4rem;
-    border-radius: 12px;
+    border-radius: 0;
     text-align: center;
     color: var(--white);
     box-shadow: 0 20px 40px rgba(119, 89, 50, 0.2);

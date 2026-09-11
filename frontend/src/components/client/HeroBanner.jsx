@@ -1,7 +1,15 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { SparklesIcon, ArrowUpRightIcon, ChevronLeft, ChevronRight } from '../../icons';
-
+import {
+  SparklesIcon,
+  ArrowUpRightIcon,
+  ChevronLeft,
+  ChevronRight,
+  Facebook,
+  Zalo,
+  TikTok,
+  Instagram
+} from '../../icons';
 import { API_URL } from '../../config';
 
 // Fallback placeholder gradient backgrounds when service has no image
@@ -11,6 +19,13 @@ const FALLBACK_GRADIENTS = [
   'linear-gradient(135deg, #1B2838 0%, #0D1B2A 100%)',
   'linear-gradient(135deg, #1A1612 0%, #2A211B 100%)',
 ];
+
+const formatPrice = (price) => {
+  if (!price && price !== 0) return '';
+  const num = Number(price);
+  if (Number.isNaN(num)) return price;
+  return `${num.toLocaleString('vi-VN')} VNĐ`;
+};
 
 export default function HeroBanner() {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -122,7 +137,7 @@ export default function HeroBanner() {
   }
 
   return (
-    <section 
+    <section
       className="relative h-screen w-full overflow-hidden font-geist text-white select-none bg-black"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
@@ -137,18 +152,16 @@ export default function HeroBanner() {
             key={service.id}
             src={imgSrc}
             alt={service.name}
-            className={`absolute inset-0 w-full h-full object-cover object-[center_20%] transition-opacity duration-700 ease-out ${
-              index === activeIndex ? 'opacity-100' : 'opacity-0 pointer-events-none'
-            }`}
+            className={`absolute inset-0 w-full h-full object-cover object-[center_20%] transition-opacity duration-700 ease-out ${index === activeIndex ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              }`}
             loading={index === 0 ? 'eager' : 'lazy'}
           />
         ) : (
           /* Gradient fallback when no image */
           <div
             key={service.id}
-            className={`absolute inset-0 transition-opacity duration-700 ease-out ${
-              index === activeIndex ? 'opacity-100' : 'opacity-0 pointer-events-none'
-            }`}
+            className={`absolute inset-0 transition-opacity duration-700 ease-out ${index === activeIndex ? 'opacity-100' : 'opacity-0 pointer-events-none'
+              }`}
             style={{ background: FALLBACK_GRADIENTS[index % FALLBACK_GRADIENTS.length] }}
           />
         );
@@ -194,36 +207,69 @@ export default function HeroBanner() {
             </h1>
           </div>
 
-          {/* Service description panel */}
-          <div className="max-w-xs md:pt-4">
-            <p
+          {/* Service info (Title, Category, Description, Formatted Price) — transparent layout */}
+          <div className="max-w-sm md:pt-2 w-full">
+            <div
               key={current.id}
-              className="text-sm font-medium leading-relaxed text-white/90 sm:text-base animate-[fadeIn_0.5s_ease]"
+              className="flex flex-col gap-2.5 animate-[fadeIn_0.5s_ease]"
             >
-              {current.shortDescription || current.description || current.name}
-            </p>
+              {/* Category badge */}
+              {current.category?.name && (
+                <span className="inline-flex self-start text-[#DFBF91] text-xs font-bold uppercase tracking-wider">
+                  {current.category.name}
+                </span>
+              )}
 
-            {/* Price tag */}
-            {current.priceLabel && (
-              <p className="mt-2 text-xs text-[#DFBF91] font-semibold tracking-wide">
-                {current.priceLabel}
+              {/* Service Name */}
+              <h3 className="text-xl sm:text-4xl font-bold text-white leading-snug drop-shadow-md">
+                {current.name}
+              </h3>
+
+              {/* Description */}
+              <p className="text-xs sm:text-sm leading-relaxed text-white/90 drop-shadow line-clamp-3">
+                {current.shortDescription || current.description || 'Liệu trình chăm sóc da chuyên sâu giúp da sáng khỏe và mịn màng.'}
               </p>
-            )}
 
-            <div className="mt-4 flex items-center gap-3">
-              <Link
-                to={current ? `/booking?service=${encodeURIComponent(current.slug || current.name)}` : '/booking'}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#C59B63] hover:bg-[#9A7543] text-white text-xs sm:text-sm font-medium transition-all shadow-lg hover:shadow-xl"
-              >
-                <span>Đặt Lịch Trực Tuyến</span>
-                <ArrowUpRightIcon className="w-4 h-4" />
-              </Link>
-              <Link
-                to={`/services/Detail/${current.slug}`}
-                className="text-xs text-white/60 hover:text-white underline underline-offset-4 transition-colors"
-              >
-                Xem chi tiết
-              </Link>
+              {/* Formatted Price (000.000.000 VNĐ) */}
+              {(current.price || current.salePrice || current.priceLabel) && (
+                <div className="pt-1">
+                  {current.salePrice ? (
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-base sm:text-lg font-bold text-[#DFBF91] drop-shadow">
+                        Từ {formatPrice(current.salePrice)}
+                      </span>
+                      <span className="text-xs text-white/60 line-through">
+                        {formatPrice(current.price)}
+                      </span>
+                    </div>
+                  ) : current.price ? (
+                    <span className="text-base sm:text-lg font-bold text-[#DFBF91] drop-shadow">
+                      Từ {formatPrice(current.price)}
+                    </span>
+                  ) : (
+                    <span className="text-xs sm:text-sm font-semibold text-[#DFBF91] drop-shadow">
+                      {current.priceLabel}
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Action buttons */}
+              <div className="mt-2 flex items-center gap-3 pt-2">
+                <Link
+                  to={current ? `/booking?service=${encodeURIComponent(current.slug || current.name)}` : '/booking'}
+                  className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#C59B63] hover:bg-[#9A7543] text-white text-xs sm:text-sm font-medium transition-all shadow-lg hover:shadow-xl"
+                >
+                  <span>Đặt Lịch Trực Tuyến</span>
+                  <ArrowUpRightIcon className="w-3.5 h-3.5" />
+                </Link>
+                <Link
+                  to={`/services/Detail/${current.slug}`}
+                  className="text-xs text-white/80 hover:text-white underline underline-offset-4 transition-colors"
+                >
+                  Xem chi tiết
+                </Link>
+              </div>
             </div>
           </div>
         </div>
@@ -232,7 +278,7 @@ export default function HeroBanner() {
         <div className="flex flex-col gap-8 mt-12 md:mt-0">
 
           {/* Thumbnail picker row */}
-          <div 
+          <div
             className="no-scrollbar flex items-end gap-2 overflow-x-auto pb-1 sm:gap-3 sm:overflow-visible sm:pb-0"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
@@ -249,17 +295,15 @@ export default function HeroBanner() {
                 >
                   {/* Active indicator dot */}
                   <span
-                    className={`h-1 w-1 rounded-full bg-white transition-opacity duration-300 ${
-                      isActive ? 'opacity-100' : 'opacity-0'
-                    }`}
+                    className={`h-1 w-1 rounded-full bg-white transition-opacity duration-300 ${isActive ? 'opacity-100' : 'opacity-0'
+                      }`}
                   />
                   {/* Thumbnail circle */}
                   <span
-                    className={`block h-10 w-10 overflow-hidden rounded-full transition-transform duration-300 sm:h-14 sm:w-14 border ${
-                      isActive
+                    className={`block h-10 w-10 overflow-hidden rounded-full transition-transform duration-300 sm:h-14 sm:w-14 border ${isActive
                         ? 'border-white scale-105'
                         : 'border-white/30 group-hover:border-white/70'
-                    }`}
+                      }`}
                   >
                     {thumb ? (
                       <img
@@ -282,33 +326,47 @@ export default function HeroBanner() {
             })}
           </div>
 
-          {/* Meta footer */}
-          <div className="flex flex-wrap items-center justify-between gap-4 border-t border-white/20 pt-5 text-sm font-medium">
-            <span
-              key={current.id + '-name'}
-              className="text-white animate-[fadeIn_0.5s_ease]"
-            >
-              {current.name}
-            </span>
-
-            <span
-              key={current.id + '-cat'}
-              className="hidden text-white/70 sm:inline"
-            >
-              {current.category?.name || ''}
-            </span>
-
-            <span className="hidden text-white/70 md:inline">
-              Đồng hành cùng vẻ đẹp Việt từ 2016
-            </span>
-
+          {/* Meta footer with Facebook, Zalo, Instagram, TikTok icons (without div bg) */}
+          <div className="flex items-center justify-between gap-2 sm:gap-4 border-t border-white/20 pt-4 sm:pt-5 text-xs sm:text-sm font-medium">
             <a
-              href="https://wa.me/"
+              href="https://www.facebook.com/05.thanh"
               target="_blank"
               rel="noopener noreferrer"
-              className="underline underline-offset-4 transition-colors hover:text-white/70"
+              title="Facebook Lan Anh Beauty"
+              className="text-white/80 hover:text-white flex items-center gap-1.5 sm:gap-2 transition-all hover:scale-105"
             >
-              WhatsApp / Zalo
+              <Facebook size={16} className="sm:w-[18px] sm:h-[18px]" />
+              <span className="text-xs sm:text-base">Facebook</span>
+            </a>
+            <a
+              href="https://zalo.me"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Zalo Lan Anh Beauty"
+              className="text-white/80 hover:text-white flex items-center gap-1.5 sm:gap-2 transition-all hover:scale-105"
+            >
+              <Zalo size={16} className="sm:w-[18px] sm:h-[18px]" />
+              <span className="text-xs sm:text-base">Zalo</span>
+            </a>
+            <a
+              href="https://instagram.com/05.thanh"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Instagram Lan Anh Beauty"
+              className="text-white/80 hover:text-white flex items-center gap-1.5 sm:gap-2 transition-all hover:scale-105"
+            >
+              <Instagram size={16} className="sm:w-[18px] sm:h-[18px]" />
+              <span className="text-xs sm:text-base">Instagram</span>
+            </a>
+            <a
+              href="https://www.tiktok.com/@user6m14d05y"
+              target="_blank"
+              rel="noopener noreferrer"
+              title="TikTok Lan Anh Beauty"
+              className="text-white/80 hover:text-white flex items-center gap-1.5 sm:gap-2 transition-all hover:scale-105"
+            >
+              <TikTok size={16} className="sm:w-[18px] sm:h-[18px]" />
+              <span className="text-xs sm:text-base">Tiktok</span>
             </a>
           </div>
         </div>

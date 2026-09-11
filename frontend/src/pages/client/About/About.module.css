@@ -183,11 +183,11 @@
         height: 6px;
     }
     .valuesGrid::-webkit-scrollbar-track {
-        background: var(--bg);
+        background: transparent;
         border-radius: 4px;
     }
     .valuesGrid::-webkit-scrollbar-thumb {
-        background: rgba(119, 89, 50, 0.5);
+        background: #C59B63;
         border-radius: 4px;
     }
     .valueCard {

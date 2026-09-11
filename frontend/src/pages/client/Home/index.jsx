@@ -8,6 +8,8 @@ import {
   StarIcon,
   CheckBadgeIcon,
   ArrowUpRightIcon,
+  ClockIcon,
+  Eye,
 } from '../../../icons';
 import styles from './Home.module.css';
 import HeroBanner from '../../../components/client/HeroBanner';
@@ -39,19 +41,34 @@ const feedbackItems = [
 
 const articleItems = [
   {
+    id: 1,
     tag: 'Chăm sóc da',
     title: 'Cách giữ da căng mịn sau liệu trình spa',
-    excerpt: 'Những thói quen nhỏ giúp duy trì hiệu quả chăm sóc da tại nhà sau khi kết thúc liệu trình.',
+    excerpt: 'Những thói quen nhỏ giúp duy trì hiệu quả chăm sóc da tại nhà sau khi kết thúc liệu trình chuyên sâu tại spa.',
+    image: serviceImg1,
+    views: '1.2k',
+    readTime: '5 phút đọc',
+    slug: 'cach-giu-da-cang-min-sau-lieu-trinh-spa',
   },
   {
+    id: 2,
     tag: 'Phun thêu',
     title: 'Lưu ý trước và sau khi phun môi collagen',
-    excerpt: 'Chuẩn bị đúng cách giúp màu môi lên đều, tự nhiên và hạn chế các vấn đề sau liệu trình.',
+    excerpt: 'Chuẩn bị đúng cách giúp màu môi lên đều, tự nhiên, căng mọng và hạn chế tối đa các vấn đề sưng viêm sau liệu trình.',
+    image: serviceImg2,
+    views: '980',
+    readTime: '6 phút đọc',
+    slug: 'luu-y-truoc-va-sau-khi-phun-moi-collagen',
   },
   {
+    id: 3,
     tag: 'Thư giãn',
     title: 'Khi nào nên chọn massage cổ vai gáy?',
-    excerpt: 'Nếu bạn thường xuyên mỏi cổ, đau vai hoặc căng thẳng, massage trị liệu có thể là lựa chọn phù hợp.',
+    excerpt: 'Nếu bạn thường xuyên mỏi cổ, đau vai hoặc làm việc văn phòng căng thẳng, massage trị liệu là giải pháp hồi phục thể trạng nhanh chóng.',
+    image: serviceImg3,
+    views: '1.5k',
+    readTime: '4 phút đọc',
+    slug: 'khi-nao-nen-chon-massage-co-vai-gay',
   },
 ];
 
@@ -322,19 +339,46 @@ export default function Home() {
           <h2>Bài Viết & Bí Quyết</h2>
           <p>Cập nhật những xu hướng chăm sóc da chuẩn khoa học từ đội ngũ chuyên gia.</p>
         </div>
-        <div className={styles.articleGrid}>
-          {articleItems.map((item) => (
-            <article key={item.title} className={styles.articleCard}>
-              <div className={styles.articleHeader}>
-                <span className={styles.articleTag}>{item.tag}</span>
-                <span className={styles.readTime}>• 5 phút đọc</span>
+        <div className={styles.articleList}>
+          {articleItems.slice(0, 3).map((item, index) => (
+            <article
+              key={item.id || item.title}
+              className={`${styles.articleRow} ${index % 2 === 1 ? styles.articleRowReverse : ''}`}
+            >
+              {/* Col 1: Hình ảnh */}
+              <div className={styles.articleImgCol}>
+                <Link to="/blog" className={styles.articleImgLink}>
+                  <img src={item.image} alt={item.title} className={styles.articleImg} />
+                </Link>
               </div>
-              <h3 className={styles.articleTitle}>{item.title}</h3>
-              <p className={styles.articleExcerpt}>{item.excerpt}</p>
-              <Link to="/blog" className={styles.articleLink}>
-                <span>Đọc bài viết</span>
-                <ArrowUpRightIcon className="w-4 h-4 inline ml-1" />
-              </Link>
+
+              {/* Col 2: Content (Danh mục, Thời gian đọc, Lượt xem, Title, Mô tả, Link) */}
+              <div className={styles.articleContentCol}>
+                <div className={styles.articleMeta}>
+                  <span className={styles.articleTag}>{item.tag}</span>
+                  <span className={styles.articleMetaDivider}>•</span>
+                  <span className={styles.readTime}>
+                    <ClockIcon className="w-3.5 h-3.5 inline mr-1 text-[#C59B63]" />
+                    {item.readTime}
+                  </span>
+                  <span className={styles.articleMetaDivider}>•</span>
+                  <span className={styles.viewsCount}>
+                    <Eye size={14} className="inline mr-1 text-[#C59B63]" />
+                    {item.views} lượt xem
+                  </span>
+                </div>
+
+                <h3 className={styles.articleTitle}>
+                  <Link to="/blog">{item.title}</Link>
+                </h3>
+
+                <p className={styles.articleExcerpt}>{item.excerpt}</p>
+
+                <Link to="/blog" className={styles.articleLink}>
+                  <span>Đọc bài viết</span>
+                  <ArrowUpRightIcon className="w-4 h-4 inline ml-1" />
+                </Link>
+              </div>
             </article>
           ))}
         </div>
