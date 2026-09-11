@@ -1,3 +1,5 @@
+import { QueryTypes } from 'sequelize';
+
 const services = [
   {
     categorySlug: 'chan-may',
@@ -272,29 +274,42 @@ const services = [
 export default {
   async up(queryInterface) {
     const now = new Date();
+    const serviceSlugs = services.map((service) => service.slug);
+
+    await queryInterface.bulkDelete('services', { slug: serviceSlugs });
+
     const categorySlugs = [...new Set(services.map((service) => service.categorySlug))];
-    const [categories] = await queryInterface.sequelize.query(
+    const categories = await queryInterface.sequelize.query(
       'SELECT id, slug FROM service_categories WHERE slug IN (:slugs)',
-      { replacements: { slugs: categorySlugs } },
+      {
+        replacements: { slugs: categorySlugs },
+        type: QueryTypes.SELECT,
+      },
     );
     const categoryIdBySlug = Object.fromEntries(categories.map((category) => [category.slug, category.id]));
 
-    await queryInterface.bulkInsert('services', services.map((service) => ({
-      categoryId: categoryIdBySlug[service.categorySlug],
-      name: service.name,
-      slug: service.slug,
-      shortDescription: service.shortDescription,
-      description: service.shortDescription,
-      price: service.price,
-      priceLabel: service.priceLabel,
-      durationMinutes: service.durationMinutes,
-      imageUrl: null,
-      isFeatured: Boolean(service.isFeatured),
-      isActive: true,
-      sortOrder: service.sortOrder,
-      createdAt: now,
-      updatedAt: now,
-    })));
+    const validServices = services
+      .filter((service) => categoryIdBySlug[service.categorySlug] !== undefined)
+      .map((service) => ({
+        categoryId: categoryIdBySlug[service.categorySlug],
+        name: service.name,
+        slug: service.slug,
+        shortDescription: service.shortDescription,
+        description: service.shortDescription,
+        price: service.price,
+        priceLabel: service.priceLabel,
+        durationMinutes: service.durationMinutes,
+        imageUrl: null,
+        isFeatured: Boolean(service.isFeatured),
+        isActive: true,
+        sortOrder: service.sortOrder,
+        createdAt: now,
+        updatedAt: now,
+      }));
+
+    if (validServices.length > 0) {
+      await queryInterface.bulkInsert('services', validServices);
+    }
   },
 
   async down(queryInterface) {

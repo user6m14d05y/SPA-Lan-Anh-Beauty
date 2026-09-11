@@ -4,6 +4,9 @@ export default {
   async up(queryInterface) {
     const now = new Date();
     const hashedPassword = await bcrypt.hash('123456', 10);
+    const targetEmails = ['admin@lananhbeauty.local', 'staff@lananhbeauty.local'];
+
+    await queryInterface.bulkDelete('users', { email: targetEmails });
 
     await queryInterface.bulkInsert('users', [
       {
@@ -31,11 +34,7 @@ export default {
 
   async down(queryInterface) {
     await queryInterface.bulkDelete('users', {
-      email: [
-        'admin@lananhbeauty.local',
-        'staff@lananhbeauty.local',
-        'customer@lananhbeauty.local',
-      ],
+      email: ['admin@lananhbeauty.local', 'staff@lananhbeauty.local'],
     });
   },
 };

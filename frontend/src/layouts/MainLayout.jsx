@@ -74,6 +74,7 @@ export default function MainLayout() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [activeChatTab, setActiveChatTab] = useState("bot");
   const [chatInput, setChatInput] = useState("");
+  const [botImage, setBotImage] = useState("");
   const [chatLoading, setChatLoading] = useState(false);
   const [staffInput, setStaffInput] = useState("");
   const [staffImage, setStaffImage] = useState('');
@@ -239,20 +240,22 @@ export default function MainLayout() {
     return "Hiện chatbot AI chưa phản hồi được. Bạn có thể chuyển sang tab Nhân viên hoặc thử lại sau ít phút.";
   };
 
-  const sendChatMessage = async (message) => {
-    const trimmedMessage = message.trim();
-    if (!trimmedMessage || chatLoading) return;
+  const sendChatMessage = async (messageText) => {
+    const trimmedMessage = (messageText || '').trim();
+    if ((!trimmedMessage && !botImage) || chatLoading) return;
 
     const userMessage = {
       id: Date.now(),
       sender: "user",
       text: trimmedMessage,
+      imageUrl: botImage || undefined,
     };
 
     const nextMessages = [...chatMessages, userMessage];
 
     setChatMessages(nextMessages);
     setChatInput("");
+    setBotImage("");
     setChatLoading(true);
 
     try {
@@ -260,7 +263,7 @@ export default function MainLayout() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: trimmedMessage,
+          message: trimmedMessage || "Đã gửi một hình ảnh.",
           history: nextMessages.slice(-8),
         }),
       });
@@ -289,6 +292,24 @@ export default function MainLayout() {
       ]);
     } finally {
       setChatLoading(false);
+    }
+  };
+
+  const handleBotImageChange = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+
+    try {
+      setBotImage(await readImageFile(file));
+    } catch (imageError) {
+      setChatMessages((messages) => [
+        ...messages,
+        {
+          id: Date.now(),
+          sender: "bot",
+          text: imageError.message || "Không thể chọn ảnh.",
+        },
+      ]);
     }
   };
 
@@ -433,7 +454,7 @@ export default function MainLayout() {
       <header className={styles.headerWrapper}>
         <nav className={`${styles.navbar} ${scrolled && !mobileMenuOpen ? styles.scrolled : ""} ${mobileMenuOpen ? styles.navbarHasMobileOpen : ""}`}>
 
-          <Link to="/" className={styles.logo}>
+          <Link to="/" className={`${styles.logo} ${mobileMenuOpen ? styles.logoHiddenOnMobileOpen : ''}`}>
             <img src={logoImg} alt="Lan Anh Beauty Logo" />
           </Link>
 
@@ -530,10 +551,9 @@ export default function MainLayout() {
               {/* Header Row */}
               <li className={styles.mobileDrawerHeaderLi}>
                 <div className={styles.mobileDrawerHeaderRow}>
-                  <div className={styles.mobileDrawerBrand}>
-                    <span className={styles.mobileDrawerBrandTag}>LAN ANH BEAUTY</span>
-                    <h3 className={styles.mobileDrawerBrandTitle}>Khám phá nhanh</h3>
-                  </div>
+                  <Link to="/" className={styles.mobileDrawerLogo} onClick={() => setMobileMenuOpen(false)}>
+                    <img src={logoImg} alt="Lan Anh Beauty Logo" />
+                  </Link>
                   <button 
                     type="button" 
                     className={styles.mobileDrawerCloseBtn} 
@@ -545,187 +565,192 @@ export default function MainLayout() {
                 </div>
               </li>
 
-              {/* Search Bar */}
-              <li className={styles.mobileDrawerSearchLi}>
-                <form 
-                  className={styles.mobileDrawerSearchWrap}
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    if (mobileSearchQuery.trim()) {
-                      navigate(`/services?q=${encodeURIComponent(mobileSearchQuery.trim())}`);
-                      setMobileMenuOpen(false);
-                    }
-                  }}
-                >
-                  <MagnifyingGlassIcon className={styles.mobileDrawerSearchIcon} />
-                  <input 
-                    type="text" 
-                    className={styles.mobileDrawerSearchInput}
-                    placeholder="Tìm kiếm sản phẩm, dịch vụ..."
-                    value={mobileSearchQuery}
-                    onChange={(e) => setMobileSearchQuery(e.target.value)}
-                  />
-                </form>
-              </li>
-
-              {/* Featured Category Pills */}
-              <li className={styles.mobileDrawerSectionLi}>
-                <span className={styles.mobileSectionLabel}>DANH MỤC NỔI BẬT</span>
-                <div className={styles.mobileFeaturedPills}>
-                  {(serviceCategories.length > 0 ? serviceCategories.slice(0, 3) : [
-                    { id: 1, name: 'Phun xăm', slug: 'phun-xam' },
-                    { id: 2, name: 'Trị liệu cổ vai gáy', slug: 'tri-lieu-co-vai-gay' },
-                    { id: 3, name: 'Chăm sóc da', slug: 'cham-soc-da' }
-                  ]).map((cat) => (
-                    <Link 
-                      key={cat.id} 
-                      to={`/services?category=${cat.slug}`}
-                      className={styles.mobileFeaturedPill}
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      {cat.name}
-                    </Link>
-                  ))}
-                </div>
-              </li>
-
-              {/* Section Label: KHÁM PHÁ */}
-              <li className={styles.mobileDrawerSectionLi}>
-                <span className={styles.mobileSectionLabel}>KHÁM PHÁ</span>
-              </li>
-
-              <li>
-                <Link to="/about" onClick={() => setMobileMenuOpen(false)}>
-                  <span className={styles.mobileNavItemContent}>Về Chúng Tôi</span>
-                  <ChevronRight size={16} className={styles.mobileNavArrow} />
-                </Link>
-              </li>
-
-              <li className={styles.navItemHasDropdown}>
-                <div className={styles.mobileNavDropdownRow}>
-                  <Link 
-                    to="/services" 
-                    className={styles.navDropdownTrigger} 
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    <span className={styles.mobileNavItemContent}>Dịch Vụ</span>
-                    <ChevronDown size={14} className={styles.desktopChevron} />
-                  </Link>
-                  <button
-                    type="button"
-                    className={`${styles.mobileAccordionToggle} ${mobileServicesOpen ? styles.mobileAccordionActive : ''}`}
-                    onClick={(e) => {
+              {/* Middle Scrollable Body */}
+              <div className={styles.mobileDrawerScrollBody}>
+                {/* Search Bar */}
+                <div className={styles.mobileDrawerSearchLi}>
+                  <form 
+                    className={styles.mobileDrawerSearchWrap}
+                    onSubmit={(e) => {
                       e.preventDefault();
-                      e.stopPropagation();
-                      setMobileServicesOpen((prev) => !prev);
+                      if (mobileSearchQuery.trim()) {
+                        navigate(`/services?q=${encodeURIComponent(mobileSearchQuery.trim())}`);
+                        setMobileMenuOpen(false);
+                      }
                     }}
-                    aria-label="Mở/đóng danh mục dịch vụ"
                   >
-                    <ChevronDown size={16} />
-                  </button>
+                    <MagnifyingGlassIcon className={styles.mobileDrawerSearchIcon} />
+                    <input 
+                      type="text" 
+                      className={styles.mobileDrawerSearchInput}
+                      placeholder="Tìm kiếm sản phẩm, dịch vụ..."
+                      value={mobileSearchQuery}
+                      onChange={(e) => setMobileSearchQuery(e.target.value)}
+                    />
+                  </form>
                 </div>
 
-                {/* Desktop Hover Dropdown */}
-                <div className={styles.servicesDropdown}>
-                  <div className={styles.dropdownMenu}>
-                    {serviceCategories.length > 0 ? serviceCategories.map((category) => (
-                      <div key={category.id} className={styles.dropdownItem}>
-                        <Link className={styles.dropdownParent} to={`/services?category=${category.slug}`} onClick={() => setMobileMenuOpen(false)}>
-                          <span>{category.name}</span>
-                          {(category.children || []).length > 0 && (
-                            <ChevronRight size={14} className={styles.categoryChevron} />
-                          )}
-                        </Link>
-                        {(category.children || []).length > 0 && (
-                          <div className={styles.dropdownSubmenu}>
-                            {(category.children || []).map((child) => (
-                              <Link key={child.id} to={`/services?category=${child.slug}`} onClick={() => setMobileMenuOpen(false)}>{child.name}</Link>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    )) : (
-                      <Link className={styles.dropdownParent} to="/services" onClick={() => setMobileMenuOpen(false)}>Xem tất cả dịch vụ</Link>
-                    )}
+                {/* Featured Category Pills */}
+                <div className={styles.mobileDrawerSectionLi}>
+                  <span className={styles.mobileSectionLabel}>DANH MỤC NỔI BẬT</span>
+                  <div className={styles.mobileFeaturedPills}>
+                    {(serviceCategories.length > 0 ? serviceCategories.slice(0, 3) : [
+                      { id: 1, name: 'Phun xăm', slug: 'phun-xam' },
+                      { id: 2, name: 'Trị liệu cổ vai gáy', slug: 'tri-lieu-co-vai-gay' },
+                      { id: 3, name: 'Chăm sóc da', slug: 'cham-soc-da' }
+                    ]).map((cat) => (
+                      <Link 
+                        key={cat.id} 
+                        to={`/services?category=${cat.slug}`}
+                        className={styles.mobileFeaturedPill}
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        {cat.name}
+                      </Link>
+                    ))}
                   </div>
                 </div>
 
-                {/* Mobile Accordion Submenu (Level 1 & Level 2) */}
-                {mobileServicesOpen && (
-                  <div className={styles.mobileAccordionPanel}>
+                {/* Section Label: KHÁM PHÁ */}
+                <div className={styles.mobileDrawerSectionLi}>
+                  <span className={styles.mobileSectionLabel}>KHÁM PHÁ</span>
+                </div>
+
+                <div className={`${styles.mobileDrawerItem} ${location.pathname.startsWith('/about') ? styles.activeNavItem : ''}`}>
+                  <Link to="/about" onClick={() => setMobileMenuOpen(false)}>
+                    <span className={styles.mobileNavItemContent}>Về Chúng Tôi</span>
+                    <ChevronRight size={16} className={styles.mobileNavArrow} />
+                  </Link>
+                </div>
+
+                <div className={`${styles.mobileDrawerItem} ${styles.navItemHasDropdown} ${location.pathname.startsWith('/services') ? styles.activeNavItem : ''}`}>
+                  <div className={styles.mobileNavDropdownRow}>
                     <Link 
                       to="/services" 
-                      className={styles.mobileAccordionAllLink}
+                      className={`${styles.navDropdownTrigger} ${location.pathname.startsWith('/services') ? styles.activeNavItem : ''}`} 
                       onClick={() => setMobileMenuOpen(false)}
                     >
-                      ❖ Xem tất cả dịch vụ
+                      <span className={styles.mobileNavItemContent}>Dịch Vụ</span>
+                      <ChevronDown size={14} className={styles.desktopChevron} />
                     </Link>
+                    <button
+                      type="button"
+                      className={`${styles.mobileAccordionToggle} ${mobileServicesOpen ? styles.mobileAccordionActive : ''}`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setMobileServicesOpen((prev) => !prev);
+                      }}
+                      aria-label="Mở/đóng danh mục dịch vụ"
+                    >
+                      <ChevronDown size={16} />
+                    </button>
+                  </div>
 
-                    {serviceCategories.map((cat) => {
-                      const hasChildren = (cat.children || []).length > 0;
-                      const isCatExpanded = !!expandedMobileCategories[cat.id];
-                      return (
-                        <div key={cat.id} className={styles.mobileCatItem}>
-                          <div className={styles.mobileCatHeader}>
-                            <Link 
-                              to={`/services?category=${cat.slug}`} 
-                              className={styles.mobileCatTitle}
-                              onClick={() => setMobileMenuOpen(false)}
-                            >
-                              {cat.name}
-                            </Link>
-
-                            {hasChildren && (
-                              <button
-                                type="button"
-                                className={`${styles.mobileCatChevron} ${isCatExpanded ? styles.mobileCatChevronOpen : ''}`}
-                                onClick={(e) => toggleMobileCategory(cat.id, e)}
-                                aria-label={`Mở danh mục con của ${cat.name}`}
-                              >
-                                <ChevronDown size={14} />
-                              </button>
+                  {/* Desktop Hover Dropdown */}
+                  <div className={styles.servicesDropdown}>
+                    <div className={styles.dropdownMenu}>
+                      {serviceCategories.length > 0 ? serviceCategories.map((category) => (
+                        <div key={category.id} className={styles.dropdownItem}>
+                          <Link className={styles.dropdownParent} to={`/services?category=${category.slug}`} onClick={() => setMobileMenuOpen(false)}>
+                            <span>{category.name}</span>
+                            {(category.children || []).length > 0 && (
+                              <ChevronRight size={14} className={styles.categoryChevron} />
                             )}
-                          </div>
-
-                          {/* Level 2 Subcategories */}
-                          {hasChildren && isCatExpanded && (
-                            <div className={styles.mobileSubCatList}>
-                              {cat.children.map((child) => (
-                                <Link
-                                  key={child.id}
-                                  to={`/services?category=${child.slug}`}
-                                  className={styles.mobileSubCatItem}
-                                  onClick={() => setMobileMenuOpen(false)}
-                                >
-                                  • {child.name}
-                                </Link>
+                          </Link>
+                          {(category.children || []).length > 0 && (
+                            <div className={styles.dropdownSubmenu}>
+                              {(category.children || []).map((child) => (
+                                <Link key={child.id} to={`/services?category=${child.slug}`} onClick={() => setMobileMenuOpen(false)}>{child.name}</Link>
                               ))}
                             </div>
                           )}
                         </div>
-                      );
-                    })}
+                      )) : (
+                        <Link className={styles.dropdownParent} to="/services" onClick={() => setMobileMenuOpen(false)}>Xem tất cả dịch vụ</Link>
+                      )}
+                    </div>
                   </div>
-                )}
-              </li>
 
-              <li>
-                <Link to="/blog" onClick={() => setMobileMenuOpen(false)}>
-                  <span className={styles.mobileNavItemContent}>Bài Viết</span>
-                  <ChevronRight size={16} className={styles.mobileNavArrow} />
-                </Link>
-              </li>
+                  {/* Mobile Accordion Submenu (Level 1 & Level 2) */}
+                  {mobileServicesOpen && (
+                    <div className={styles.mobileAccordionPanel}>
+                      <Link 
+                        to="/services" 
+                        className={styles.mobileAccordionAllLink}
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        ❖ Xem tất cả dịch vụ
+                      </Link>
 
-              <li>
-                <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>
-                  <span className={styles.mobileNavItemContent}>Liên Hệ</span>
-                  <ChevronRight size={16} className={styles.mobileNavArrow} />
-                </Link>
-              </li>
+                      {serviceCategories.map((cat) => {
+                        const hasChildren = (cat.children || []).length > 0;
+                        const isCatExpanded = !!expandedMobileCategories[cat.id];
+                        return (
+                          <div key={cat.id} className={styles.mobileCatItem}>
+                            <div className={styles.mobileCatHeader}>
+                              <Link 
+                                to={`/services?category=${cat.slug}`} 
+                                className={styles.mobileCatTitle}
+                                onClick={() => setMobileMenuOpen(false)}
+                              >
+                                {cat.name}
+                              </Link>
 
+                              {hasChildren && (
+                                <button
+                                  type="button"
+                                  className={`${styles.mobileCatChevron} ${isCatExpanded ? styles.mobileCatChevronOpen : ''}`}
+                                  onClick={(e) => toggleMobileCategory(cat.id, e)}
+                                  aria-label={`Mở danh mục con của ${cat.name}`}
+                                >
+                                  <ChevronDown size={14} />
+                                </button>
+                              )}
+                            </div>
+
+                            {/* Level 2 Subcategories */}
+                            {hasChildren && isCatExpanded && (
+                              <div className={styles.mobileSubCatList}>
+                                {cat.children.map((child) => (
+                                  <Link
+                                    key={child.id}
+                                    to={`/services?category=${child.slug}`}
+                                    className={styles.mobileSubCatItem}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                  >
+                                    • {child.name}
+                                  </Link>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
+                <div className={`${styles.mobileDrawerItem} ${location.pathname.startsWith('/blog') ? styles.activeNavItem : ''}`}>
+                  <Link to="/blog" onClick={() => setMobileMenuOpen(false)}>
+                    <span className={styles.mobileNavItemContent}>Bài Viết</span>
+                    <ChevronRight size={16} className={styles.mobileNavArrow} />
+                  </Link>
+                </div>
+
+                <div className={`${styles.mobileDrawerItem} ${location.pathname.startsWith('/contact') ? styles.activeNavItem : ''}`}>
+                  <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>
+                    <span className={styles.mobileNavItemContent}>Liên Hệ</span>
+                    <ChevronRight size={16} className={styles.mobileNavArrow} />
+                  </Link>
+                </div>
+              </div>
+
+              {/* Fixed Bottom Booking Button */}
               <li className={styles.mobileDrawerFooterLi}>
                 <Link to="/booking" className={styles.mobileDrawerBookBtn} onClick={() => setMobileMenuOpen(false)}>
-                  Đặt Lịch Ngay
+                  <span>Đặt Lịch Ngay</span>
+                  <ArrowUpRightIcon className="w-4 h-4" />
                 </Link>
               </li>
             </ul>
@@ -749,31 +774,40 @@ export default function MainLayout() {
         <div key={`${location.pathname}${location.search}`} className={styles.pageTransition}>
           <Outlet />
         </div>
-        <div className={styles.quickContactWidget} aria-label="Liên hệ nhanh">
+        <div className={`${styles.quickContactWidget} ${scrolled ? styles.quickContactWidgetVisible : ''}`} aria-label="Liên hệ nhanh">
           <Link to="/booking" title="Đặt lịch"><Calendar size={20} /></Link>
           <a href="https://www.facebook.com/05.thanh" title="Facebook" target="_blank" rel="noopener noreferrer"><Facebook size={20} /></a>
           <a href="https://zalo.me" title="Zalo" target="_blank" rel="noopener noreferrer"><Zalo size={20} /></a>
+          <a href="https://instagram.com/05.thanh" title="Instagram" target="_blank" rel="noopener noreferrer"><Instagram size={20} /></a>
           <a href="https://www.tiktok.com/@user6m14d05y" title="TikTok" target="_blank" rel="noopener noreferrer"><TikTok size={20} /></a>
         </div>
         <button
           type="button"
-          className={styles.chat}
-          onClick={openChatModal}
-          aria-label="Mở chat"
+          className={`${styles.chat} ${scrolled || isChatOpen ? styles.chatVisible : ''}`}
+          onClick={() => setIsChatOpen((prev) => !prev)}
+          aria-label={isChatOpen ? "Đóng chat" : "Mở chat"}
         >
-          <Chat />
+          {isChatOpen ? <XMarkIcon className="w-6 h-6 text-white" /> : <Chat />}
         </button>
       </main>
 
       {isChatOpen ? (
         <div className={styles.chatWidget} role="dialog" aria-label="Chat hỗ trợ Lan Anh Beauty">
           <div className={styles.chatHeader}>
-            <div>
-              <h2>Lan Anh Beauty</h2>
-              <span>Thường phản hồi trong vài phút</span>
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-full bg-[#C59B63]/25 border border-[#C59B63]/40 flex items-center justify-center text-white font-serif font-bold text-sm shrink-0">
+                <span>LA</span>
+              </div>
+              <div>
+                <h2 className="font-serif font-semibold text-white text-base leading-tight">Lan Anh Beauty</h2>
+                <div className="text-[11px] text-white/80 flex items-center gap-1.5 mt-0.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
+                  <span>Đang hoạt động • Phản hồi ngay</span>
+                </div>
+              </div>
             </div>
             <button type="button" className={styles.chatClose} onClick={closeChatModal} aria-label="Đóng chat">
-              ×
+              <XMarkIcon className="w-5 h-5" />
             </button>
           </div>
 
@@ -807,7 +841,8 @@ export default function MainLayout() {
                     className={`${styles.chatBubble} ${message.sender === "user" ? styles.userBubble : styles.botBubble
                       }`}
                   >
-                    {message.text}
+                    {message.imageUrl && <img className={styles.chatImage} src={message.imageUrl} alt="Ảnh đính kèm" />}
+                    {message.text && <span>{message.text}</span>}
                   </div>
                 ))}
                 {chatLoading ? (
@@ -828,7 +863,17 @@ export default function MainLayout() {
                   Địa chỉ
                 </button>
               </div>
-              <form className={`${styles.chatForm} ${styles.botChatForm}`} onSubmit={handleChatSubmit}>
+              {botImage && (
+                <div className={styles.imagePreview}>
+                  <img src={botImage} alt="Ảnh chuẩn bị gửi" />
+                  <button type="button" onClick={() => setBotImage('')}>Xóa ảnh</button>
+                </div>
+              )}
+              <form className={styles.chatForm} onSubmit={handleChatSubmit}>
+                <label className={styles.attachImageBtn} title="Đính kèm ảnh / tệp">
+                  <Paperclip size={18} />
+                  <input type="file" accept="image/*" onChange={handleBotImageChange} disabled={chatLoading} />
+                </label>
                 <input
                   type="text"
                   value={chatInput}
@@ -893,15 +938,15 @@ export default function MainLayout() {
                 </div>
               )}
               <form className={styles.chatForm} onSubmit={handleStaffSubmit}>
-                <label className={styles.attachImageBtn}>
-                  <Paperclip size={20} />
+                <label className={styles.attachImageBtn} title="Đính kèm ảnh">
+                  <Paperclip size={18} />
                   <input type="file" accept="image/*" onChange={handleStaffImageChange} disabled={!staffConnected || isStaffConversationClosed} />
                 </label>
                 <input
                   type="text"
                   value={staffInput}
                   onChange={(event) => setStaffInput(event.target.value)}
-                  placeholder={isStaffConversationClosed ? 'Hội thoại đã kết thúc' : 'Nhập tin nhắn cho nhân viên...'}
+                  placeholder={isStaffConversationClosed ? 'Hội thoại đã kết thúc' : 'Nhập tin nhắn...'}
                   aria-label="Nhập tin nhắn cho nhân viên"
                   disabled={!staffConnected || isStaffConversationClosed}
                 />

@@ -111,7 +111,7 @@ export default function Blog() {
               key={cat} 
               type="button"
               onClick={() => setSelectedCategory(cat)}
-              className={`border rounded-[20px] p-5 text-left transition-all duration-300 ${
+              className={`border rounded-none p-5 text-left transition-all duration-300 ${
                 selectedCategory === cat 
                   ? 'border-[var(--primary-gold)] bg-white shadow-[var(--shadow-luxury)] transform -translate-y-1' 
                   : 'border-[var(--border-silk-light)] bg-white/70 hover:border-[var(--primary-gold)] hover:bg-white hover:-translate-y-1'
@@ -130,7 +130,7 @@ export default function Blog() {
 
         {/* Section Header */}
         <div className="text-center max-w-[760px] mx-auto mb-12">
-          <span className="eyebrow-badge mb-3">Chuyên Mục Nổi Bật</span>
+          <span className="eyebrow-badge mb-3 rounded-none">Chuyên Mục Nổi Bật</span>
           <h2 className="text-[2.4rem] text-[var(--text-main)] mb-3 font-serif font-bold">
             Kiến Thức Chăm Sóc Da
           </h2>
@@ -144,7 +144,7 @@ export default function Blog() {
           {filteredPosts.map((post) => (
             <article 
               key={post.id} 
-              className="bg-white rounded-[18px] overflow-hidden border border-[var(--border-silk)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-luxury)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col h-full"
+              className="bg-white rounded-none overflow-hidden border border-[var(--border-silk)] shadow-[var(--shadow-soft)] hover:shadow-[var(--shadow-luxury)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col h-full"
             >
               {/* Thumbnail */}
               <div className="relative h-[180px] w-full overflow-hidden bg-stone-100">
@@ -155,7 +155,7 @@ export default function Blog() {
                     className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                   />
                 </Link>
-                <div className="absolute top-3 left-3 bg-[var(--primary-gold)] text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-md uppercase tracking-wide">
+                <div className="absolute top-3 left-3 bg-[var(--primary-gold)] text-white text-[10px] font-bold px-2.5 py-1 rounded-none shadow-md uppercase tracking-wide">
                   {post.category}
                 </div>
               </div>
@@ -190,7 +190,7 @@ export default function Blog() {
                 <div className="mt-auto pt-3 border-t border-[var(--border-silk-light)] flex items-center justify-between">
                   <Link 
                     to={`/blog`} 
-                    className="btn-luxury-secondary text-[11px] px-3 py-1.5 whitespace-nowrap inline-flex items-center"
+                    className="btn-luxury-secondary text-[11px] px-3 py-1.5 whitespace-nowrap inline-flex items-center rounded-none"
                   >
                     <span>Đọc bài</span>
                     <ArrowUpRightIcon className="w-3 h-3 ml-0.5" />
@@ -208,7 +208,7 @@ export default function Blog() {
             type="button"
             onClick={handleLoadMore}
             disabled={loading}
-            className="btn-luxury-secondary"
+            className="btn-luxury-secondary rounded-none"
           >
             {loading ? 'Đang Tải...' : 'Tải Thêm Bài Viết Kinh Nghiệm'}
           </button>
