@@ -93,10 +93,25 @@ jobs:
             sudo docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
 
             # 6. Database Migrations & Seeders
-            echo "🗄️ Running Database Migrations..."
-            sudo docker compose -f docker-compose.prod.yml exec -T backend npm run db:migrate || true
+            echo "🗄️ Waiting for MySQL to be ready and running Database Migrations..."
+            for i in {1..15}; do
+              if sudo docker compose -f docker-compose.prod.yml exec -T backend npm run db:migrate; then
+                echo "✅ Database Migrations completed successfully."
+                break
+              fi
+              echo "⏳ MySQL is initializing/warming up... retrying migration in 3s ($i/15)"
+              sleep 3
+            done
+
             echo "🌱 Running Database Seeders..."
-            sudo docker compose -f docker-compose.prod.yml exec -T backend npm run db:seed || true
+            for i in {1..15}; do
+              if sudo docker compose -f docker-compose.prod.yml exec -T backend npm run db:seed; then
+                echo "✅ Database Seeders completed successfully."
+                break
+              fi
+              echo "⏳ Retrying seeders in 3s ($i/15)"
+              sleep 3
+            done
 
             # 7. Prune dangling images
             echo "🧹 Pruning unused Docker images..."

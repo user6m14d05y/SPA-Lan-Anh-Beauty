@@ -22,10 +22,24 @@ echo "🐳 [3/5] Build và khởi chạy Docker Production Containers..."
 docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
 
 echo "🗄️ [4/5] Chạy Database Migrations..."
-docker compose -f docker-compose.prod.yml exec -T backend npm run db:migrate || true
+for i in {1..15}; do
+    if docker compose -f docker-compose.prod.yml exec -T backend npm run db:migrate; then
+        echo "✅ Migration thành công."
+        break
+    fi
+    echo "⏳ Đang chờ MySQL sẵn sàng cho migration... ($i/15)"
+    sleep 3
+done
 
 echo "🌱 [4.5/5] Chạy Database Seeders..."
-docker compose -f docker-compose.prod.yml exec -T backend npm run db:seed || true
+for i in {1..15}; do
+    if docker compose -f docker-compose.prod.yml exec -T backend npm run db:seed; then
+        echo "✅ Seeders thành công."
+        break
+    fi
+    echo "⏳ Đang chờ MySQL sẵn sàng cho seeders... ($i/15)"
+    sleep 3
+done
 
 echo "🧹 [5/5] Dọn dẹp Docker Images và Cache thừa..."
 docker image prune -f
