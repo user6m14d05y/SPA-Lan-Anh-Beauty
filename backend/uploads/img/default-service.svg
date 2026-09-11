@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">
+  <defs>
+    <linearGradient id="spaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fdf2f8" />
+      <stop offset="50%" stop-color="#fbcfe8" />
+      <stop offset="100%" stop-color="#f472b6" />
+    </linearGradient>
+  </defs>
+  <rect width="100%" height="100%" fill="url(#spaGrad)"/>
+  <circle cx="400" cy="250" r="80" fill="#db2777" opacity="0.2"/>
+  <path d="M400 190 C420 230, 460 250, 460 280 C460 313, 433 340, 400 340 C367 340, 340 313, 340 280 C340 250, 380 230, 400 190 Z" fill="#be185d"/>
+  <text x="400" y="420" font-family="'Helvetica Neue', Arial, sans-serif" font-size="28" font-weight="bold" fill="#831843" text-anchor="middle">Lan Anh Beauty &amp; Spa</text>
+  <text x="400" y="460" font-family="'Helvetica Neue', Arial, sans-serif" font-size="18" fill="#9d174d" text-anchor="middle">Hình Ảnh Dịch Vụ Mẫu</text>
+</svg>

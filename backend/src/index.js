@@ -24,8 +24,15 @@ app.use(cors({
   credentials: true
 }));
 app.use(express.json({ limit: '25mb' })); // Để parse body dạng JSON
-app.use(express.urlencoded({ extended: true, limit: '25mb' }));
-app.use('/uploads/img', express.static(path.join(process.cwd(), 'uploads', 'img')));
+import fs from 'fs';
+
+// Tự động khởi tạo thư mục uploads/img nếu chưa có
+const uploadsImgDir = path.join(process.cwd(), 'uploads', 'img');
+if (!fs.existsSync(uploadsImgDir)) {
+  fs.mkdirSync(uploadsImgDir, { recursive: true });
+}
+
+app.use('/uploads/img', express.static(uploadsImgDir));
 
 // Request logger for incoming Webhook / API debugging
 app.use((req, res, next) => {
