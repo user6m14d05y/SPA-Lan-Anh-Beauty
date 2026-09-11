@@ -39,6 +39,7 @@ jobs:
               sudo apt-get update -y
               sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
               sudo usermod -aG docker $USER || true
+              sudo apt-get clean
               echo "✅ Docker installed successfully."
             fi
 
@@ -81,7 +82,11 @@ jobs:
               echo "$ENV_FILE_CONTENT" > .env
             fi
 
-            # 5. Build and launch Docker containers
+            # 5. Clean disk & Build Docker containers
+            echo "🧹 Cleaning up old Docker build cache & apt cache..."
+            sudo apt-get clean
+            sudo docker system prune -f || true
+
             echo "🐳 Building and starting Docker containers..."
             sudo docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
 
@@ -91,7 +96,7 @@ jobs:
 
             # 7. Prune dangling images
             echo "🧹 Pruning unused Docker images..."
-            sudo docker image prune -f
+            sudo docker system prune -af --volumes || true
 
             # 8. Check status
             echo "📊 Container status verification:"
