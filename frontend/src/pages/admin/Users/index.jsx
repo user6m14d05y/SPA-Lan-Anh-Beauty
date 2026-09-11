@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Edit, Plus, User, X } from '../../../icons.jsx';
 import { useAuth } from '../../../context/AuthContext';
+import { API_URL } from '../../../config';
 import styles from './Users.module.css';
 
 const emptyForm = {
@@ -43,7 +44,7 @@ export default function Users() {
     try {
       setLoading(true);
       setError('');
-      const response = await authFetch('http://localhost:5000/api/users');
+      const response = await authFetch(`${API_URL}/users`);
       const result = await response.json();
 
       if (!response.ok || !result.success) {
@@ -128,8 +129,8 @@ export default function Users() {
       }
 
       const url = editingUser
-        ? `http://localhost:5000/api/users/${editingUser.id}`
-        : 'http://localhost:5000/api/users';
+        ? `${API_URL}/users/${editingUser.id}`
+        : `${API_URL}/users`;
 
       const response = await authFetch(url, {
         method: editingUser ? 'PUT' : 'POST',

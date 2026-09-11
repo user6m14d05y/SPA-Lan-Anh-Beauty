@@ -4,8 +4,7 @@ import { Paperclip, Send } from '../../../icons.jsx';
 import { useAuth } from '../../../context/AuthContext.jsx';
 import styles from './Chat.module.css';
 
-const API_URL = 'http://localhost:5000/api';
-const SOCKET_URL = 'http://localhost:5000';
+import { API_URL, SOCKET_URL } from '../../../config.js';
 
 const formatTime = (value) => {
   if (!value) return '';

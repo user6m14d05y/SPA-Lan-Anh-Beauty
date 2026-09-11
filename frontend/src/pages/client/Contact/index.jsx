@@ -8,6 +8,7 @@ import {
   ArrowUpRightIcon
 } from '../../../icons';
 import { useToast } from '../../../context/ToastContext';
+import { API_URL } from '../../../config';
 import styles from './Contact.module.css';
 
 export default function Contact() {
@@ -28,7 +29,7 @@ export default function Contact() {
 
   const fetchCaptcha = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/contacts/captcha');
+      const res = await fetch(`${API_URL}/contacts/captcha`);
       const data = await res.json();
       setCaptchaSvg(data.svg);
       setCaptchaToken(data.token);
@@ -95,7 +96,7 @@ export default function Contact() {
         ? { ...formData, captchaCode, captchaToken }
         : formData;
 
-      const response = await fetch('http://localhost:5000/api/contacts', {
+      const response = await fetch(`${API_URL}/contacts`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),

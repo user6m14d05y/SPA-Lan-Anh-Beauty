@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Editor } from '@tinymce/tinymce-react';
 import { CheckCircle, Plus, X } from '../../../icons.jsx';
 import { useAuth } from '../../../context/AuthContext';
+import { API_URL } from '../../../config.js';
 import styles from './Services.module.css';
 
 const MAX_IMAGE_SIZE = 2 * 1024 * 1024;
@@ -126,7 +127,7 @@ export default function EditService() {
       try {
         setLoading(true);
         setError('');
-        const response = await fetch('http://localhost:5000/api/catalog/tree?active=all');
+        const response = await fetch(`${API_URL}/catalog/tree?active=all`);
         const result = await response.json();
 
         if (!response.ok || !result.success) {
@@ -237,7 +238,7 @@ export default function EditService() {
     try {
       setSubmitting(true);
       setError('');
-      const response = await authFetch(`http://localhost:5000/api/catalog/services/${editingId}`, {
+      const response = await authFetch(`${API_URL}/catalog/services/${editingId}`, {
         method: 'PUT',
         body: JSON.stringify(buildPayload(formData, images)),
       });

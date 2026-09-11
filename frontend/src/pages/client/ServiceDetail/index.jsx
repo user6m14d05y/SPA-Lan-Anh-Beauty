@@ -10,6 +10,7 @@ import {
   ArrowUpRightIcon,
   StarIcon
 } from '../../../icons';
+import { API_URL, ASSET_URL } from '../../../config';
 import styles from './ServiceDetail.module.css';
 import fallbackImage from '../../../assets/images/service1.png';
 
@@ -39,8 +40,8 @@ export default function ServiceDetail() {
         setLoading(true);
         setError('');
         const [detailResponse, servicesResponse] = await Promise.all([
-          fetch(`http://localhost:5000/api/catalog/services/${slug}`),
-          fetch('http://localhost:5000/api/catalog/services'),
+          fetch(`${API_URL}/catalog/services/${slug}`),
+          fetch(`${API_URL}/catalog/services`),
         ]);
         const detailResult = await detailResponse.json();
         const servicesResult = await servicesResponse.json();

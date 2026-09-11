@@ -4,7 +4,7 @@ import { useAuth } from '../../../context/AuthContext.jsx';
 import CustomDatePicker from '../../../components/common/CustomDatePicker.jsx';
 import styles from './Dashboard.module.css';
 
-const API_URL = 'http://localhost:5000/api';
+import { API_URL } from '../../../config.js';
 
 const statusLabels = {
   PENDING: 'Chờ xác nhận',
