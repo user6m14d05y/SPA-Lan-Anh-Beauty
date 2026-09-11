@@ -1,4 +1,4 @@
-name: CD - Deploy to Production VPS
+name: CD - Deploy to Production AWS EC2 / VPS
 
 on:
   push:
@@ -7,46 +7,95 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to Production VPS
+    name: Deploy to Production AWS EC2
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Deploy via SSH to VPS
+      - name: Deploy via SSH to AWS EC2
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
+          username: ${{ secrets.VPS_USERNAME || 'ubuntu' }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT || 22 }}
           script_stop: true
+          envs: ENV_FILE_CONTENT
           script: |
-            echo "Starting deployment on VPS..."
-            
-            # Navigate to target directory
-            cd ${{ secrets.DEPLOY_PATH || '/var/www/spa-lan-anh-beauty' }}
-            
-            # Fetch and reset code to latest main
-            echo "Fetching latest code from main..."
-            git fetch origin main
-            git reset --hard origin/main
-            
-            # Build & Restart containers via Production Docker Compose
-            echo "Building and starting Docker containers..."
-            docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
-            
-            # Run Database Migrations inside backend container
-            echo "Running Database Migrations..."
-            docker compose -f docker-compose.prod.yml exec -T backend npm run db:migrate || true
-            
-            # Clean up dangling images to free disk space
-            echo "Pruning unused Docker images..."
-            docker image prune -f
-            
-            # Container status verification
-            echo "Checking running containers..."
-            docker compose -f docker-compose.prod.yml ps
-            
-            echo "Deployment completed successfully!"
+            echo "🚀 Starting 100% Automated Deployment on AWS EC2..."
+
+            # 1. Check and install Docker & Docker Compose if missing
+            if ! command -v docker &> /dev/null; then
+              echo "🐳 Docker not found on EC2. Installing Docker & Docker Compose..."
+              sudo apt-get update -y
+              sudo apt-get install -y curl wget git ufw ca-certificates gnupg lsb-release
+              sudo mkdir -p /etc/apt/keyrings
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+              echo \
+                "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+                $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+              sudo apt-get update -y
+              sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+              sudo usermod -aG docker $USER || true
+              echo "✅ Docker installed successfully."
+            fi
+
+            # 2. Create 2GB Swap Memory if missing
+            if [ ! -f /swapfile ]; then
+              echo "💾 Creating 2GB Swap Memory for EC2..."
+              sudo fallocate -l 2G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
+              sudo chmod 600 /swapfile
+              sudo mkswap /swapfile
+              sudo swapon /swapfile
+              echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab || true
+              echo "✅ Swap memory created."
+            fi
+
+            # 3. Setup project directory & repository
+            DEPLOY_DIR="${{ secrets.DEPLOY_PATH || '/var/www/spa-lan-anh-beauty' }}"
+            echo "📂 Ensuring project directory exists at: $DEPLOY_DIR"
+            sudo mkdir -p "$DEPLOY_DIR"
+            sudo chown -R $USER:$USER "$DEPLOY_DIR"
+            cd "$DEPLOY_DIR"
+
+            if [ ! -d ".git" ]; then
+              echo "📦 Repository not found on EC2. Cloning repository..."
+              git clone https://github.com/${{ github.repository }}.git .
+            else
+              echo "🔄 Fetching latest code from main branch..."
+              git fetch origin main
+              git reset --hard origin/main
+            fi
+
+            # 4. Setup .env configuration
+            if [ ! -f .env ]; then
+              echo "🔑 Initializing .env from .env.example..."
+              cp .env.example .env
+            fi
+
+            # Overwrite .env with secret content if ENV_FILE_CONTENT is provided in GitHub Secrets
+            if [ -n "$ENV_FILE_CONTENT" ]; then
+              echo "🔑 Updating .env with secrets from GitHub..."
+              echo "$ENV_FILE_CONTENT" > .env
+            fi
+
+            # 5. Build and launch Docker containers
+            echo "🐳 Building and starting Docker containers..."
+            sudo docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
+
+            # 6. Database Migrations
+            echo "🗄️ Running Database Migrations..."
+            sudo docker compose -f docker-compose.prod.yml exec -T backend npm run db:migrate || true
+
+            # 7. Prune dangling images
+            echo "🧹 Pruning unused Docker images..."
+            sudo docker image prune -f
+
+            # 8. Check status
+            echo "📊 Container status verification:"
+            sudo docker compose -f docker-compose.prod.yml ps
+
+            echo "🎉 Deployment completed 100% automatically!"
+
