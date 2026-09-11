@@ -4,7 +4,7 @@ import { useAuth } from '../../../context/AuthContext';
 import CustomDatePicker from '../../../components/common/CustomDatePicker';
 import styles from './ClosedPeriods.module.css';
 
-const API_URL = 'http://localhost:5000/api';
+import { API_URL } from '../../../config.js';
 
 const shiftLabels = {
   MORNING: 'Nghỉ ca sáng',

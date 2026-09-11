@@ -3,7 +3,7 @@ import { Eye } from '../../../icons.jsx';
 import { useAuth } from '../../../context/AuthContext.jsx';
 import styles from './Customers.module.css';
 
-const API_URL = 'http://localhost:5000/api';
+import { API_URL } from '../../../config.js';
 
 const formatCurrency = (value) => new Intl.NumberFormat('vi-VN', {
   style: 'currency',

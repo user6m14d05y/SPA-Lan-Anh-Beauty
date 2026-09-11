@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../../context/AuthContext.jsx';
 import { Sparkles, X } from '../../../icons.jsx';
+import { API_URL } from '../../../config.js';
 import styles from './CategoryServices.module.css';
 
 const collectServices = (category) => [
@@ -42,7 +43,7 @@ export default function CategoryServices() {
     try {
       setLoading(true);
       setError('');
-      const response = await fetch('http://localhost:5000/api/catalog/tree?active=all');
+      const response = await fetch(`${API_URL}/catalog/tree?active=all`);
       const result = await response.json();
 
       if (!response.ok || !result.success) {
@@ -103,7 +104,7 @@ export default function CategoryServices() {
         sortOrder: formData.sortOrder,
         isActive: true,
       };
-      const response = await authFetch('http://localhost:5000/api/catalog/categories', {
+      const response = await authFetch(`${API_URL}/catalog/categories`, {
         method: 'POST',
         body: JSON.stringify(payload),
       });

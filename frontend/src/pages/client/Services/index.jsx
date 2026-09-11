@@ -10,6 +10,7 @@ import {
   ArrowUpRightIcon,
   SparklesIcon
 } from '../../../icons';
+import { API_URL, ASSET_URL } from '../../../config';
 import styles from './Services.module.css';
 import serviceImg1 from '../../../assets/images/service1.png';
 import serviceImg2 from '../../../assets/images/service2.png';
@@ -72,7 +73,7 @@ export default function Services() {
       try {
         setLoading(true);
         setError('');
-        const response = await fetch('http://localhost:5000/api/catalog/tree');
+        const response = await fetch(`${API_URL}/catalog/tree`);
         const result = await response.json();
 
         if (!response.ok || !result.success) {

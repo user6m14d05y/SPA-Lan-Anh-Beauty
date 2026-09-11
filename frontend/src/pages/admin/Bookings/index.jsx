@@ -2,9 +2,7 @@ import { useEffect, useMemo, useState, useRef } from 'react';
 import { Eye, CheckCircle, ShieldCheck, X, ChevronDown, Calendar, Clock, Phone, Mail, Sparkles } from '../../../icons.jsx';
 import { useAuth } from '../../../context/AuthContext';
 import CustomDatePicker from '../../../components/common/CustomDatePicker';
-
-const API_URL = 'http://localhost:5000/api';
-const ASSET_URL = 'http://localhost:5000';
+import { API_URL, ASSET_URL } from '../../../config';
 
 const statusLabels = {
     PENDING: 'Chờ xác nhận',

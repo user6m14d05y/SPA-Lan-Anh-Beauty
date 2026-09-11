@@ -19,8 +19,7 @@ import {
 import { useToast } from '../../../context/ToastContext';
 import styles from './Booking.module.css';
 import CustomDatePicker from '../../../components/common/CustomDatePicker';
-
-const API_URL = 'http://localhost:5000/api';
+import { API_URL } from '../../../config';
 const MAX_IMAGE_SIZE = 3 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const MAX_BOOKING_DAYS_AHEAD = 90;

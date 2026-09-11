@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Eye, Mail, MessageSquareReply, Phone, Trash2 } from '../../../icons.jsx';
 import { useAuth } from '../../../context/AuthContext';
+import { API_URL } from '../../../config.js';
 import styles from './Contacts.module.css';
 
 export default function Contacts() {
@@ -22,7 +23,7 @@ export default function Contacts() {
     try {
       setLoading(true);
       setError('');
-      const response = await authFetch('http://localhost:5000/api/contacts');
+      const response = await authFetch(`${API_URL}/contacts`);
       const result = await response.json();
 
       if (!response.ok || !result.success) {
@@ -75,7 +76,7 @@ export default function Contacts() {
     try {
       setSubmittingReply(true);
       setActionError('');
-      const response = await authFetch(`http://localhost:5000/api/contacts/${replyContact.id}/reply`, {
+      const response = await authFetch(`${API_URL}/contacts/${replyContact.id}/reply`, {
         method: 'POST',
         body: JSON.stringify({ replyMessage }),
       });
@@ -100,7 +101,7 @@ export default function Contacts() {
 
     try {
       setActionError('');
-      const response = await authFetch(`http://localhost:5000/api/contacts/${contact.id}`, {
+      const response = await authFetch(`${API_URL}/contacts/${contact.id}`, {
         method: 'DELETE',
       });
       const result = await response.json();

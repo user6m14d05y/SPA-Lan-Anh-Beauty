@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Edit, Plus, Sparkles } from '../../../icons.jsx';
 import { useAuth } from '../../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../../../config.js';
 import styles from './Services.module.css';
 
 const collectServices = (category) => [
@@ -13,7 +14,7 @@ const collectServices = (category) => [
 
 const normalizeCatalogResponse = (data) => data.flatMap(collectServices);
 const formatCategoryText = (service) => service.category?.name || service.categoryName || 'Danh mục hiện tại';
-const toggleServiceUrl = (id) => `http://localhost:5000/api/catalog/services/${id}/toggle-active`;
+const toggleServiceUrl = (id) => `${API_URL}/catalog/services/${id}/toggle-active`;
 
 const statusFilters = [
   { key: 'all', label: 'Tất cả' },
@@ -43,7 +44,7 @@ export default function Services() {
     try {
       setLoading(true);
       setError('');
-      const response = await fetch('http://localhost:5000/api/catalog/tree?active=all');
+      const response = await fetch(`${API_URL}/catalog/tree?active=all`);
       const result = await response.json();
 
       if (!response.ok || !result.success) {
