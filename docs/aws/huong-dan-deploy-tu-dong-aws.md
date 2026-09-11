@@ -106,3 +106,49 @@ sudo docker compose -f docker-compose.prod.yml logs -f backend
 # Xem log của Nginx Reverse Proxy
 sudo docker compose -f docker-compose.prod.yml logs -f nginx
 ```
+
+---
+
+## ⚠️ 7. Lưu Ý Quan Trọng: Khắc Phục Lỗi `dial tcp ***:***: i/o timeout`
+
+Nếu GitHub Actions thất bại ở bước `appleboy/ssh-action` với lỗi `dial tcp ***:***: i/o timeout`:
+
+### Nguyên nhân:
+AWS EC2 Security Group mặc định chỉ mở Port 22 SSH cho IP máy tính cá nhân (`My IP`). Khi GitHub Actions chạy từ runner đám mây, kết nối SSH sẽ bị AWS Firewall chặn lại dẫn đến timeout.
+
+### Cách khắc phục:
+1. Đăng nhập vào **AWS EC2 Console** ➔ chọn **Security Groups** của Instance.
+2. Bấm nút **Edit inbound rules**.
+3. Tại quy tắc **SSH (Port 22)**: Đổi **Source** từ `IP_cá_nhân/32` thành **`0.0.0.0/0`** (Anywhere IPv4).
+4. Kiểm tra Secret **`VPS_HOST`** trên GitHub: Đảm bảo sử dụng **Public IPv4** của EC2 (không dùng IP nội bộ `172.31.x.x`).
+5. Vào lại tab **Actions** trên GitHub ➔ Chọn workflow vừa lỗi ➔ Bấm **Re-run all jobs**.
+
+---
+
+## ⚠️ 8. Khắc Phục Lỗi `no space left on device` (Hết dung lượng ổ đĩa EC2)
+
+Nếu build Docker bị lỗi `write /var/lib/containerd/... no space left on device`:
+
+### Nguyên nhân:
+Mặc định ổ đĩa EBS khi khởi tạo EC2 chỉ có **8GB**. Khi cài Docker, pull nhiều image (MySQL, Nginx, Node) và build đồng thời 2 container Frontend & Backend, bộ nhớ đệm (build cache) bị đầy.
+
+### Cách khắc phục ngay trên EC2:
+SSH vào EC2 và dọn dẹp bộ nhớ đệm Docker / APT:
+```bash
+sudo apt-get clean
+sudo docker system prune -af --volumes
+```
+
+### Cách tăng dung lượng ổ đĩa EC2 lên 30GB (Miễn phí 100% trên AWS Free Tier):
+1. Đăng nhập **AWS EC2 Console** ➔ chọn **Volumes** (ở thanh bên trái).
+2. Chọn Volume của máy EC2 ➔ Bấm **Actions** ➔ **Modify Volume**.
+3. Đổi kích thước (Size) từ `8` GiB lên **`30`** GiB (AWS cho miễn phí tối đa 30GB EBS) ➔ Bấm **Modify**.
+4. SSH vào EC2 và chạy lệnh mở rộng phân vùng (không cần restart server):
+   ```bash
+   sudo growpart /dev/nvme0n1 1
+   sudo resize2fs /dev/nvme0n1p1
+   # Kiểm tra lại dung lượng:
+   df -h
+   ```
+
+
