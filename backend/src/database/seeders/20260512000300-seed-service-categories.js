@@ -1,3 +1,5 @@
+import { QueryTypes } from 'sequelize';
+
 const categories = [
   {
     name: 'Phun xăm',
@@ -75,6 +77,14 @@ export default {
   async up(queryInterface) {
     const now = new Date();
 
+    const childSlugs = categories.flatMap((cat) => (cat.children || []).map((child) => child.slug));
+    const parentSlugs = categories.map((cat) => cat.slug);
+
+    if (childSlugs.length > 0) {
+      await queryInterface.bulkDelete('service_categories', { slug: childSlugs });
+    }
+    await queryInterface.bulkDelete('service_categories', { slug: parentSlugs });
+
     for (const category of categories) {
       await queryInterface.bulkInsert('service_categories', [{
         parentId: null,
@@ -89,10 +99,15 @@ export default {
 
       if (!category.children?.length) continue;
 
-      const [parents] = await queryInterface.sequelize.query(
+      const parents = await queryInterface.sequelize.query(
         'SELECT id FROM service_categories WHERE slug = :slug LIMIT 1',
-        { replacements: { slug: category.slug } },
+        {
+          replacements: { slug: category.slug },
+          type: QueryTypes.SELECT,
+        },
       );
+
+      if (!parents || !parents.length) continue;
       const parentId = parents[0].id;
 
       await queryInterface.bulkInsert('service_categories', category.children.map((child) => ({

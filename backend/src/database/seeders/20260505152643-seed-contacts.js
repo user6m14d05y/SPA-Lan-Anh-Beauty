@@ -2,6 +2,10 @@ import { makeContact } from '../factories/contactFactory.js';
 
 export default {
   async up(queryInterface) {
+    await queryInterface.bulkDelete('contacts', {
+      email: ['lananh@example.com', 'minhthu@example.com'],
+    });
+
     await queryInterface.bulkInsert('contacts', [
       makeContact({
         name: 'Lan Anh',
@@ -21,3 +25,4 @@ export default {
     });
   },
 };
+

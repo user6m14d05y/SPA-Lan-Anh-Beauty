@@ -24,6 +24,9 @@ docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
 echo "🗄️ [4/5] Chạy Database Migrations..."
 docker compose -f docker-compose.prod.yml exec -T backend npm run db:migrate || true
 
+echo "🌱 [4.5/5] Chạy Database Seeders..."
+docker compose -f docker-compose.prod.yml exec -T backend npm run db:seed || true
+
 echo "🧹 [5/5] Dọn dẹp Docker Images và Cache thừa..."
 docker image prune -f
 

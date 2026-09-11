@@ -1,6 +1,9 @@
 export default {
   async up(queryInterface) {
     const now = new Date();
+    const sampleIds = ['BK-SAMPLE-001', 'BK-SAMPLE-002', 'BK-SAMPLE-003'];
+
+    await queryInterface.bulkDelete('bookings', { id: sampleIds });
 
     await queryInterface.bulkInsert('bookings', [
       {
@@ -44,7 +47,7 @@ export default {
 
   async down(queryInterface) {
     await queryInterface.bulkDelete('bookings', {
-      customerPhone: ['0900000003', '0900000004', '0900000005'],
+      id: ['BK-SAMPLE-001', 'BK-SAMPLE-002', 'BK-SAMPLE-003'],
     });
   },
 };
