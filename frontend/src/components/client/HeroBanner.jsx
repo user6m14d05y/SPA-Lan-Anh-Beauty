@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { SparklesIcon, ArrowUpRightIcon } from '../../icons';
+import { SparklesIcon, ArrowUpRightIcon, ChevronLeft, ChevronRight } from '../../icons';
 
 import { API_URL } from '../../config';
 
@@ -16,6 +16,10 @@ export default function HeroBanner() {
   const [activeIndex, setActiveIndex] = useState(0);
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Touch swipe support
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   useEffect(() => {
     const fetchFeatured = async () => {
@@ -36,6 +40,45 @@ export default function HeroBanner() {
     };
     fetchFeatured();
   }, []);
+
+  // Auto-scroll every 5 seconds
+  useEffect(() => {
+    if (services.length <= 1) return;
+    const timer = setInterval(() => {
+      setActiveIndex((prev) => (prev + 1) % services.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [services.length]);
+
+  const handlePrev = () => {
+    if (services.length <= 1) return;
+    setActiveIndex((prev) => (prev - 1 + services.length) % services.length);
+  };
+
+  const handleNext = () => {
+    if (services.length <= 1) return;
+    setActiveIndex((prev) => (prev + 1) % services.length);
+  };
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    const distance = touchStartX.current - touchEndX.current;
+    if (distance > 50) {
+      handleNext(); // Swipe Left -> Next slide
+    } else if (distance < -50) {
+      handlePrev(); // Swipe Right -> Prev slide
+    }
+    touchStartX.current = 0;
+    touchEndX.current = 0;
+  };
 
   const current = services[activeIndex];
 
@@ -79,7 +122,12 @@ export default function HeroBanner() {
   }
 
   return (
-    <section className="relative h-screen w-full overflow-hidden font-geist text-white select-none bg-black">
+    <section 
+      className="relative h-screen w-full overflow-hidden font-geist text-white select-none bg-black"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
 
       {/* Background images — one per featured service */}
       {services.map((service, index) => {
@@ -108,6 +156,28 @@ export default function HeroBanner() {
 
       {/* Dark gradient overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/25 to-black/70 pointer-events-none" />
+
+      {/* Left/Right Scroll Navigation Buttons (Desktop only) */}
+      {services.length > 1 && (
+        <>
+          <button
+            type="button"
+            onClick={handlePrev}
+            aria-label="Slide trước đó"
+            className="hidden sm:flex absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/35 hover:bg-[#C59B63] border border-white/20 hover:border-[#C59B63] text-white items-center justify-center backdrop-blur-md transition-all duration-300 shadow-xl hover:scale-110 active:scale-95 cursor-pointer"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <button
+            type="button"
+            onClick={handleNext}
+            aria-label="Slide tiếp theo"
+            className="hidden sm:flex absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-black/35 hover:bg-[#C59B63] border border-white/20 hover:border-[#C59B63] text-white items-center justify-center backdrop-blur-md transition-all duration-300 shadow-xl hover:scale-110 active:scale-95 cursor-pointer"
+          >
+            <ChevronRight size={20} />
+          </button>
+        </>
+      )}
 
       {/* Content layer */}
       <div className="relative z-10 flex h-full flex-col justify-between px-6 pb-6 pt-28 sm:px-10 sm:pb-8 lg:px-16">
@@ -162,7 +232,10 @@ export default function HeroBanner() {
         <div className="flex flex-col gap-8 mt-12 md:mt-0">
 
           {/* Thumbnail picker row */}
-          <div className="flex items-end gap-2 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-1 sm:gap-3 sm:overflow-visible sm:pb-0">
+          <div 
+            className="no-scrollbar flex items-end gap-2 overflow-x-auto pb-1 sm:gap-3 sm:overflow-visible sm:pb-0"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          >
             {services.map((service, index) => {
               const isActive = index === activeIndex;
               const thumb = service.thumbnailUrl || service.imageUrl || null;
