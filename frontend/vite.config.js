@@ -14,6 +14,7 @@ export default defineConfig({
   server: {
     host: true,         // cho phép truy cập từ bên ngoài Docker container
     port: 5173,         // cổng host
+    allowedHosts: true, // Cho phép tất cả hostname / subdomain truy cập
     watch: {
       usePolling: true, // quan trọng khi chạy Docker
       interval: 500,
