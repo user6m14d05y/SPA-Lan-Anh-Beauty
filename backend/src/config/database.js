@@ -16,13 +16,21 @@ const sequelize = new Sequelize(
   }
 );
 
-export const connectDB = async () => {
-  try {
-    await sequelize.authenticate();
-    console.log(' Kết nối Database MySQL thành công!');
-  } catch (error) {
-    console.error(' Không thể kết nối tới Database:', error);
-    process.exit(1);
+export const connectDB = async (retries = 10, delay = 3000) => {
+  while (retries > 0) {
+    try {
+      await sequelize.authenticate();
+      console.log('✅ Kết nối Database MySQL thành công!');
+      return;
+    } catch (error) {
+      console.error(`⚠️ Chưa thể kết nối tới Database MySQL (${retries} lần thử còn lại):`, error.message);
+      retries -= 1;
+      if (retries === 0) {
+        console.error('❌ Thất bại kết nối Database MySQL sau nhiều lần thử:', error);
+        process.exit(1);
+      }
+      await new Promise((res) => setTimeout(res, delay));
+    }
   }
 };
 

@@ -92,9 +92,11 @@ jobs:
             echo "🐳 Building and starting Docker containers..."
             sudo docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
 
-            # 6. Database Migrations
+            # 6. Database Migrations & Seeders
             echo "🗄️ Running Database Migrations..."
             sudo docker compose -f docker-compose.prod.yml exec -T backend npm run db:migrate || true
+            echo "🌱 Running Database Seeders..."
+            sudo docker compose -f docker-compose.prod.yml exec -T backend npm run db:seed || true
 
             # 7. Prune dangling images
             echo "🧹 Pruning unused Docker images..."
