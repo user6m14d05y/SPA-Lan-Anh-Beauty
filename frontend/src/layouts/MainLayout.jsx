@@ -1,4 +1,4 @@
-import { Outlet, Link, useLocation, useSearchParams } from "react-router-dom";
+import { Outlet, Link, useLocation, useSearchParams, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 import styles from "./MainLayout.module.css";
@@ -82,6 +82,17 @@ export default function MainLayout() {
   const [staffConnected, setStaffConnected] = useState(false);
   const [startingNewConversation, setStartingNewConversation] = useState(false);
   const [serviceCategories, setServiceCategories] = useState([]);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
+  const [expandedMobileCategories, setExpandedMobileCategories] = useState({});
+
+  const toggleMobileCategory = (catId, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setExpandedMobileCategories((prev) => ({
+      ...prev,
+      [catId]: !prev[catId],
+    }));
+  };
   const isStaffConversationClosed = staffConversation?.status === 'CLOSED';
   const [chatMessages, setChatMessages] = useState([
     {
@@ -336,7 +347,9 @@ export default function MainLayout() {
     setActiveChatTab("staff");
   };
 
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileSearchQuery, setMobileSearchQuery] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
   const isFilterPage = location.pathname === '/services' || location.pathname === '/blog';
   const [stickySortOpen, setStickySortOpen] = useState(false);
@@ -404,10 +417,21 @@ export default function MainLayout() {
     setMobileMenuOpen(false);
   }, [location.pathname, location.search]);
 
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileMenuOpen]);
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className={styles.headerWrapper}>
-        <nav className={`${styles.navbar} ${scrolled ? styles.scrolled : ""}`}>
+        <nav className={`${styles.navbar} ${scrolled && !mobileMenuOpen ? styles.scrolled : ""} ${mobileMenuOpen ? styles.navbarHasMobileOpen : ""}`}>
 
           <Link to="/" className={styles.logo}>
             <img src={logoImg} alt="Lan Anh Beauty Logo" />
@@ -415,7 +439,7 @@ export default function MainLayout() {
 
           <button
             type="button"
-            className={styles.mobileMenuToggle}
+            className={`${styles.mobileMenuToggle} ${mobileMenuOpen ? styles.mobileMenuToggleHidden : ''}`}
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle navigation menu"
           >
@@ -503,14 +527,105 @@ export default function MainLayout() {
             </div>
           ) : (
             <ul className={`${styles.navLinks} ${mobileMenuOpen ? styles.mobileNavOpen : ""}`}>
-              <li>
-                <Link to="/about" onClick={() => setMobileMenuOpen(false)}>Về Chúng Tôi</Link>
+              {/* Header Row */}
+              <li className={styles.mobileDrawerHeaderLi}>
+                <div className={styles.mobileDrawerHeaderRow}>
+                  <div className={styles.mobileDrawerBrand}>
+                    <span className={styles.mobileDrawerBrandTag}>LAN ANH BEAUTY</span>
+                    <h3 className={styles.mobileDrawerBrandTitle}>Khám phá nhanh</h3>
+                  </div>
+                  <button 
+                    type="button" 
+                    className={styles.mobileDrawerCloseBtn} 
+                    onClick={() => setMobileMenuOpen(false)}
+                    aria-label="Đóng menu"
+                  >
+                    <XMarkIcon className="w-5 h-5" />
+                  </button>
+                </div>
               </li>
-              <li className={styles.navItemHasDropdown}>
-                <Link to="/services" className={styles.navDropdownTrigger}>
-                  Dịch Vụ
-                  <ChevronDown size={14} />
+
+              {/* Search Bar */}
+              <li className={styles.mobileDrawerSearchLi}>
+                <form 
+                  className={styles.mobileDrawerSearchWrap}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    if (mobileSearchQuery.trim()) {
+                      navigate(`/services?q=${encodeURIComponent(mobileSearchQuery.trim())}`);
+                      setMobileMenuOpen(false);
+                    }
+                  }}
+                >
+                  <MagnifyingGlassIcon className={styles.mobileDrawerSearchIcon} />
+                  <input 
+                    type="text" 
+                    className={styles.mobileDrawerSearchInput}
+                    placeholder="Tìm kiếm sản phẩm, dịch vụ..."
+                    value={mobileSearchQuery}
+                    onChange={(e) => setMobileSearchQuery(e.target.value)}
+                  />
+                </form>
+              </li>
+
+              {/* Featured Category Pills */}
+              <li className={styles.mobileDrawerSectionLi}>
+                <span className={styles.mobileSectionLabel}>DANH MỤC NỔI BẬT</span>
+                <div className={styles.mobileFeaturedPills}>
+                  {(serviceCategories.length > 0 ? serviceCategories.slice(0, 3) : [
+                    { id: 1, name: 'Phun xăm', slug: 'phun-xam' },
+                    { id: 2, name: 'Trị liệu cổ vai gáy', slug: 'tri-lieu-co-vai-gay' },
+                    { id: 3, name: 'Chăm sóc da', slug: 'cham-soc-da' }
+                  ]).map((cat) => (
+                    <Link 
+                      key={cat.id} 
+                      to={`/services?category=${cat.slug}`}
+                      className={styles.mobileFeaturedPill}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      {cat.name}
+                    </Link>
+                  ))}
+                </div>
+              </li>
+
+              {/* Section Label: KHÁM PHÁ */}
+              <li className={styles.mobileDrawerSectionLi}>
+                <span className={styles.mobileSectionLabel}>KHÁM PHÁ</span>
+              </li>
+
+              <li>
+                <Link to="/about" onClick={() => setMobileMenuOpen(false)}>
+                  <span className={styles.mobileNavItemContent}>Về Chúng Tôi</span>
+                  <ChevronRight size={16} className={styles.mobileNavArrow} />
                 </Link>
+              </li>
+
+              <li className={styles.navItemHasDropdown}>
+                <div className={styles.mobileNavDropdownRow}>
+                  <Link 
+                    to="/services" 
+                    className={styles.navDropdownTrigger} 
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <span className={styles.mobileNavItemContent}>Dịch Vụ</span>
+                    <ChevronDown size={14} className={styles.desktopChevron} />
+                  </Link>
+                  <button
+                    type="button"
+                    className={`${styles.mobileAccordionToggle} ${mobileServicesOpen ? styles.mobileAccordionActive : ''}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setMobileServicesOpen((prev) => !prev);
+                    }}
+                    aria-label="Mở/đóng danh mục dịch vụ"
+                  >
+                    <ChevronDown size={16} />
+                  </button>
+                </div>
+
+                {/* Desktop Hover Dropdown */}
                 <div className={styles.servicesDropdown}>
                   <div className={styles.dropdownMenu}>
                     {serviceCategories.length > 0 ? serviceCategories.map((category) => (
@@ -534,17 +649,83 @@ export default function MainLayout() {
                     )}
                   </div>
                 </div>
+
+                {/* Mobile Accordion Submenu (Level 1 & Level 2) */}
+                {mobileServicesOpen && (
+                  <div className={styles.mobileAccordionPanel}>
+                    <Link 
+                      to="/services" 
+                      className={styles.mobileAccordionAllLink}
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      ❖ Xem tất cả dịch vụ
+                    </Link>
+
+                    {serviceCategories.map((cat) => {
+                      const hasChildren = (cat.children || []).length > 0;
+                      const isCatExpanded = !!expandedMobileCategories[cat.id];
+                      return (
+                        <div key={cat.id} className={styles.mobileCatItem}>
+                          <div className={styles.mobileCatHeader}>
+                            <Link 
+                              to={`/services?category=${cat.slug}`} 
+                              className={styles.mobileCatTitle}
+                              onClick={() => setMobileMenuOpen(false)}
+                            >
+                              {cat.name}
+                            </Link>
+
+                            {hasChildren && (
+                              <button
+                                type="button"
+                                className={`${styles.mobileCatChevron} ${isCatExpanded ? styles.mobileCatChevronOpen : ''}`}
+                                onClick={(e) => toggleMobileCategory(cat.id, e)}
+                                aria-label={`Mở danh mục con của ${cat.name}`}
+                              >
+                                <ChevronDown size={14} />
+                              </button>
+                            )}
+                          </div>
+
+                          {/* Level 2 Subcategories */}
+                          {hasChildren && isCatExpanded && (
+                            <div className={styles.mobileSubCatList}>
+                              {cat.children.map((child) => (
+                                <Link
+                                  key={child.id}
+                                  to={`/services?category=${child.slug}`}
+                                  className={styles.mobileSubCatItem}
+                                  onClick={() => setMobileMenuOpen(false)}
+                                >
+                                  • {child.name}
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </li>
+
               <li>
-                <Link to="/blog" onClick={() => setMobileMenuOpen(false)}>Bài Viết</Link>
+                <Link to="/blog" onClick={() => setMobileMenuOpen(false)}>
+                  <span className={styles.mobileNavItemContent}>Bài Viết</span>
+                  <ChevronRight size={16} className={styles.mobileNavArrow} />
+                </Link>
               </li>
+
               <li>
-                <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>Liên Hệ</Link>
+                <Link to="/contact" onClick={() => setMobileMenuOpen(false)}>
+                  <span className={styles.mobileNavItemContent}>Liên Hệ</span>
+                  <ChevronRight size={16} className={styles.mobileNavArrow} />
+                </Link>
               </li>
-              <li className={styles.mobileBookLi}>
-                <Link to="/booking" className={styles.mobileBtnBook} onClick={() => setMobileMenuOpen(false)}>
-                  <span>Đặt Lịch Ngay</span>
-                  <ArrowUpRightIcon className="w-3.5 h-3.5 inline-block ml-1" />
+
+              <li className={styles.mobileDrawerFooterLi}>
+                <Link to="/booking" className={styles.mobileDrawerBookBtn} onClick={() => setMobileMenuOpen(false)}>
+                  Đặt Lịch Ngay
                 </Link>
               </li>
             </ul>
@@ -558,6 +739,11 @@ export default function MainLayout() {
           </div>
         </nav>
       </header>
+
+      <div 
+        className={`${styles.mobileBackdrop} ${mobileMenuOpen ? styles.mobileBackdropVisible : ''}`} 
+        onClick={() => setMobileMenuOpen(false)} 
+      />
 
       <main className={styles.mainContent}>
         <div key={`${location.pathname}${location.search}`} className={styles.pageTransition}>

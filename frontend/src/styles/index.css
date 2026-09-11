@@ -116,6 +116,17 @@ body {
   scrollbar-color: rgba(197, 155, 99, 0.4) rgba(250, 247, 242, 0.5);
 }
 
+/* Utility to completely hide scrollbars */
+.no-scrollbar {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
 h1, h2, h3, h4, h5, h6, .font-serif {
   font-family: var(--font-serif);
   line-height: 1.25;
