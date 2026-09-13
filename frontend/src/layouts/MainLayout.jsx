@@ -783,55 +783,67 @@ export default function MainLayout() {
         </div>
         <button
           type="button"
-          className={`${styles.chat} ${scrolled || isChatOpen ? styles.chatVisible : ''}`}
+          className={`${styles.chat} ${scrolled || isChatOpen ? styles.chatVisible : ''} ${isChatOpen ? styles.chatActive : ''}`}
           onClick={() => setIsChatOpen((prev) => !prev)}
           aria-label={isChatOpen ? "Đóng chat" : "Mở chat"}
         >
-          {isChatOpen ? <XMarkIcon className="w-6 h-6 text-white" /> : <Chat />}
+          <div className={styles.chatIconWrap}>
+            <span className={`${styles.chatIcon} ${isChatOpen ? styles.iconHidden : styles.iconVisible}`}>
+              <Chat />
+            </span>
+            <span className={`${styles.chatIcon} ${isChatOpen ? styles.iconVisible : styles.iconHidden}`}>
+              <XMarkIcon className="w-6 h-6 text-white" />
+            </span>
+          </div>
         </button>
       </main>
 
-      {isChatOpen ? (
-        <div className={styles.chatWidget} role="dialog" aria-label="Chat hỗ trợ Lan Anh Beauty">
-          <div className={styles.chatHeader}>
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-full bg-[#C59B63]/25 border border-[#C59B63]/40 flex items-center justify-center text-white font-serif font-bold text-sm shrink-0">
-                <span>LA</span>
-              </div>
-              <div>
-                <h2 className="font-serif font-semibold text-white text-base leading-tight">Lan Anh Beauty</h2>
-                <div className="text-[11px] text-white/80 flex items-center gap-1.5 mt-0.5">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
-                  <span>Đang hoạt động • Phản hồi ngay</span>
-                </div>
+      <div 
+        className={`${styles.chatWidget} ${isChatOpen ? styles.chatWidgetOpen : styles.chatWidgetClosed}`} 
+        role="dialog" 
+        aria-label="Chat hỗ trợ Lan Anh Beauty"
+        aria-hidden={!isChatOpen}
+      >
+        <div className={styles.chatHeader}>
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-[#C59B63]/25 border border-[#C59B63]/40 flex items-center justify-center text-white font-serif font-bold text-sm shrink-0">
+              <span>LA</span>
+            </div>
+            <div>
+              <h2 className="font-serif font-semibold text-white text-base leading-tight">Lan Anh Beauty</h2>
+              <div className="text-[11px] text-white/80 flex items-center gap-1.5 mt-0.5">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 shrink-0 animate-pulse" />
+                <span>Đang hoạt động • Phản hồi ngay</span>
               </div>
             </div>
-            <button type="button" className={styles.chatClose} onClick={closeChatModal} aria-label="Đóng chat">
-              <XMarkIcon className="w-5 h-5" />
-            </button>
           </div>
+          <button type="button" className={styles.chatClose} onClick={closeChatModal} aria-label="Đóng chat">
+            <XMarkIcon className="w-5 h-5" />
+          </button>
+        </div>
 
-          <div className={styles.chatTabs} role="tablist" aria-label="Chọn kiểu chat">
-            <button
-              type="button"
-              className={activeChatTab === "bot" ? styles.activeChatTab : ""}
-              onClick={() => setActiveChatTab("bot")}
-              role="tab"
-              aria-selected={activeChatTab === "bot"}
-            >
-              Chatbot AI
-            </button>
-            <button
-              type="button"
-              className={activeChatTab === "staff" ? styles.activeChatTab : ""}
-              onClick={() => setActiveChatTab("staff")}
-              role="tab"
-              aria-selected={activeChatTab === "staff"}
-            >
-              Nhân viên Tư vấn
-            </button>
-          </div>
+        <div className={styles.chatTabs} role="tablist" aria-label="Chọn kiểu chat">
+          <button
+            type="button"
+            className={activeChatTab === "bot" ? styles.activeChatTab : ""}
+            onClick={() => setActiveChatTab("bot")}
+            role="tab"
+            aria-selected={activeChatTab === "bot"}
+          >
+            Chatbot AI
+          </button>
+          <button
+            type="button"
+            className={activeChatTab === "staff" ? styles.activeChatTab : ""}
+            onClick={() => setActiveChatTab("staff")}
+            role="tab"
+            aria-selected={activeChatTab === "staff"}
+          >
+            Nhân viên Tư vấn
+          </button>
+        </div>
 
+        <div key={activeChatTab} className={styles.chatTabContent}>
           {activeChatTab === "bot" ? (
             <>
               <div className={styles.chatMessages}>
@@ -955,7 +967,7 @@ export default function MainLayout() {
             </div>
           )}
         </div>
-      ) : null}
+      </div>
 
       <footer className={styles.footer}>
         <div className={styles.footerContainer}>
