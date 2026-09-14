@@ -1,13 +1,19 @@
 export default {
   async up(queryInterface, Sequelize) {
-    await queryInterface.addColumn('bookings', 'customerEmail', {
-      type: Sequelize.STRING,
-      allowNull: false,
-      defaultValue: '',
-    });
+    const tableInfo = await queryInterface.describeTable('bookings');
+    if (!tableInfo.customerEmail) {
+      await queryInterface.addColumn('bookings', 'customerEmail', {
+        type: Sequelize.STRING,
+        allowNull: false,
+        defaultValue: '',
+      });
+    }
   },
 
   async down(queryInterface) {
-    await queryInterface.removeColumn('bookings', 'customerEmail');
+    const tableInfo = await queryInterface.describeTable('bookings');
+    if (tableInfo.customerEmail) {
+      await queryInterface.removeColumn('bookings', 'customerEmail');
+    }
   },
 };
