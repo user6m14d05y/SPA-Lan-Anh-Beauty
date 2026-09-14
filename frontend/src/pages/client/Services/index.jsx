@@ -73,14 +73,13 @@ export default function Services() {
       try {
         setLoading(true);
         setError('');
-        const response = await fetch(`${API_URL}/catalog/tree`);
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-          throw new Error(result.message || 'Không thể tải danh sách dịch vụ.');
+        const res = await fetch(`${API_URL}/catalog/tree`);
+        const result = await res.json();
+        if (result.success) {
+          setCategories(result.data || []);
+        } else {
+          setError(result.message || 'Không thể tải danh sách dịch vụ.');
         }
-
-        setCategories(result.data || []);
       } catch (error) {
         setError(error.message || 'Không thể tải danh sách dịch vụ.');
       } finally {

@@ -91,13 +91,17 @@ export function AuthProvider({ children }) {
   // Tạo axios-like fetch với token tự động
   const authFetch = useCallback(async (url, options = {}) => {
     if (!accessToken) throw new Error('Chưa đăng nhập');
+    const isFormData = options.body instanceof FormData;
+    const headers = {
+      'Authorization': `Bearer ${accessToken}`,
+      ...options.headers,
+    };
+    if (!isFormData && !headers['Content-Type']) {
+      headers['Content-Type'] = 'application/json';
+    }
     return fetch(url, {
       ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${accessToken}`,
-        ...options.headers,
-      },
+      headers,
     });
   }, [accessToken]);
 

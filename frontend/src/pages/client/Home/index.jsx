@@ -18,8 +18,16 @@ import serviceImg1 from '../../../assets/images/service1.png';
 import serviceImg2 from '../../../assets/images/service2.png';
 import serviceImg3 from '../../../assets/images/service3.png';
 
-import { API_URL } from '../../../config';
+import { API_URL, ASSET_URL } from '../../../config';
 const fallbackImages = [serviceImg1, serviceImg2, serviceImg3];
+
+const getArticleImage = (item, index) => {
+  const url = item.coverImageUrl || item.imageUrl;
+  if (!url) return fallbackImages[index % fallbackImages.length];
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  return `${ASSET_URL}${url}`;
+};
+
 
 const feedbackItems = [
   {
@@ -36,39 +44,6 @@ const feedbackItems = [
     name: 'Ngọc Trâm',
     service: 'Gội đầu dưỡng sinh',
     content: 'Mình thích nhất phần massage cổ vai gáy, cảm giác rất dễ chịu sau một ngày làm việc.',
-  },
-];
-
-const articleItems = [
-  {
-    id: 1,
-    tag: 'Chăm sóc da',
-    title: 'Cách giữ da căng mịn sau liệu trình spa',
-    excerpt: 'Những thói quen nhỏ giúp duy trì hiệu quả chăm sóc da tại nhà sau khi kết thúc liệu trình chuyên sâu tại spa.',
-    image: serviceImg1,
-    views: '1.2k',
-    readTime: '5 phút đọc',
-    slug: 'cach-giu-da-cang-min-sau-lieu-trinh-spa',
-  },
-  {
-    id: 2,
-    tag: 'Phun thêu',
-    title: 'Lưu ý trước và sau khi phun môi collagen',
-    excerpt: 'Chuẩn bị đúng cách giúp màu môi lên đều, tự nhiên, căng mọng và hạn chế tối đa các vấn đề sưng viêm sau liệu trình.',
-    image: serviceImg2,
-    views: '980',
-    readTime: '6 phút đọc',
-    slug: 'luu-y-truoc-va-sau-khi-phun-moi-collagen',
-  },
-  {
-    id: 3,
-    tag: 'Thư giãn',
-    title: 'Khi nào nên chọn massage cổ vai gáy?',
-    excerpt: 'Nếu bạn thường xuyên mỏi cổ, đau vai hoặc làm việc văn phòng căng thẳng, massage trị liệu là giải pháp hồi phục thể trạng nhanh chóng.',
-    image: serviceImg3,
-    views: '1.5k',
-    readTime: '4 phút đọc',
-    slug: 'khi-nao-nen-chon-massage-co-vai-gay',
   },
 ];
 
@@ -114,6 +89,8 @@ export default function Home() {
   const [statsVisible, setStatsVisible] = useState(false);
   const [categories, setCategories] = useState([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
+  const [articles, setArticles] = useState([]);
+  const [loadingArticles, setLoadingArticles] = useState(true);
   const statsRef = useRef(null);
 
   useEffect(() => {
@@ -121,14 +98,9 @@ export default function Home() {
       try {
         setLoadingFeatured(true);
         setFeaturedError('');
-        const response = await fetch(`${API_URL}/catalog/services?featured=true`);
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-          throw new Error(result.message || 'Không thể tải dịch vụ nổi bật.');
-        }
-
-        setFeaturedServices(result.data || []);
+        const res = await fetch(`${API_URL}/catalog/services?featured=true`);
+        const result = await res.json();
+        if (result.success) setFeaturedServices(result.data || []);
       } catch (error) {
         setFeaturedError(error.message || 'Không thể tải dịch vụ nổi bật.');
       } finally {
@@ -144,11 +116,9 @@ export default function Home() {
     const fetchCategories = async () => {
       try {
         setLoadingCategories(true);
-        const response = await fetch(`${API_URL}/catalog/tree`);
-        const result = await response.json();
-        if (response.ok && result.success) {
-          setCategories(result.data || []);
-        }
+        const res = await fetch(`${API_URL}/catalog/tree`);
+        const result = await res.json();
+        if (result.success) setCategories(result.data || []);
       } catch {
         setCategories([]);
       } finally {
@@ -156,6 +126,22 @@ export default function Home() {
       }
     };
     fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${API_URL}/blog/posts?limit=3&sort=newest`)
+      .then((res) => res.json())
+      .then((result) => {
+        if (!cancelled && result.success) {
+          const payload = result.data || {};
+          const items = payload.items || payload.posts || (Array.isArray(payload) ? payload : []);
+          setArticles(items.slice(0, 3));
+        }
+      })
+      .catch(() => { if (!cancelled) setArticles([]); })
+      .finally(() => { if (!cancelled) setLoadingArticles(false); });
+    return () => { cancelled = true; };
   }, []);
 
   useEffect(() => {
@@ -340,41 +326,41 @@ export default function Home() {
           <p>Cập nhật những xu hướng chăm sóc da chuẩn khoa học từ đội ngũ chuyên gia.</p>
         </div>
         <div className={styles.articleList}>
-          {articleItems.slice(0, 3).map((item, index) => (
+          {loadingArticles ? <p className={styles.articleExcerpt}>Đang tải bài viết...</p> : articles.map((item, index) => (
             <article
               key={item.id || item.title}
               className={`${styles.articleRow} ${index % 2 === 1 ? styles.articleRowReverse : ''}`}
             >
               {/* Col 1: Hình ảnh */}
               <div className={styles.articleImgCol}>
-                <Link to="/blog" className={styles.articleImgLink}>
-                  <img src={item.image} alt={item.title} className={styles.articleImg} />
+                <Link to={`/blog/${item.slug}`} className={styles.articleImgLink}>
+                  <img src={getArticleImage(item, index)} alt={item.title} className={styles.articleImg} />
                 </Link>
               </div>
 
               {/* Col 2: Content (Danh mục, Thời gian đọc, Lượt xem, Title, Mô tả, Link) */}
               <div className={styles.articleContentCol}>
                 <div className={styles.articleMeta}>
-                  <span className={styles.articleTag}>{item.tag}</span>
+                  <span className={styles.articleTag}>{item.categoryName}</span>
                   <span className={styles.articleMetaDivider}>•</span>
                   <span className={styles.readTime}>
                     <ClockIcon className="w-3.5 h-3.5 inline mr-1 text-[#C59B63]" />
-                    {item.readTime}
+                    {item.readingTimeMinutes ? `${item.readingTimeMinutes} phút đọc` : 'Đọc nhanh'}
                   </span>
                   <span className={styles.articleMetaDivider}>•</span>
                   <span className={styles.viewsCount}>
                     <Eye size={14} className="inline mr-1 text-[#C59B63]" />
-                    {item.views} lượt xem
+                    {item.viewCount.toLocaleString('vi-VN')} lượt xem
                   </span>
                 </div>
 
                 <h3 className={styles.articleTitle}>
-                  <Link to="/blog">{item.title}</Link>
+                  <Link to={`/blog/${item.slug}`}>{item.title}</Link>
                 </h3>
 
                 <p className={styles.articleExcerpt}>{item.excerpt}</p>
 
-                <Link to="/blog" className={styles.articleLink}>
+                <Link to={`/blog/${item.slug}`} className={styles.articleLink}>
                   <span>Đọc bài viết</span>
                   <ArrowUpRightIcon className="w-4 h-4 inline ml-1" />
                 </Link>

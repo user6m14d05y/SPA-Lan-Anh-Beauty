@@ -149,12 +149,11 @@ export default function Bookings() {
             return matchesSearch && matchesStatus && matchesDate;
         });
 
+        // id là mã chuỗi (DH-XXXX-XXXX-XXXX) nên sort theo thời gian tạo
         result.sort((a, b) => {
-            if (sortOrder === 'desc') {
-                return b.id - a.id;
-            } else {
-                return a.id - b.id;
-            }
+            const timeA = new Date(a.createdAt).getTime() || 0;
+            const timeB = new Date(b.createdAt).getTime() || 0;
+            return sortOrder === 'desc' ? timeB - timeA : timeA - timeB;
         });
 
         return result;
@@ -250,7 +249,7 @@ export default function Bookings() {
                     <table className="w-full min-w-[1100px] text-left border-collapse table-fixed">
                         <thead>
                             <tr>
-                                <th className="w-[80px] px-5 py-4 bg-[rgba(119,89,50,0.05)] text-[var(--primary)] font-semibold border-b border-[var(--border)] whitespace-nowrap">Mã LH</th>
+                                <th className="w-[170px] px-5 py-4 bg-[rgba(119,89,50,0.05)] text-[var(--primary)] font-semibold border-b border-[var(--border)] whitespace-nowrap">Mã LH</th>
                                 <th className="w-[170px] px-5 py-4 bg-[rgba(119,89,50,0.05)] text-[var(--primary)] font-semibold border-b border-[var(--border)] whitespace-nowrap">Khách hàng</th>
                                 <th className="w-[130px] px-5 py-4 bg-[rgba(119,89,50,0.05)] text-[var(--primary)] font-semibold border-b border-[var(--border)] whitespace-nowrap">SĐT</th>
                                 <th className="w-[240px] px-5 py-4 bg-[rgba(119,89,50,0.05)] text-[var(--primary)] font-semibold border-b border-[var(--border)]">Dịch vụ</th>
@@ -263,7 +262,7 @@ export default function Bookings() {
                         <tbody>
                             {filteredAppointments.map((appointment) => (
                                 <tr key={appointment.id} className="hover:bg-[rgba(119,89,50,0.035)] transition-colors group">
-                                    <td className="px-5 py-4 border-b border-[var(--border)] text-[0.75rem] text-[var(--text-muted)] group-last:border-none font-mono tracking-widest whitespace-nowrap">{appointment.id}</td>
+                                    <td className="px-5 py-4 border-b border-[var(--border)] text-[0.75rem] text-[var(--text-muted)] group-last:border-none font-mono whitespace-nowrap">{appointment.id}</td>
                                     <td className="px-5 py-4 border-b border-[var(--border)] text-[0.95rem] font-semibold text-[var(--text-dark)] group-last:border-none"><div className="truncate" title={appointment.customerName}>{appointment.customerName}</div></td>
                                     <td className="px-5 py-4 border-b border-[var(--border)] text-[0.95rem] text-[var(--text-dark)] group-last:border-none whitespace-nowrap">{appointment.customerPhone}</td>
                                     <td className="px-5 py-4 border-b border-[var(--border)] text-[0.95rem] text-[var(--text-dark)] group-last:border-none"><div className="line-clamp-2 leading-relaxed" title={appointment.serviceName}>{appointment.serviceName}</div></td>
@@ -388,7 +387,7 @@ export default function Bookings() {
                                                 <Mail size={14} className="text-[var(--primary)]" /> {selectedAppointment.customerEmail}
                                             </span>
                                         )}
-                                        <span className="text-[0.72rem] font-bold px-2.5 py-0.5 rounded-md bg-black/5 text-[var(--text-muted)] font-mono tracking-widest">
+                                        <span className="text-[0.72rem] font-bold px-2.5 py-0.5 rounded-md bg-black/5 text-[var(--text-muted)] font-mono tracking-widest whitespace-nowrap">
                                             {selectedAppointment.id}
                                         </span>
                                     </div>

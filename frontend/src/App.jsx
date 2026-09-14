@@ -17,6 +17,7 @@ import ClientServices from "./pages/client/Services";
 import ServiceDetail from "./pages/client/ServiceDetail";
 import Contact from "./pages/client/Contact";
 import Blog from "./pages/client/Blog";
+import BlogDetail from "./pages/client/Blog/Detail";
 
 // Admin Pages
 import Login from "./pages/admin/Login";
@@ -33,6 +34,8 @@ import Contacts from "./pages/admin/Contacts";
 import Chat from "./pages/admin/Chat";
 import Staffs from "./pages/admin/Staffs";
 import UsersPage from "./pages/admin/Users";
+import BlogAdmin from "./pages/admin/Blog";
+import BlogForm from "./pages/admin/Blog/Form";
 
 function App() {
   return (
@@ -49,6 +52,7 @@ function App() {
             <Route path="booking" element={<Booking />} />
             <Route path="contact" element={<Contact />} />
             <Route path="blog" element={<Blog />} />
+            <Route path="blog/:slug" element={<BlogDetail />} />
           </Route>
 
           {/* Admin Public Routes */}
@@ -76,6 +80,9 @@ function App() {
             <Route path="chat" element={<Chat />} />
             <Route path="users" element={<UsersPage />} />
             <Route path="staffs" element={<Staffs />} />
+            <Route path="blog" element={<ProtectedRoute roles={['ADMIN']}><BlogAdmin /></ProtectedRoute>} />
+            <Route path="blog/add" element={<ProtectedRoute roles={['ADMIN']}><BlogForm /></ProtectedRoute>} />
+            <Route path="blog/edit/:id" element={<ProtectedRoute roles={['ADMIN']}><BlogForm /></ProtectedRoute>} />
           </Route>
         </Routes>
       </BrowserRouter>

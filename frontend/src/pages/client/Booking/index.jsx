@@ -154,24 +154,21 @@ export default function Booking() {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await fetch(`${API_URL}/catalog/services`);
-        const result = await response.json();
+        const res = await fetch(`${API_URL}/catalog/services`);
+        const result = await res.json();
+        const nextServices = result.success ? (result.data || []) : [];
+        setServices(nextServices);
 
-        if (response.ok && result.success) {
-          const nextServices = result.data || [];
-          setServices(nextServices);
-
-          if (selectedServiceSlug) {
-            const decodedParam = decodeURIComponent(selectedServiceSlug).toLowerCase();
-            const matchedService = nextServices.find((service) => 
-              service.slug === selectedServiceSlug || service.name.toLowerCase() === decodedParam
-            );
-            if (matchedService) {
-              setFormData((current) => ({ ...current, service: matchedService.name }));
-            }
-          } else if (nextServices.length > 0) {
-            setFormData((current) => ({ ...current, service: nextServices[0].name }));
+        if (selectedServiceSlug) {
+          const decodedParam = decodeURIComponent(selectedServiceSlug).toLowerCase();
+          const matchedService = nextServices.find((service) =>
+            service.slug === selectedServiceSlug || service.name.toLowerCase() === decodedParam
+          );
+          if (matchedService) {
+            setFormData((current) => ({ ...current, service: matchedService.name }));
           }
+        } else if (nextServices.length > 0) {
+          setFormData((current) => ({ ...current, service: nextServices[0].name }));
         }
       } catch {
         setServices([]);

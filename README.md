@@ -69,6 +69,11 @@ Tại thư mục gốc dự án, thực hiện lệnh:
 
 ```bash
 docker compose up -d --build
+
+# Chờ MySQL healthy rồi chạy schema/seed trong container backend.
+# Nếu đang dùng Windows + WSL, thêm tiền tố wsl như bên dưới:
+wsl docker compose exec backend npm run db:migrate
+wsl docker compose exec backend npm run db:seed
 ```
 
 ---

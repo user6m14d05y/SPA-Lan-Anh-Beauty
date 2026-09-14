@@ -53,6 +53,16 @@ app.post('/', paymentRoutes);
 // API routes
 app.use('/api', router);
 
+// Global Error Handler Middleware
+app.use((err, req, res, next) => {
+  console.error('[Backend Global Error]', err.stack || err.message || err);
+  const status = err.statusCode || err.status || 500;
+  res.status(status).json({
+    success: false,
+    message: err.message || 'Lỗi xử lý hệ thống.',
+  });
+});
+
 // Cấu hình Socket.io cho realtime
 const io = new Server(httpServer, {
   cors: {

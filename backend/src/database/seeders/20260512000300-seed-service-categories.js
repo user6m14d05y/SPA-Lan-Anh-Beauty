@@ -80,46 +80,55 @@ export default {
     const childSlugs = categories.flatMap((cat) => (cat.children || []).map((child) => child.slug));
     const parentSlugs = categories.map((cat) => cat.slug);
 
-    if (childSlugs.length > 0) {
-      await queryInterface.bulkDelete('service_categories', { slug: childSlugs });
-    }
-    await queryInterface.bulkDelete('service_categories', { slug: parentSlugs });
+    const allCategories = categories.flatMap((category) => [
+      { ...category, parentSlug: null },
+      ...(category.children || []).map((child) => ({ ...child, parentSlug: category.slug })),
+    ]);
+    const existingRows = await queryInterface.sequelize.query(
+      'SELECT id, slug FROM service_categories WHERE slug IN (:slugs)',
+      { replacements: { slugs: allCategories.map((category) => category.slug) }, type: QueryTypes.SELECT },
+    );
+    const existingSlugs = new Set(existingRows.map((category) => category.slug));
 
     for (const category of categories) {
-      await queryInterface.bulkInsert('service_categories', [{
-        parentId: null,
-        name: category.name,
-        slug: category.slug,
-        description: category.description,
-        sortOrder: category.sortOrder,
-        isActive: true,
-        createdAt: now,
-        updatedAt: now,
-      }]);
-
-      if (!category.children?.length) continue;
+      if (!existingSlugs.has(category.slug)) {
+        await queryInterface.bulkInsert('service_categories', [{
+          parentId: null,
+          name: category.name,
+          slug: category.slug,
+          description: category.description,
+          sortOrder: category.sortOrder,
+          isActive: true,
+          createdAt: now,
+          updatedAt: now,
+        }]);
+      }
 
       const parents = await queryInterface.sequelize.query(
         'SELECT id FROM service_categories WHERE slug = :slug LIMIT 1',
-        {
-          replacements: { slug: category.slug },
-          type: QueryTypes.SELECT,
-        },
+        { replacements: { slug: category.slug }, type: QueryTypes.SELECT },
       );
+      if (!parents.length || !category.children?.length) continue;
 
-      if (!parents || !parents.length) continue;
       const parentId = parents[0].id;
-
-      await queryInterface.bulkInsert('service_categories', category.children.map((child) => ({
-        parentId,
-        name: child.name,
-        slug: child.slug,
-        description: child.description,
-        sortOrder: child.sortOrder,
-        isActive: true,
-        createdAt: now,
-        updatedAt: now,
-      })));
+      const childRows = await queryInterface.sequelize.query(
+        'SELECT slug FROM service_categories WHERE parentId = :parentId',
+        { replacements: { parentId }, type: QueryTypes.SELECT },
+      );
+      const existingChildSlugs = new Set(childRows.map((child) => child.slug));
+      const missingChildren = category.children.filter((child) => !existingChildSlugs.has(child.slug));
+      if (missingChildren.length > 0) {
+        await queryInterface.bulkInsert('service_categories', missingChildren.map((child) => ({
+          parentId,
+          name: child.name,
+          slug: child.slug,
+          description: child.description,
+          sortOrder: child.sortOrder,
+          isActive: true,
+          createdAt: now,
+          updatedAt: now,
+        })));
+      }
     }
   },
 

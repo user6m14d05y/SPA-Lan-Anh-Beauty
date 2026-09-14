@@ -16,7 +16,8 @@ export default function AdminLayout() {
   const [openMenus, setOpenMenus] = useState({
     accounts: ['/admin/users', '/admin/staffs', '/admin/customers'].includes(location.pathname),
     appointments: ['/admin/bookings', '/admin/closed-periods'].includes(location.pathname),
-    services: ['/admin/services', '/admin/category-services'].includes(location.pathname)
+    services: ['/admin/services', '/admin/category-services'].includes(location.pathname),
+    blog: location.pathname.startsWith('/admin/blog')
   });
 
   const toggleMenu = (menu) => {
@@ -45,6 +46,7 @@ export default function AdminLayout() {
       case '/admin/closed-periods': return 'Ngày nghỉ';
       case '/admin/services': return 'Dịch vụ';
       case '/admin/category-services': return 'Danh mục dịch vụ';
+      case '/admin/blog': return 'Quản lý bài viết';
       case '/admin/contacts': return 'Liên hệ';
       case '/admin/chat': return 'Chat Khách hàng';
       default: return 'Admin Panel';
@@ -215,6 +217,17 @@ export default function AdminLayout() {
               </ul>
             </div>
           </li>
+          {hasRole('ADMIN') && (
+            <li>
+              <NavLink
+                to="/admin/blog"
+                className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
+              >
+                <span className={styles.navIcon}><List size={20} /></span>
+                Bài viết
+              </NavLink>
+            </li>
+          )}
           <li>
             <NavLink
               to="/admin/contacts"

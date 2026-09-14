@@ -47,7 +47,28 @@ Content-Type: application/json
 |---|---|---|---|
 | `POST` | `/chatbot/message` | Public | Gửi câu hỏi cho Gemini AI Chatbot |
 
-### 5. Services & Category Management (Admin)
+### 5. Blog & Beauty Articles
+| Method | Endpoint | Phân quyền | Mô tả |
+|---|---|---|---|
+| `GET` | `/blog/categories` | Public | Danh mục bài viết đang hoạt động |
+| `GET` | `/blog/posts` | Public | Danh sách bài đã xuất bản; hỗ trợ `categorySlug`, `q`, `sort` (`newest`/`oldest`/`popular`), `page`, `limit`, `cursor` |
+| `GET` | `/blog/posts/:slug` | Public | Chi tiết bài viết theo slug |
+| `POST` | `/blog/posts/:slug/view` | Public (rate-limited 30 req/60s/IP) | Ghi nhận lượt xem |
+| `GET` | `/blog/admin/posts` | `ADMIN` | Danh sách bài mọi trạng thái |
+| `GET` | `/blog/admin/posts/:id` | `ADMIN` | Chi tiết bài quản trị |
+| `POST` | `/blog/admin/posts` | `ADMIN` | Tạo bài viết |
+| `POST` | `/blog/admin/upload-image` | `ADMIN` | Upload ảnh bài viết (multipart, field `image`) → `{ imageUrl: /uploads/img/<file> }` |
+| `PUT` | `/blog/admin/posts/:id` | `ADMIN` | Cập nhật bài viết |
+| `PATCH` | `/blog/admin/posts/:id/status` | `ADMIN` | Chuyển `DRAFT`, `PUBLISHED` hoặc `ARCHIVED` |
+| `DELETE` | `/blog/admin/posts/:id` | `ADMIN` | Xóa bài chưa xuất bản |
+| `GET` | `/blog/admin/categories` | `ADMIN` | Danh sách chuyên mục (kể cả inactive) |
+| `POST` | `/blog/admin/categories` | `ADMIN` | Tạo chuyên mục bài viết |
+| `PUT` | `/blog/admin/categories/:id` | `ADMIN` | Cập nhật chuyên mục |
+| `DELETE` | `/blog/admin/categories/:id` | `ADMIN` | Xóa chuyên mục (chưa có bài viết) |
+
+Public list response có dạng `data.items` và `data.pagination` gồm `page`, `limit`, `total`, `hasMore`, `nextCursor`, `isElasticsearch`. Tìm kiếm ưu tiên **Elasticsearch** (nếu triển khai) và tự động **fallback về MySQL** khi ES không khả dụng — không bắt buộc cài ES. Chi tiết nghiệp vụ blog: xem [docs/blog-feature-daily-log-2026-09-14.md](blog-feature-daily-log-2026-09-14.md).
+
+### 6. Services & Category Management (Admin)
 | Method | Endpoint | Phân quyền | Mô tả |
 |---|---|---|---|
 | `POST` | `/admin/services` | `ADMIN` | Tạo dịch vụ mới |
@@ -65,3 +86,5 @@ Content-Type: application/json
 4. **`Bookings`**: `id`, `bookingCode`, `customerName`, `customerPhone`, `customerEmail`, `serviceId`, `bookingDate`, `bookingTime`, `notes`, `status` (`PENDING`/`CONFIRMED`/`COMPLETED`/`CANCELLED`).
 5. **`ClosedPeriods`**: `id`, `startDate`, `endDate`, `reason`.
 6. **`Conversations` & `Messages`**: Quản lý lịch sử chat và các cuộc thoại Socket.io.
+7. **`BlogCategory`** (bảng `blog_categories`): `id`, `name`, `slug` (unique), `description`, `sortOrder`, `isActive`.
+8. **`BlogPost`** (bảng `blog_posts`): `id`, `categoryId` (FK), `authorId` (FK), `authorName`, `title`, `slug` (unique), `excerpt`, `content`, `imageUrl`, `status` (`DRAFT`/`PUBLISHED`/`ARCHIVED`), `publishedAt`, `isFeatured`, `readingTimeMinutes`, `viewCount`, `sortOrder`.
