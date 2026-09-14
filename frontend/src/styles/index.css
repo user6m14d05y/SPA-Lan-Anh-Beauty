@@ -278,3 +278,21 @@ h6,
   transform: translateY(-2px);
   box-shadow: var(--shadow-luxury);
 }
+
+/* Synchronized Clean Select Input Styling */
+select {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke-width='2.2' stroke='%23775932'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m19.5 8.25-7.5 7.5-7.5-7.5'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  background-size: 14px 14px !important;
+  padding-right: 34px !important;
+  border-radius: 8px !important;
+}
+
+/* Synchronized Search Input Styling */
+.searchInput {
+  border-radius: 8px !important;
+}

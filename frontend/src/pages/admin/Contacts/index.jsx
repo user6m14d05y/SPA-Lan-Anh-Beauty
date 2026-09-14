@@ -170,20 +170,37 @@ export default function Contacts() {
                     </span>
                   </td>
                   <td>
-                    <button className={`${styles.actionBtn} ${styles.actionView}`} onClick={() => setSelectedContact(contact)}>
-                      <Eye size={16} /> Xem
-                    </button>
-                    <button
-                      className={`${styles.actionBtn} ${styles.actionEdit}`}
-                      onClick={() => openReplyModal(contact)}
-                      disabled={contact.status === 'REPLIED'}
-                      title={contact.status === 'REPLIED' ? 'Liên hệ này đã được trả lời' : 'Trả lời liên hệ'}
-                    >
-                      <MessageSquareReply size={16} /> {contact.status === 'REPLIED' ? 'Đã trả lời' : 'Trả lời'}
-                    </button>
-                    <button className={`${styles.actionBtn} ${styles.actionDelete}`} onClick={() => handleDelete(contact)}>
-                      <Trash2 size={16} /> Xóa
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        title="Xem chi tiết liên hệ"
+                        className="w-8 h-8 rounded-full bg-stone-100 text-[#775932] border border-[#EBE4DD] hover:bg-[#775932] hover:text-white flex items-center justify-center transition-all cursor-pointer shadow-xs hover:scale-105"
+                        onClick={() => setSelectedContact(contact)}
+                      >
+                        <Eye size={15} />
+                      </button>
+                      <button
+                        type="button"
+                        disabled={contact.status === 'REPLIED'}
+                        title={contact.status === 'REPLIED' ? 'Liên hệ này đã được trả lời' : 'Trả lời liên hệ'}
+                        className={`w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-xs hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
+                          contact.status === 'REPLIED'
+                            ? 'bg-emerald-50 text-emerald-600 border border-emerald-200'
+                            : 'bg-sky-50 text-sky-600 border border-sky-200 hover:bg-sky-100'
+                        }`}
+                        onClick={() => openReplyModal(contact)}
+                      >
+                        <MessageSquareReply size={15} />
+                      </button>
+                      <button
+                        type="button"
+                        title="Xóa liên hệ"
+                        className="w-8 h-8 rounded-full bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 flex items-center justify-center transition-all cursor-pointer shadow-xs hover:scale-105"
+                        onClick={() => handleDelete(contact)}
+                      >
+                        <Trash2 size={15} />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

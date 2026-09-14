@@ -83,6 +83,7 @@ export default function MainLayout() {
   const [staffConnected, setStaffConnected] = useState(false);
   const [startingNewConversation, setStartingNewConversation] = useState(false);
   const [serviceCategories, setServiceCategories] = useState([]);
+  const [blogCategories, setBlogCategories] = useState([]);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [expandedMobileCategories, setExpandedMobileCategories] = useState({});
 
@@ -135,6 +136,10 @@ export default function MainLayout() {
     };
 
     fetchServiceCategories();
+    fetch(`${API_URL}/blog/categories`)
+      .then((res) => res.json())
+      .then((result) => { if (result.success) setBlogCategories(result.data || []); })
+      .catch(() => setBlogCategories([]));
   }, []);
 
   useEffect(() => {
@@ -379,26 +384,34 @@ export default function MainLayout() {
   const stickyCatRef = useRef(null);
 
   const activeCategorySlug = searchParams.get('category') || '';
-  const activeSearchQuery = searchParams.get('q') || '';
-  const activeSortBy = searchParams.get('sort') || 'default';
+  const activeSearchQuery = searchParams.get('q') || searchParams.get('search') || '';
+  const activeSortBy = searchParams.get('sort') || (location.pathname === '/blog' ? 'newest' : 'default');
 
-  const sortOptions = [
-    { value: 'default', label: 'Sắp xếp: Mặc định' },
-    { value: 'price-asc', label: 'Giá: Thấp đến Cao' },
-    { value: 'price-desc', label: 'Giá: Cao đến Thấp' },
-    { value: 'discount', label: 'Ưu đãi tốt nhất' },
-    { value: 'duration', label: 'Thời lượng' },
-  ];
+  const sortOptions = location.pathname === '/blog'
+    ? [
+      { value: 'newest', label: 'Mới nhất' },
+      { value: 'popular', label: 'Xem nhiều' },
+      { value: 'oldest', label: 'Cũ nhất' },
+    ]
+    : [
+      { value: 'default', label: 'Sắp xếp: Mặc định' },
+      { value: 'price-asc', label: 'Giá: Thấp đến Cao' },
+      { value: 'price-desc', label: 'Giá: Cao đến Thấp' },
+      { value: 'discount', label: 'Ưu đãi tốt nhất' },
+      { value: 'duration', label: 'Thời lượng' },
+    ];
 
   const currentSortLabel = sortOptions.find((o) => o.value === activeSortBy)?.label || 'Sắp xếp: Mặc định';
 
-  const categoriesList = serviceCategories.length > 0 ? serviceCategories : [
-    { id: 1, name: 'Chăm sóc da', slug: 'cham-soc-da' },
-    { id: 2, name: 'Mỹ phẩm', slug: 'my-pham' },
-    { id: 3, name: 'Xu hướng', slug: 'xu-huong' },
-    { id: 4, name: 'Gội đầu', slug: 'goi-dau' },
-    { id: 5, name: 'Phun xăm', slug: 'phun-xam' },
-  ];
+  const categoriesList = location.pathname === '/blog'
+    ? blogCategories
+    : (serviceCategories.length > 0 ? serviceCategories : [
+      { id: 1, name: 'Chăm sóc da', slug: 'cham-soc-da' },
+      { id: 2, name: 'Mỹ phẩm', slug: 'my-pham' },
+      { id: 3, name: 'Xu hướng', slug: 'xu-huong' },
+      { id: 4, name: 'Gội đầu', slug: 'goi-dau' },
+      { id: 5, name: 'Phun xăm', slug: 'phun-xam' },
+    ]);
 
   const activeCategoryName = (() => {
     if (!activeCategorySlug) return 'Tất cả';
@@ -508,7 +521,13 @@ export default function MainLayout() {
                   className={styles.stickySearchInput}
                   placeholder={location.pathname === '/blog' ? "Tìm kiếm bài viết..." : "Tìm kiếm dịch vụ..."}
                   value={activeSearchQuery}
-                  onChange={(e) => updateSearchParam('q', e.target.value)}
+                  onChange={(e) => {
+                    const nextParams = new URLSearchParams(searchParams);
+                    nextParams.delete('search');
+                    if (e.target.value) nextParams.set('q', e.target.value);
+                    else nextParams.delete('q');
+                    setSearchParams(nextParams);
+                  }}
                 />
                 {activeSearchQuery && (
                   <button

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Eye, X } from '../../../icons.jsx';
 import { useAuth } from '../../../context/AuthContext';
 import CustomDatePicker from '../../../components/common/CustomDatePicker';
+import CustomSelect from '../../../components/common/CustomSelect';
 import { API_URL, ASSET_URL } from '../../../config';
 import styles from './Appointments.module.css';
 
@@ -154,11 +155,7 @@ export default function Appointments() {
           onChange={(event) => setSearchTerm(event.target.value)}
           placeholder="Tìm tên, SĐT hoặc dịch vụ..."
         />
-        <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
-          {statusOptions.map((option) => (
-            <option key={option.value} value={option.value}>{option.label}</option>
-          ))}
-        </select>
+        <CustomSelect value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} options={statusOptions} />
         <div className="min-w-[190px]">
           <CustomDatePicker
             value={dateFilter}
