@@ -6,12 +6,12 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "nodemon -L src/index.js",
-    "db:migrate": "sequelize-cli db:migrate",
-    "db:migrate:undo": "sequelize-cli db:migrate:undo",
-    "db:migrate:undo:all": "sequelize-cli db:migrate:undo:all",
-    "db:seed": "sequelize-cli db:seed:all",
-    "db:seed:undo": "sequelize-cli db:seed:undo",
-    "db:seed:undo:all": "sequelize-cli db:seed:undo:all"
+    "db:migrate": "NODE_OPTIONS=--experimental-require-module sequelize-cli db:migrate",
+    "db:migrate:undo": "NODE_OPTIONS=--experimental-require-module sequelize-cli db:migrate:undo",
+    "db:migrate:undo:all": "NODE_OPTIONS=--experimental-require-module sequelize-cli db:migrate:undo:all",
+    "db:seed": "NODE_OPTIONS=--experimental-require-module sequelize-cli db:seed:all",
+    "db:seed:undo": "NODE_OPTIONS=--experimental-require-module sequelize-cli db:seed:undo",
+    "db:seed:undo:all": "NODE_OPTIONS=--experimental-require-module sequelize-cli db:seed:undo:all"
   },
   "keywords": [],
   "author": "",

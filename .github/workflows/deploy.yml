@@ -94,24 +94,38 @@ jobs:
 
             # 6. Database Migrations & Seeders
             echo "🗄️ Waiting for MySQL to be ready and running Database Migrations..."
-            for i in {1..15}; do
+            MIGRATED=false
+            for i in {1..20}; do
               if sudo docker compose -f docker-compose.prod.yml exec -T backend npm run db:migrate; then
                 echo "✅ Database Migrations completed successfully."
+                MIGRATED=true
                 break
               fi
-              echo "⏳ MySQL is initializing/warming up... retrying migration in 3s ($i/15)"
+              echo "⏳ MySQL is initializing/warming up... retrying migration in 3s ($i/20)"
               sleep 3
             done
 
+            if [ "$MIGRATED" = false ]; then
+              echo "❌ Database Migrations failed after retries!"
+              exit 1
+            fi
+
             echo "🌱 Running Database Seeders..."
-            for i in {1..15}; do
+            SEEDED=false
+            for i in {1..20}; do
               if sudo docker compose -f docker-compose.prod.yml exec -T backend npm run db:seed; then
                 echo "✅ Database Seeders completed successfully."
+                SEEDED=true
                 break
               fi
-              echo "⏳ Retrying seeders in 3s ($i/15)"
+              echo "⏳ Retrying seeders in 3s ($i/20)"
               sleep 3
             done
+
+            if [ "$SEEDED" = false ]; then
+              echo "❌ Database Seeders failed after retries!"
+              exit 1
+            fi
 
             # 7. Prune dangling images
             echo "🧹 Pruning unused Docker images..."
