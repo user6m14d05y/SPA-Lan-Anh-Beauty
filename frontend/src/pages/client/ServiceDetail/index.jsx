@@ -39,20 +39,23 @@ export default function ServiceDetail() {
       try {
         setLoading(true);
         setError('');
-        const [detailResponse, servicesResponse] = await Promise.all([
-          fetch(`${API_URL}/catalog/services/${slug}`),
+        const [resDetail, resList] = await Promise.all([
+          fetch(`${API_URL}/catalog/services/${encodeURIComponent(slug)}`),
           fetch(`${API_URL}/catalog/services`),
         ]);
-        const detailResult = await detailResponse.json();
-        const servicesResult = await servicesResponse.json();
+        const resultDetail = await resDetail.json();
+        const resultList = await resList.json();
 
-        if (!detailResponse.ok || !detailResult.success) {
-          throw new Error(detailResult.message || 'Không thể tải chi tiết dịch vụ.');
+        if (!resultDetail.success || !resultDetail.data) {
+          throw new Error(resultDetail.message || 'Không tìm thấy dịch vụ.');
         }
 
-        setService(detailResult.data);
-        setServices(servicesResponse.ok && servicesResult.success ? servicesResult.data || [] : []);
-        setActiveImage(detailResult.data.thumbnailUrl || detailResult.data.imageUrl || fallbackImage);
+        const detail = resultDetail.data;
+        const allServices = resultList.success ? (resultList.data || []) : [];
+
+        setService(detail);
+        setServices(allServices);
+        setActiveImage(detail.thumbnailUrl || detail.imageUrl || fallbackImage);
         setIsDescriptionExpanded(false);
       } catch (error) {
         setError(error.message || 'Không thể tải chi tiết dịch vụ.');

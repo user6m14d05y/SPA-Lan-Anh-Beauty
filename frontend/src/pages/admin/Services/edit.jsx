@@ -73,6 +73,48 @@ const validateImageFile = (file) => {
   return '';
 };
 
+const formatDotsNumber = (val) => {
+  if (val === null || val === undefined || val === '') return '';
+  const digitsOnly = String(val).replace(/\D/g, '');
+  if (!digitsOnly) return '';
+  return Number(digitsOnly).toLocaleString('vi-VN');
+};
+
+const parseDotsToNumber = (val) => {
+  if (val === null || val === undefined || val === '') return null;
+  const digitsOnly = String(val).replace(/\D/g, '');
+  return digitsOnly ? Number(digitsOnly) : null;
+};
+
+const formatPriceLabel = (val) => {
+  if (val === null || val === undefined || val === '') return '';
+  const str = String(val).replace(/(\d)\.(\d)/g, '$1$2');
+  return str.replace(/\d+/g, (match) => Number(match).toLocaleString('vi-VN'));
+};
+
+const formatDiscountPercent = (val) => {
+  if (val === null || val === undefined || val === '') return '';
+  const digitsOnly = String(val).replace(/\D/g, '');
+  if (!digitsOnly) return '';
+  let num = Number(digitsOnly);
+  if (num > 100) num = 100;
+  return String(num);
+};
+
+const formatDurationMinutes = (val) => {
+  if (val === null || val === undefined || val === '') return '';
+  const digitsOnly = String(val).replace(/\D/g, '');
+  if (!digitsOnly) return '';
+  return String(Number(digitsOnly));
+};
+
+const formatSortOrder = (val) => {
+  if (val === null || val === undefined || val === '') return '0';
+  const digitsOnly = String(val).replace(/\D/g, '');
+  if (!digitsOnly) return '0';
+  return String(Number(digitsOnly));
+};
+
 const validateForm = (formData, images) => {
   if (!formData.categoryId) return 'Vui lòng chọn danh mục dịch vụ.';
   if (!formData.name.trim()) return 'Tên dịch vụ là bắt buộc.';
@@ -80,9 +122,18 @@ const validateForm = (formData, images) => {
   if (!formData.slug.trim()) return 'Slug là bắt buộc.';
   if (!/^[a-z0-9-]+$/.test(formData.slug.trim())) return 'Slug chỉ được gồm chữ thường, số và dấu gạch ngang.';
   if (formData.shortDescription.trim().length > 255) return 'Mô tả ngắn không được vượt quá 255 ký tự.';
-  if (formData.price && Number(formData.price) < 0) return 'Giá dịch vụ không hợp lệ.';
-  if (formData.durationMinutes && Number(formData.durationMinutes) < 1) return 'Thời lượng phải lớn hơn 0.';
-  if (Number(formData.discountPercent) < 0 || Number(formData.discountPercent) > 100) return 'Phần trăm giảm giá phải từ 0 đến 100.';
+  
+  const numPrice = parseDotsToNumber(formData.price);
+  if (formData.price && (numPrice === null || numPrice < 0)) return 'Giá dịch vụ không hợp lệ.';
+
+  const numDuration = parseDotsToNumber(formData.durationMinutes);
+  if (formData.durationMinutes && (numDuration === null || numDuration < 1)) return 'Thời lượng phải lớn hơn 0.';
+
+  const numDiscount = parseDotsToNumber(formData.discountPercent);
+  if (formData.discountPercent && (numDiscount === null || numDiscount < 0 || numDiscount > 100)) {
+    return 'Phần trăm giảm giá phải từ 0 đến 100%.';
+  }
+
   if (images.length === 0) return 'Vui lòng tải lên ít nhất 1 hình ảnh dịch vụ.';
   if (images.length > MAX_IMAGE_COUNT) return `Tối đa ${MAX_IMAGE_COUNT} hình ảnh cho mỗi dịch vụ.`;
   return '';
@@ -94,15 +145,15 @@ const buildPayload = (formData, images) => ({
   slug: formData.slug.trim(),
   shortDescription: formData.shortDescription.trim(),
   description: formData.description.trim(),
-  price: formData.price,
+  price: parseDotsToNumber(formData.price),
   priceLabel: formData.priceLabel.trim(),
-  durationMinutes: formData.durationMinutes,
+  durationMinutes: parseDotsToNumber(formData.durationMinutes),
   imageUrl: images[0] || '',
   images,
-  discountPercent: Number(formData.discountPercent || 0),
+  discountPercent: parseDotsToNumber(formData.discountPercent) || 0,
   isFeatured: Boolean(formData.isFeatured),
   isActive: Boolean(formData.isActive),
-  sortOrder: Number(formData.sortOrder || 0),
+  sortOrder: parseDotsToNumber(formData.sortOrder) || 0,
 });
 
 export default function EditService() {
@@ -151,13 +202,13 @@ export default function EditService() {
           slug: matchedService.slug || '',
           shortDescription: matchedService.shortDescription || '',
           description: matchedService.description || '',
-          price: matchedService.price || '',
-          priceLabel: matchedService.priceLabel || '',
-          durationMinutes: matchedService.durationMinutes || '',
-          discountPercent: matchedService.discountPercent || 0,
+          price: formatDotsNumber(matchedService.price),
+          priceLabel: formatPriceLabel(matchedService.priceLabel),
+          durationMinutes: formatDurationMinutes(matchedService.durationMinutes),
+          discountPercent: formatDiscountPercent(matchedService.discountPercent),
           isFeatured: Boolean(matchedService.isFeatured),
           isActive: Boolean(matchedService.isActive),
-          sortOrder: matchedService.sortOrder || 0,
+          sortOrder: formatSortOrder(matchedService.sortOrder),
         });
         setImages(initialImages);
       } catch (error) {
@@ -173,7 +224,20 @@ export default function EditService() {
   const handleFormChange = (event) => {
     const { name, value } = event.target;
     setFormData((current) => {
-      const nextForm = { ...current, [name]: value };
+      const nextForm = { ...current };
+      if (name === 'price') {
+        nextForm.price = formatDotsNumber(value);
+      } else if (name === 'priceLabel') {
+        nextForm.priceLabel = formatPriceLabel(value);
+      } else if (name === 'discountPercent') {
+        nextForm.discountPercent = formatDiscountPercent(value);
+      } else if (name === 'durationMinutes') {
+        nextForm.durationMinutes = formatDurationMinutes(value);
+      } else if (name === 'sortOrder') {
+        nextForm.sortOrder = formatSortOrder(value);
+      } else {
+        nextForm[name] = value;
+      }
       return nextForm;
     });
   };
@@ -280,10 +344,10 @@ export default function EditService() {
           <div className={`${styles.formMainColumn} transition-all duration-300`}>
             <div className={styles.formSection}>
               <div className={styles.sectionTitleRow}>
-                <div>
-                  <h3>Thông tin dịch vụ</h3>
-                  <p>Thông tin chính dùng cho danh sách và trang chi tiết dịch vụ.</p>
-                </div>
+                <h3>
+                  <span className={styles.cardTitleBullet}></span>
+                  THÔNG TIN DỊCH VỤ
+                </h3>
               </div>
 
               <div className={styles.formGrid}>
@@ -325,28 +389,28 @@ export default function EditService() {
 
             <div className={styles.formSection}>
               <div className={styles.sectionTitleRow}>
-                <div>
-                  <h3>Giá bán</h3>
-                  <p>Nhập giá gốc và phần trăm giảm giá nếu dịch vụ đang có ưu đãi.</p>
-                </div>
+                <h3>
+                  <span className={styles.cardTitleBullet}></span>
+                  GIÁ BÁN & THỜI LƯỢNG
+                </h3>
               </div>
 
               <div className={styles.formGrid}>
                 <div>
-                  <label>Giá số</label>
-                  <input type="number" name="price" value={formData.price} onChange={handleFormChange} min="0" placeholder="500000" />
+                  <label>Giá bán</label>
+                  <input type="text" name="price" value={formData.price} onChange={handleFormChange} placeholder="500.000" />
                 </div>
                 <div>
                   <label>Label giá</label>
-                  <input name="priceLabel" value={formData.priceLabel} onChange={handleFormChange} placeholder="Từ 500.000đ" />
+                  <input type="text" name="priceLabel" value={formData.priceLabel} onChange={handleFormChange} placeholder="Từ 500.000đ" />
                 </div>
                 <div>
                   <label>Giảm giá (%)</label>
-                  <input type="number" name="discountPercent" value={formData.discountPercent} onChange={handleFormChange} min="0" max="100" />
+                  <input type="text" name="discountPercent" value={formData.discountPercent} onChange={handleFormChange} placeholder="0" />
                 </div>
                 <div>
-                  <label>Thời lượng phút</label>
-                  <input type="number" name="durationMinutes" value={formData.durationMinutes} onChange={handleFormChange} min="1" placeholder="60" />
+                  <label>Thời lượng (phút)</label>
+                  <input type="text" name="durationMinutes" value={formData.durationMinutes} onChange={handleFormChange} placeholder="60" />
                 </div>
               </div>
             </div>
@@ -355,10 +419,10 @@ export default function EditService() {
           <aside className={`${styles.formSideColumn} transition-all duration-300`}>
             <div className={styles.formSection}>
               <div className={styles.sectionTitleRow}>
-                <div>
-                  <h3>Ảnh dịch vụ</h3>
-                  <p>Ảnh đầu tiên sẽ là ảnh đại diện.</p>
-                </div>
+                <h3>
+                  <span className={styles.cardTitleBullet}></span>
+                  ẢNH DỊCH VỤ
+                </h3>
               </div>
 
               <div className={styles.coverPreview}>
@@ -394,10 +458,10 @@ export default function EditService() {
 
             <div className={styles.formSection}>
               <div className={styles.sectionTitleRow}>
-                <div>
-                  <h3>Phân loại & hiển thị</h3>
-                  <p>Cài đặt nơi dịch vụ xuất hiện trên website.</p>
-                </div>
+                <h3>
+                  <span className={styles.cardTitleBullet}></span>
+                  PHÂN LOẠI & HIỂN THỊ
+                </h3>
               </div>
 
               <label>Danh mục dịch vụ</label>

@@ -276,8 +276,6 @@ export default {
     const now = new Date();
     const serviceSlugs = services.map((service) => service.slug);
 
-    await queryInterface.bulkDelete('services', { slug: serviceSlugs });
-
     const categorySlugs = [...new Set(services.map((service) => service.categorySlug))];
     const categories = await queryInterface.sequelize.query(
       'SELECT id, slug FROM service_categories WHERE slug IN (:slugs)',
@@ -307,8 +305,15 @@ export default {
         updatedAt: now,
       }));
 
-    if (validServices.length > 0) {
-      await queryInterface.bulkInsert('services', validServices);
+    const existingServices = await queryInterface.sequelize.query(
+      'SELECT slug FROM services WHERE slug IN (:slugs)',
+      { replacements: { slugs: serviceSlugs }, type: QueryTypes.SELECT },
+    );
+    const existingServiceSlugs = new Set(existingServices.map((service) => service.slug));
+    const missingServices = validServices.filter((service) => !existingServiceSlugs.has(service.slug));
+
+    if (missingServices.length > 0) {
+      await queryInterface.bulkInsert('services', missingServices);
     }
   },
 
