@@ -109,6 +109,19 @@ export const chatbotRateLimiter = rateLimit({
   },
 });
 
+export const blogViewRateLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (_req, res) => {
+    res.status(429).json({
+      success: false,
+      message: 'Bạn đã xem bài viết quá thường xuyên. Vui lòng thử lại sau.',
+    });
+  },
+});
+
 export const bookingRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 phút
   max: 100,                   // Tối đa 5 lần đặt lịch / 15 phút
