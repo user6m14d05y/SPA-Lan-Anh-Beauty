@@ -657,6 +657,7 @@
     grid-template-columns: 4fr 8fr;
     gap: 40px;
     align-items: center;
+    min-width: 0;
     background: transparent;
     border: none;
     border-bottom: 1px solid var(--border-silk-light);
@@ -693,6 +694,7 @@
 .articleImgCol {
     position: relative;
     width: 100%;
+    min-width: 0;
     aspect-ratio: 16 / 10.5;
     max-height: 240px;
     border-radius: 0;
@@ -723,6 +725,7 @@
 .articleContentCol {
     display: flex;
     flex-direction: column;
+    min-width: 0;
     gap: 12px;
     justify-content: center;
 }
@@ -832,6 +835,45 @@
     .articleImgCol {
         aspect-ratio: 16 / 9;
         max-height: none;
+    }
+}
+
+@media (max-width: 640px) {
+    .articleSection {
+        padding: 64px 20px;
+    }
+
+    .articleList {
+        gap: 32px;
+    }
+
+    .articleRow,
+    .articleRowReverse {
+        gap: 16px;
+        padding-bottom: 28px;
+    }
+
+    .articleMeta {
+        gap: 6px 8px;
+        font-size: 0.78rem;
+    }
+
+    .articleTag,
+    .readTime,
+    .viewsCount {
+        max-width: 100%;
+        overflow-wrap: anywhere;
+    }
+
+    .articleTitle,
+    .articleExcerpt {
+        overflow-wrap: anywhere;
+    }
+
+    .articleLink {
+        align-self: flex-start;
+        max-width: 100%;
+        overflow-wrap: anywhere;
     }
 }
 
