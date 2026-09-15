@@ -81,7 +81,7 @@ cp .env.example .env
 - `VPS_PORT`: `22`
 - `DEPLOY_PATH`: `/var/www/spa-lan-anh-beauty`
 
-Mỗi khi thực hiện `git push origin main`, hệ thống tự động build Docker, cập nhật DB Migration và dọn dẹp bộ nhớ trên VPS.
+Mỗi khi thực hiện `git push origin main` hoặc merge PR vào `main`, hệ thống tự động build Docker Container (Node 22), chạy DB Migration & Seeders tự động với cơ chế kiểm tra lỗi nghiêm ngặt và dọn dẹp bộ nhớ trên VPS.
 
 ---
 
@@ -89,4 +89,7 @@ Mỗi khi thực hiện `git push origin main`, hệ thống tự động build 
 
 1. **Khả năng mở rộng (Scalability):** Dễ dàng nâng cấp Redis Cache hoặc chia tải backend thành các Microservices độc lập khi lượng truy cập tăng đột biến.
 2. **Dễ bảo trì (Maintainability):** Code tách biệt theo Service Layer, Controller Layer và Component CSS Modules cô lập.
-3. **An toàn dữ liệu (Data Safety):** Dữ liệu MySQL được lưu trữ bền vững qua Docker Volume `mysql_data`.
+3. **An toàn dữ liệu & Migration (Data Safety & Migration Rules):**
+   - Dữ liệu MySQL được lưu trữ bền vững qua Docker Volume `mysql_data`.
+   - Các file migration Sequelize ORM viết theo chuẩn **Idempotent Migration** (kiểm tra `describeTable` trước khi thêm cột) tránh trùng lặp làm ngắt đoạn tiến trình deploy.
+   - `sequelize-cli` chạy trên nền Node 22 (`FROM node:22-alpine`) với `NODE_OPTIONS=--experimental-require-module` đảm bảo tương thích tuyệt đối các file ES Module (`export default`).

@@ -13,3 +13,6 @@ skills-lock.json
 .agents
 .playwright-mcp
 .vscode
+.claude
+AGENTS.md
+CLAUDE.md
