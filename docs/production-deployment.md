@@ -104,10 +104,31 @@ Thêm dòng sau để tự động sao lưu CSDL lúc **02:00 sáng mỗi ngày*
 
 ## 🤖 7. Cấu Hình Tự Động Deploy Với GitHub Actions CI/CD
 
-Vào GitHub Repository -> **Settings** -> **Secrets and variables** -> **Actions** và tạo 3 Secrets:
+File workflow: `.github/workflows/deploy.yml`
 
+### Các GitHub Secrets cần cấu hình trên Repo:
 - `VPS_HOST`: IP của VPS (VD: `103.1.2.3`)
 - `VPS_USERNAME`: User đăng nhập (VD: `root` hoặc `ubuntu`)
 - `VPS_SSH_KEY`: Nội dung Private SSH Key (`~/.ssh/id_rsa`)
+- `VPS_PORT`: `22` (Mặc định)
+- `DEPLOY_PATH`: `/var/www/spa-lan-anh-beauty`
 
-Mỗi khi bạn `git push origin main`, GitHub Actions sẽ tự động kiểm tra build và kết nối SSH để deploy code mới lên VPS mà bạn không cần thao tác gì thêm!
+Mỗi khi bạn `git push origin main` hoặc merge PR vào `main`, GitHub Actions sẽ tự động:
+1. SSH vào VPS và kéo mã nguồn mới nhất (`git fetch origin main && git reset --hard origin/main`).
+2. Rebuild các Docker Container (với Node 22 Alpine hỗ trợ ES Modules).
+3. **Tự động chạy Migration & Seeder CSDL** (với cơ chế thử lại 20 lần cho đến khi MySQL sẵn sàng; nếu thất bại sẽ bắt lỗi `exit 1` rõ ràng trên GitHub Actions).
+
+---
+
+## 💡 8. Quy Tắc Viết DB Migration An Toàn (Idempotent Migration)
+
+Để tránh ngắt tiến trình `db:migrate` trên Production do lỗi trùng tên cột/index (`Duplicate column name`):
+1. **Node 22 & ES Module**: Backend Docker container sử dụng Node 22 (`FROM node:22-alpine`) kèm `NODE_OPTIONS=--experimental-require-module` để `sequelize-cli` nạp mượt các file migration dạng `export default`.
+2. **Kểm tra trước khi thêm cột/index**: Các file migration thêm cột cần dùng `describeTable` để kiểm tra sự tồn tại của cột trước khi gọi `queryInterface.addColumn`:
+   ```javascript
+   const tableInfo = await queryInterface.describeTable('bookings');
+   if (!tableInfo.customerEmail) {
+     await queryInterface.addColumn('bookings', 'customerEmail', { ... });
+   }
+   ```
+

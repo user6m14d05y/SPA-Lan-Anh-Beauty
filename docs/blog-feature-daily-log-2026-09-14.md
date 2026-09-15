@@ -301,13 +301,16 @@ Nếu thêm service ES vào `docker-compose.yml`, index `blog_posts` sẽ đư�
 
 ## 📦 8. Checklist Trước Khi Commit
 
-- [ ] **16 file untracked mới** phải được `git add` (module blog backend 9 file + frontend 7 file) — dùng `git add -A` hoặc add từng nhóm.
-- [ ] Kiểm tra `backend/.env` **không** bị track (đảm bảo `.gitignore` còn `.env`).
-- [ ] Chạy ESLint frontend: `wsl -e bash -lc "cd /mnt/c/Thanhbt-dev/Project/SPA-Lan-Anh-Beauty/frontend && npx eslint src --ext .js,.jsx"`.
-- [ ] Gợi ý chia commit theo nhóm: (1) booking fix, (2) blog backend, (3) blog frontend + SEO modal, (4) UI theme admin, (5) config/eslint.
+---
 
-**Các file modified nhưng KHÔNG thuộc ngày hôm nay** (sửa từ trước, vẫn đang chờ commit): `README.md`, `backend/package.json`, `backend/package-lock.json`, `docs/api-guide.md`, `frontend/index.html`.
+## 🛠️ 9. Nhật Ký Sửa Lỗi Triển Khai Production (15/09/2026)
+
+| Sự cố phát hiện | Nguyên nhân gốc | Giải pháp khắc phục |
+|---|---|---|
+| Bảng `blog_posts` & `blog_categories` không tồn tại trên VPS | `sequelize-cli` crash trên `Node 20` khi nạp file migration ES Module (`export default`) | 1. Đổi Dockerfile backend sang `node:22-alpine`<br/>2. Thêm `NODE_OPTIONS=--experimental-require-module` vào scripts `package.json` |
+| Tiến trình `db:migrate` ngắt giữa chừng ở file `add-customer-email-to-bookings` | Báo lỗi `Duplicate column name 'customerEmail'` do cột đã tồn tại từ trước | Cập nhật file migration sang dạng **Idempotent** (dùng `describeTable` kiểm tra cột trước khi `addColumn`) |
+| CI/CD báo xanh ảo (Success) dù DB Migration bị lỗi | Lệnh `if` trong lặp retry SSH nuốt mất exit code lỗi | Cập nhật `.github/workflows/deploy.yml` bắt cờ `MIGRATED` / `SEEDED` và `exit 1` khi thất bại |
 
 ---
 
-*Cập nhật: 14/09/2026 — branch `thanhbt/feat`.*
+*Cập nhật: 15/09/2026 — branch `thanhbt/feat`.*
