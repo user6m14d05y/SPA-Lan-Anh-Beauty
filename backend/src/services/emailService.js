@@ -116,6 +116,52 @@ export const emailService = {
       html,
     });
   },
+
+  async sendReviewInvitation({ to, customerName, serviceName, reviewLink }) {
+    const transporter = createTransporter();
+    const safeCustomerName = escapeHtml(customerName);
+    const safeServiceName = escapeHtml(serviceName);
+
+    const subject = `[Lan Anh Beauty] Cảm ơn quý khách & Mời đánh giá dịch vụ ${safeServiceName}`;
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; border: 1px solid #e8ddd3; border-radius: 8px; overflow: hidden; background: #fff;">
+        <div style="background: linear-gradient(135deg, #775932 0%, #a28156 100%); color: #fff; padding: 28px 24px; text-align: center;">
+          <h1 style="margin: 0; font-size: 1.5rem; font-family: 'Playfair Display', Georgia, serif; letter-spacing: 1px;">LAN ANH BEAUTY</h1>
+          <p style="margin: 6px 0 0 0; font-size: 0.9rem; opacity: 0.9;">Viện Thẩm Mỹ & Chăm Sắc Đẹp Cao Cấp</p>
+        </div>
+        <div style="padding: 28px 24px;">
+          <p style="font-size: 1.05rem;">Xin chào <strong>${safeCustomerName}</strong>,</p>
+          <p>Cảm ơn quý khách đã tin tưởng và sử dụng dịch vụ <strong>${safeServiceName}</strong> tại <strong>Lan Anh Beauty</strong>.</p>
+          <p>Sự hài lòng của quý khách là niềm tự hào lớn nhất của chúng tôi. Kính mời quý khách dành ít phút chia sẻ trải nghiệm dịch vụ bằng cách nhấn vào nút bên dưới:</p>
+
+          <div style="text-align: center; margin: 32px 0;">
+            <a href="${reviewLink}" style="background: #775932; color: #ffffff; padding: 14px 28px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 1rem; display: inline-block; box-shadow: 0 4px 12px rgba(119, 89, 50, 0.25);">
+              ⭐ Gửi Đánh Giá Dịch Vụ
+            </a>
+          </div>
+
+          <p style="font-size: 0.88rem; color: #666; background: #fbf8f5; padding: 12px 16px; border-radius: 6px;">
+            📌 <em>Lưu ý: Link đánh giá này là độc quyền dành riêng cho quý khách, có hiệu lực trong vòng 14 ngày và chỉ sử dụng được 1 lần.</em>
+          </p>
+
+          <hr style="border: none; border-top: 1px solid #eee; margin: 24px 0;" />
+          <p style="margin: 0; color: #888; font-size: 0.85rem; text-align: center;">
+            Trân trọng cảm ơn,<br />
+            <strong>Đội ngũ Lan Anh Beauty</strong>
+          </p>
+        </div>
+      </div>
+    `;
+
+    await transporter.sendMail({
+      from: process.env.SMTP_FROM,
+      to,
+      subject,
+      text: `Xin chào ${customerName},\n\nCảm ơn quý khách đã sử dụng dịch vụ ${serviceName} tại Lan Anh Beauty.\nKính mời quý khách gửi đánh giá trải nghiệm theo đường link sau:\n${reviewLink}\n\nTrân trọng,\nLan Anh Beauty`,
+      html,
+    });
+  },
 };
 
 export default emailService;

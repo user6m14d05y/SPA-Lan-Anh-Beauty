@@ -23,7 +23,7 @@
 .btnPrimary,
 .btnSecondary {
     border: none;
-    border-radius: 10px;
+    border-radius: 8px;
     cursor: pointer;
     font-family: 'Montserrat', sans-serif;
     padding: 11px 18px;
@@ -69,7 +69,7 @@
 
 .modal {
     background: var(--bg-light);
-    border-radius: 16px;
+    border-radius: 8px;
     width: 90%;
     max-width: 600px;
     box-shadow: 0 20px 60px rgba(0,0,0,0.2);
@@ -124,7 +124,7 @@
     padding: 16px 24px;
     border-top: 1px solid var(--border);
     background: var(--bg);
-    border-radius: 0 0 16px 16px;
+    border-radius: 0 0 8px 8px;
 }
 
 .formGrid {
@@ -178,7 +178,7 @@
 .successBox {
     background: #dcfce7;
     border: 1px solid #86efac;
-    border-radius: 12px;
+    border-radius: 8px;
     color: #166534;
     font-weight: 700;
     margin-bottom: 16px;
@@ -195,7 +195,7 @@
 .summaryCard {
     background: var(--bg-light);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 8px;
     padding: 18px;
     box-shadow: 0 8px 20px rgba(119, 89, 50, 0.06);
 }
@@ -223,7 +223,7 @@
 .categoryCard {
     background: var(--bg-light);
     border: 1px solid var(--border);
-    border-radius: 16px;
+    border-radius: 8px;
     overflow: hidden;
     box-shadow: 0 8px 20px rgba(119, 89, 50, 0.06);
 }
@@ -250,7 +250,7 @@
 .categoryIcon {
     width: 32px;
     height: 32px;
-    border-radius: 10px;
+    border-radius: 8px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -286,7 +286,7 @@
 .statusBadge {
     display: inline-flex;
     align-items: center;
-    border-radius: 999px;
+    border-radius: 8px;
     padding: 6px 10px;
     font-size: 0.8rem;
     font-weight: 700;
@@ -306,7 +306,7 @@
 
 .directServiceBlock {
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 8px;
     padding: 16px;
     background: rgba(119, 89, 50, 0.03);
 }
@@ -325,7 +325,7 @@
 
 .childCategory {
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 8px;
     padding: 16px;
     background: var(--bg);
 }
@@ -347,7 +347,7 @@
 .childHeader > span {
     background: var(--bg-light);
     border: 1px solid var(--border);
-    border-radius: 999px;
+    border-radius: 8px;
     color: var(--primary);
     padding: 5px 9px;
     font-size: 0.8rem;
@@ -368,7 +368,7 @@
     align-items: center;
     background: var(--bg-light);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 10px;
 }
 
@@ -379,7 +379,7 @@
 .serviceThumb {
     width: 64px;
     height: 64px;
-    border-radius: 10px;
+    border-radius: 8px;
     overflow: hidden;
     background: var(--bg);
     display: flex;
@@ -443,7 +443,7 @@
 
 .emptyInline {
     border: 1px dashed var(--border);
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 14px;
     color: var(--text-muted);
     background: var(--bg-light);
@@ -454,7 +454,7 @@
 .errorBox {
     background: var(--bg-light);
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 24px;
     text-align: center;
     color: var(--text-muted);

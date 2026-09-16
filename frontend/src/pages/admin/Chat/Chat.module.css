@@ -2,7 +2,7 @@
     display: flex;
     height: calc(100vh - 140px);
     background: var(--bg-light);
-    border-radius: 12px;
+    border-radius: 8px;
     border: 1px solid var(--border);
     overflow: hidden;
     box-shadow: 0 4px 20px rgba(0,0,0,0.03);
@@ -197,7 +197,7 @@
 .endChatBtn {
     background: #fee2e2;
     border: 1px solid #fecaca;
-    border-radius: 10px;
+    border-radius: 8px;
     color: #b91c1c;
     cursor: pointer;
     font-family: inherit;
@@ -259,7 +259,7 @@
     height: auto;
     max-width: 240px;
     max-height: 320px;
-    border-radius: 12px;
+    border-radius: 8px;
     object-fit: contain;
 }
 
@@ -300,7 +300,7 @@
 .imagePreview img {
     width: 58px;
     height: 58px;
-    border-radius: 12px;
+    border-radius: 8px;
     object-fit: cover;
 }
 
@@ -339,7 +339,7 @@
     flex: 1;
     padding: 12px 20px;
     border: 1px solid var(--border);
-    border-radius: 25px;
+    border-radius: 8px;
     outline: none;
     font-family: inherit;
     background: var(--bg);
@@ -354,7 +354,7 @@
     color: var(--white);
     border: none;
     padding: 10px 20px;
-    border-radius: 20px;
+    border-radius: 8px;
     font-weight: 600;
     cursor: pointer;
     transition: var(--transition);

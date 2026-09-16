@@ -129,7 +129,7 @@ export default function BlogDetail() {
       <div className="relative h-[360px] md:h-[480px] overflow-hidden bg-[#1C1612]">
         <img src={getDetailImage(post)} alt={post.title} className="w-full h-full object-cover opacity-60" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#1C1612] via-[#1C1612]/45 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 max-w-[1000px] mx-auto px-5 pb-12 text-white"><span className="eyebrow-badge bg-white/20 text-white border-white/30 mb-4">{post.categoryName}</span><h1 className="font-serif text-4xl md:text-6xl font-bold leading-tight">{post.title}</h1></div>
+        <div className="absolute inset-x-0 bottom-0 max-w-[1000px] mx-auto px-5 pb-12 text-white"><span className="eyebrow-badge bg-white/20 text-white border-white/30 mb-4">{post.categoryName || post.category?.name || 'Bài viết'}</span><h1 className="font-serif text-4xl md:text-6xl font-bold leading-tight">{post.title}</h1></div>
       </div>
       <div className="max-w-[1000px] mx-auto px-5">
         <div className="flex flex-wrap items-center gap-4 py-6 text-sm text-[var(--primary-gold-dark)] font-semibold border-b border-[var(--border-silk)]"><span><CalendarIcon className="w-4 h-4 inline mr-1" />{formatDate(post.publishedAt)}</span><span><PencilSquareIcon className="w-4 h-4 inline mr-1" />{post.authorName}</span>{post.readingTimeMinutes ? <span>{post.readingTimeMinutes} phút đọc</span> : null}<span>{post.viewCount.toLocaleString('vi-VN')} lượt xem</span></div>

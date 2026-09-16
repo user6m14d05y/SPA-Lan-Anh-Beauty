@@ -1,26 +1,32 @@
+import crypto from 'crypto';
 import Booking from '../models/Booking.js';
 import { Op } from 'sequelize';
+import { SEPAY_API_KEY, SEPAY_SECRET_KEY } from '../config/env.js';
+
+const safeEqual = (actual, expected) => {
+  const actualBuffer = Buffer.from(String(actual));
+  const expectedBuffer = Buffer.from(String(expected));
+  return actualBuffer.length === expectedBuffer.length && crypto.timingSafeEqual(actualBuffer, expectedBuffer);
+};
+
+const isValidWebhookCredential = (value) => {
+  const credential = String(value || '').trim();
+  const candidates = credential.toLowerCase().startsWith('bearer ')
+    ? [credential.slice(7).trim()]
+    : [credential];
+  return candidates.some((candidate) => safeEqual(candidate, SEPAY_API_KEY) || safeEqual(candidate, SEPAY_SECRET_KEY));
+};
 
 export const paymentController = {
   // Webhook received from SePay IPN
   async handleSepayWebhook(req, res) {
     try {
-      const authHeader = String(req.headers['authorization'] || req.headers['x-api-key'] || req.headers['x-sepay-secret'] || '');
-      const querySecret = String(req.query.secret || req.query.api_key || '');
-
-      const apiKey = process.env.SEPAY_API_KEY || 'api_key_lananhbeauty_1414062005';
-      const secretKey = process.env.SEPAY_SECRET_KEY || 'thanhbtdev-sepay-key';
-
-      // Verify Authorization header or query secret against configured keys
-      const isAuthorized = 
-        (!authHeader && !querySecret) ||
-        authHeader.toLowerCase().includes(apiKey.toLowerCase()) || 
-        authHeader.toLowerCase().includes(secretKey.toLowerCase()) || 
-        querySecret.toLowerCase() === secretKey.toLowerCase() ||
-        querySecret.toLowerCase() === apiKey.toLowerCase();
+      const authHeader = req.headers.authorization || req.headers['x-api-key'] || req.headers['x-sepay-secret'];
+      const querySecret = req.query.secret || req.query.api_key;
+      const isAuthorized = isValidWebhookCredential(authHeader) || isValidWebhookCredential(querySecret);
 
       if (!isAuthorized) {
-        console.warn(`[SePay Webhook Unauthorized] Header: "${authHeader}", QuerySecret: "${querySecret}"`);
+        console.warn('[SePay Webhook Unauthorized] Missing or invalid credential.');
         return res.status(401).json({ success: false, message: 'Xác thực Webhook SePay không hợp lệ.' });
       }
 
@@ -110,14 +116,6 @@ export const paymentController = {
             order: [['createdAt', 'DESC']],
           });
         }
-      }
-
-      // Fallback: Match latest PENDING booking
-      if (!matchedBooking) {
-        matchedBooking = await Booking.findOne({
-          where: { status: 'PENDING' },
-          order: [['createdAt', 'DESC']],
-        });
       }
 
       if (matchedBooking) {

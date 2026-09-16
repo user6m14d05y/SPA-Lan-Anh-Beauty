@@ -18,6 +18,7 @@ import ServiceDetail from "./pages/client/ServiceDetail";
 import Contact from "./pages/client/Contact";
 import Blog from "./pages/client/Blog";
 import BlogDetail from "./pages/client/Blog/Detail";
+import ClientReview from "./pages/client/Review";
 
 // Admin Pages
 import Login from "./pages/admin/Login";
@@ -36,6 +37,7 @@ import Staffs from "./pages/admin/Staffs";
 import UsersPage from "./pages/admin/Users";
 import BlogAdmin from "./pages/admin/Blog";
 import BlogForm from "./pages/admin/Blog/Form";
+import AdminReviews from "./pages/admin/Reviews";
 
 function App() {
   return (
@@ -54,6 +56,10 @@ function App() {
             <Route path="blog" element={<Blog />} />
             <Route path="blog/:slug" element={<BlogDetail />} />
           </Route>
+
+          {/* Standalone Client Routes (No Main Header/Footer) */}
+          <Route path="/review" element={<ClientReview />} />
+          <Route path="/danh-gia" element={<ClientReview />} />
 
           {/* Admin Public Routes */}
           <Route path="/admin/login" element={<Login />} />
@@ -78,6 +84,7 @@ function App() {
             <Route path="category-services" element={<CategoryServices />} />
             <Route path="contacts" element={<Contacts />} />
             <Route path="chat" element={<Chat />} />
+            <Route path="reviews" element={<AdminReviews />} />
             <Route path="users" element={<UsersPage />} />
             <Route path="staffs" element={<Staffs />} />
             <Route path="blog" element={<ProtectedRoute roles={['ADMIN']}><BlogAdmin /></ProtectedRoute>} />

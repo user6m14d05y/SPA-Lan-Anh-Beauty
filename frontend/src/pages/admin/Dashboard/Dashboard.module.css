@@ -27,7 +27,7 @@
 
 .btnPrimary {
     border: none;
-    border-radius: 9999px;
+    border-radius: 8px;
     background: linear-gradient(135deg, #D4AF37 0%, #C59B63 50%, #9A7543 100%);
     color: #FFFFFF;
     cursor: pointer;
@@ -57,7 +57,7 @@
     margin-bottom: 26px;
     padding: 18px 22px;
     border: 1px solid #E8E2D9;
-    border-radius: 20px;
+    border-radius: 8px;
     background: #FFFFFF;
     box-shadow: 0 10px 30px -10px rgba(28, 22, 18, 0.05);
 }
@@ -66,7 +66,7 @@
 .filtersBar input {
     min-height: 44px;
     border: 1px solid #E8E2D9;
-    border-radius: 9999px;
+    border-radius: 8px;
     background: #FFFFFF;
     color: #1C1612;
     font-family: var(--font-sans, 'Plus Jakarta Sans', sans-serif);
@@ -100,7 +100,7 @@
     gap: 18px;
     min-height: 136px;
     border: 1px solid #E8E2D9;
-    border-radius: 20px;
+    border-radius: 8px;
     background: #FFFFFF;
     box-shadow: 0 10px 30px -10px rgba(28, 22, 18, 0.06);
     padding: 24px;
@@ -122,7 +122,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 16px;
+    border-radius: 8px;
     background: rgba(197, 155, 99, 0.12);
     border: 1px solid rgba(197, 155, 99, 0.25);
     color: #C59B63;
@@ -172,7 +172,7 @@
 .stateBox,
 .errorBox {
     border: 1px solid #E8E2D9;
-    border-radius: 20px;
+    border-radius: 8px;
     background: #FFFFFF;
     box-shadow: 0 10px 30px -10px rgba(28, 22, 18, 0.06);
 }
@@ -394,7 +394,7 @@
 .statusBadge {
     display: inline-flex;
     align-items: center;
-    border-radius: 9999px;
+    border-radius: 8px;
     font-size: 0.78rem;
     font-weight: 700;
     padding: 5px 12px;
@@ -442,7 +442,7 @@
 
 .emptyState {
     border: 1px dashed #E8E2D9;
-    border-radius: 16px;
+    border-radius: 8px;
     background: #FAF7F2;
     padding: 20px;
 }

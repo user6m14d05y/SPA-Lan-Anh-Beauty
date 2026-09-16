@@ -78,6 +78,8 @@ const serializePost = (post, { includeContent = true } = {}) => {
   const plain = typeof post.toJSON === 'function' ? post.toJSON() : { ...post };
   if (!includeContent) delete plain.content;
   plain.category = serializeCategory(plain.category);
+  plain.categoryName = plain.categoryName || plain.category?.name || null;
+  plain.categorySlug = plain.categorySlug || plain.category?.slug || null;
   plain.author = plain.author || (plain.authorName ? { fullName: plain.authorName } : null);
   return plain;
 };

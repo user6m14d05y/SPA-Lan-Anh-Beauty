@@ -1,11 +1,12 @@
 import express from 'express';
 import { userController } from '../controllers/userController.js';
 import { verifyToken, requireRole } from '../middlewares/authMiddleware.js';
+import { loginRateLimiter } from '../middlewares/rateLimitMiddleware.js';
 
 const router = express.Router();
 
 // === PUBLIC ROUTES (không cần token) ===
-router.post('/login', userController.login);
+router.post('/login', loginRateLimiter, userController.login);
 
 // === PROTECTED ROUTES (cần đăng nhập) ===
 router.post('/logout', verifyToken, userController.logout);
