@@ -1,8 +1,8 @@
 import rateLimit from 'express-rate-limit';
 import crypto from 'crypto';
+import { CAPTCHA_SECRET } from '../config/env.js';
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-const CAPTCHA_SECRET = process.env.JWT_SECRET || 'captcha-hmac-secret';
 const CAPTCHA_TTL_MS = 5 * 60 * 1000; // Token hết hạn sau 5 phút
 
 /**
@@ -81,6 +81,19 @@ export const validateCaptchaMiddleware = (req, res, next) => {
 };
 
 // ─── Middleware 2: Rate Limiter (đếm theo IP) ──────────────────────────────
+export const loginRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (_req, res) => {
+    res.status(429).json({
+      success: false,
+      message: 'Bạn đã thử đăng nhập quá nhiều lần. Vui lòng thử lại sau 15 phút.',
+    });
+  },
+});
+
 export const contactRateLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 phút
   max: 3,                    // Tối đa 3 lần; lần thứ 4 bị chặn

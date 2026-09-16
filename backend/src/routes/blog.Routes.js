@@ -18,7 +18,7 @@ import {
 } from '../controllers/blogController.js';
 import { verifyToken, requireRole } from '../middlewares/authMiddleware.js';
 import { blogViewRateLimiter } from '../middlewares/rateLimitMiddleware.js';
-import { uploadImage } from '../middlewares/uploadMiddleware.js';
+import { uploadImage, validateUploadedFiles } from '../middlewares/uploadMiddleware.js';
 
 const router = express.Router();
 const adminOnly = [verifyToken, requireRole('ADMIN')];
@@ -35,7 +35,20 @@ router.delete('/admin/categories/:id', adminOnly, deleteCategory);
 router.get('/admin/posts', adminOnly, getAdminPosts);
 router.get('/admin/posts/:id', adminOnly, getAdminPost);
 router.post('/admin/posts', adminOnly, createPost);
-router.post('/admin/upload-image', adminOnly, uploadImage.single('image'), uploadBlogImage);
+router.post('/admin/upload-image', adminOnly, (req, res, next) => {
+  uploadImage.single('image')(req, res, (error) => {
+    if (error) return res.status(400).json({ success: false, message: error.message || 'Không thể tải ảnh lên.' });
+    validateUploadedFiles(req, res, (validationError) => {
+      if (validationError) {
+        return res.status(400).json({
+          success: false,
+          message: validationError.message || 'Định dạng ảnh không hợp lệ.',
+        });
+      }
+      next();
+    });
+  });
+}, uploadBlogImage);
 router.put('/admin/posts/:id', adminOnly, updatePost);
 router.patch('/admin/posts/:id/status', adminOnly, updatePostStatus);
 router.delete('/admin/posts/:id', adminOnly, deletePost);

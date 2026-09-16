@@ -2,6 +2,7 @@ import { Op } from 'sequelize';
 import Booking from '../models/Booking.js';
 import ClosedPeriod from '../models/ClosedPeriod.js';
 import Service from '../models/Service.js';
+import reviewService from '../services/reviewService.js';
 import { BOOKING_SLOTS, SLOT_CAPACITY } from '../config/bookingAvailability.js';
 
 const activeBookingStatuses = ['PENDING', 'CONFIRMED', 'COMPLETED'];
@@ -381,6 +382,14 @@ export const bookingController = {
       if (req.body.notes !== undefined) updates.notes = req.body.notes?.trim() || null;
 
       await booking.update(updates);
+
+      if (booking.status === 'COMPLETED') {
+        try {
+          await reviewService.generateReviewTokenForBooking(booking);
+        } catch (reviewErr) {
+          console.warn(`[Review Token Generation Error] Booking #${booking.id}:`, reviewErr.message);
+        }
+      }
 
       res.status(200).json({
         success: true,

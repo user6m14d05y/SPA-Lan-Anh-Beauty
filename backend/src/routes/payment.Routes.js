@@ -1,5 +1,6 @@
 import express from 'express';
 import { paymentController } from '../controllers/paymentController.js';
+import { verifyToken, requireRole } from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
@@ -13,6 +14,6 @@ router.all('/', paymentController.handleSepayWebhook);
 router.get('/check-status', paymentController.checkPaymentStatus);
 
 // Simulate payment success (manual confirm or test trigger)
-router.post('/simulate-success', paymentController.simulateSuccess);
+router.post('/simulate-success', verifyToken, requireRole('ADMIN'), paymentController.simulateSuccess);
 
 export default router;

@@ -128,6 +128,21 @@ export default function Home() {
     fetchCategories();
   }, []);
 
+  const [publicReviews, setPublicReviews] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch(`${API_URL}/reviews/public`)
+      .then((res) => res.json())
+      .then((result) => {
+        if (!cancelled && result.success && Array.isArray(result.data) && result.data.length > 0) {
+          setPublicReviews(result.data);
+        }
+      })
+      .catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     fetch(`${API_URL}/blog/posts?limit=3&sort=newest`)
@@ -382,32 +397,39 @@ export default function Home() {
           <p>Những cảm nhận chân thực từ hàng nghìn phái đẹp đã tin tưởng gửi gắm nhan sắc tại Lan Anh Beauty.</p>
         </div>
         <div className={styles.feedbackGrid}>
-          {feedbackItems.map((item) => (
-            <div key={item.name} className={styles.feedbackCard}>
-              <div className={styles.feedbackHeader}>
-                <div className={styles.quoteIcon}>“</div>
-                <div className="flex gap-1 text-amber-400">
-                  {[...Array(5)].map((_, i) => (
-                    <StarIcon key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  ))}
+          {(publicReviews.length > 0 ? publicReviews : feedbackItems).map((item, idx) => {
+            const name = item.displayName || item.name;
+            const service = item.serviceName || item.service;
+            const content = item.comment || item.content;
+            const rating = item.rating || 5;
+
+            return (
+              <div key={item.id || idx} className={styles.feedbackCard}>
+                <div className={styles.feedbackHeader}>
+                  <div className={styles.quoteIcon}>“</div>
+                  <div className="flex gap-1 text-amber-400">
+                    {[...Array(rating)].map((_, i) => (
+                      <StarIcon key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    ))}
+                  </div>
+                </div>
+                <p className={styles.feedbackContent}>“{content}”</p>
+                <div className={styles.feedbackUser}>
+                  <div className={styles.avatar}>
+                    {name.split(' ').map(n => n[0]).join('')}
+                  </div>
+                  <div className={styles.userInfo}>
+                    <h4 className="flex items-center gap-1.5">
+                      <span>{name}</span>
+                      <CheckBadgeIcon className="w-4 h-4 text-emerald-500 inline" />
+                      <span className={styles.verifiedTag}>Đã trải nghiệm</span>
+                    </h4>
+                    <span>{service}</span>
+                  </div>
                 </div>
               </div>
-              <p className={styles.feedbackContent}>“{item.content}”</p>
-              <div className={styles.feedbackUser}>
-                <div className={styles.avatar}>
-                  {item.name.split(' ').map(n => n[0]).join('')}
-                </div>
-                <div className={styles.userInfo}>
-                  <h4 className="flex items-center gap-1.5">
-                    <span>{item.name}</span>
-                    <CheckBadgeIcon className="w-4 h-4 text-emerald-500 inline" />
-                    <span className={styles.verifiedTag}>Đã trải nghiệm</span>
-                  </h4>
-                  <span>{item.service}</span>
-                </div>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 

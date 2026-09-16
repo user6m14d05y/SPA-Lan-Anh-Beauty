@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { userService } from '../services/userService.js';
-
-const JWT_SECRET = process.env.JWT_SECRET;
+import { JWT_SECRET } from '../config/env.js';
 
 /**
  * Middleware xác thực JWT token từ header Authorization
