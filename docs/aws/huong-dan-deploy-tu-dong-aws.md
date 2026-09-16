@@ -151,4 +151,59 @@ sudo docker system prune -af --volumes
    df -h
    ```
 
+---
+
+## ⚠️ 9. Khắc Phục Lỗi 502 Bad Gateway (Do Nginx Caching IP Nội Bộ Container)
+
+### 📌 Hiện tượng:
+Trình duyệt hoặc Cloudflare báo lỗi `502 Bad Gateway` khi truy cập domain chính hoặc endpoint `/api/`. Trong khi `docker compose ps` cho thấy Nginx đã chạy lâu ngày (`Up 4 days`), còn Backend và Frontend mới khởi tạo lại (`Up 2 minutes`).
+
+### 🔍 Nguyên nhân:
+Nginx mặc định chỉ phân giải tên miền nội bộ của Docker (`http://backend:5000`, `http://frontend:5173`) một lần duy nhất khi khởi động Nginx. Khi Backend hoặc Frontend container được rebuild/recreate, IP nội bộ trong mạng Docker bị thay đổi. Nginx giữ IP cũ đã chết $\rightarrow$ sinh ra lỗi `502 Bad Gateway`.
+
+### 💡 Giải pháp đã thực hiện:
+1. **Cấu hình Dynamic DNS Resolver cho Nginx**:
+   Bổ sung `resolver 127.0.0.11 valid=10s ipv6=off;` và sử dụng biến ngầm (`set $frontend_upstream "http://frontend:5173";`) trong `scripts/nginx.conf`. Việc này ép Nginx phải làm mới IP của container 10 giây/lần.
+2. **Khởi động lại Nginx khi Deploy**:
+   Tự động chạy `docker compose restart nginx` ngay sau khi deploy trong script `scripts/deploy.sh` và file workflow `.github/workflows/deploy.yml`.
+
+---
+
+## ⚠️ 10. Khắc Phục Lỗi Backend Crash Do Thiếu Biến Môi Trường (`CORS_ORIGINS`, `CAPTCHA_SECRET`)
+
+### 📌 Hiện tượng:
+Gửi request `/api/` trả về lỗi 502. Kiểm tra log `docker compose -f docker-compose.prod.yml logs backend` thấy Backend báo lỗi:
+`WARN[0000] The "CORS_ORIGINS" variable is not set.`
+`Error: Thiếu hoặc không an toàn biến môi trường bắt buộc: CAPTCHA_SECRET`
+
+### 🔍 Nguyên nhân:
+File `.env` trên VPS chưa khai báo đầy đủ các biến môi trường bảo mật bắt buộc của Backend:
+* `CORS_ORIGINS=https://lananhbeauty.thanhbtdev.id.vn`
+* `CLIENT_URL=https://lananhbeauty.thanhbtdev.id.vn`
+* `CAPTCHA_SECRET=LanAnh-Beauty-captcha-secret-2026-ultra-secure`
+
+Theo cơ chế tại `backend/src/config/env.js`, nếu thiếu bất kỳ biến nào trên, Backend sẽ tung ngoại lệ dừng chương trình ngay khi bật up.
+
+### 💡 Giải pháp:
+Bổ sung đầy đủ 3 biến môi trường trên vào file `/var/www/spa-lan-anh-beauty/.env` trên VPS (hoặc vào GitHub Secret `ENV_FILE_CONTENT`), sau đó khởi chạy lại Backend:
+```bash
+docker compose -f docker-compose.prod.yml up -d backend
+```
+
+---
+
+## ⚠️ 11. Khắc Phục Lỗi Frontend Trắng Màn Hình (404 `.vite/deps/react.js`) & Warning Node 20
+
+### 📌 Hiện tượng:
+TRUY CẬP TRANG CHỦ MÀN HÌNH TRẮNG TINH. F12 Console báo lỗi:
+`GET https://lananhbeauty.thanhbtdev.id.vn/node_modules/.vite/deps/react.js 404 (Not Found)`
+
+### 🔍 Nguyên nhân:
+Vite Dev Server trong Docker bị dính cache cũ hoặc chưa pre-bundle lại module khi container khởi chạy lại.
+
+### 💡 Giải pháp đã thực hiện:
+1. **Thêm cờ `--force` cho Vite**: Cập nhật `CMD ["npm", "run", "dev", "--", "--host", "--force"]` trong `frontend/Dockerfile` để Vite ép buộc dọn và build mới hoàn toàn cache dependencies khi bật container.
+2. **Cập nhật Node.js 22 & GitHub Actions Node 24**: Nâng cấp base image trong `frontend/Dockerfile` lên `node:22-alpine` cho đồng bộ với Backend, cập nhật `docker/build-push-action@v6` và khai báo `ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"` trong GitHub Actions workflow.
+
+
 

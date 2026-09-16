@@ -20,5 +20,10 @@ export default defineConfig({
       interval: 500,
       binaryInterval: 500
     }
+  },
+  preview: {
+    host: true,
+    port: 5173,
+    allowedHosts: true,
   }
 })
