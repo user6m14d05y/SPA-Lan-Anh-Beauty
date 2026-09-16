@@ -5,6 +5,9 @@ on:
     branches: [ "main" ]
   workflow_dispatch:
 
+env:
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
+
 jobs:
   deploy:
     name: Deploy to Production AWS EC2
@@ -91,6 +94,7 @@ jobs:
 
             echo "🐳 Building and starting Docker containers..."
             sudo docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
+            sudo docker compose -f docker-compose.prod.yml restart nginx
 
             # 6. Database Migrations & Seeders
             echo "🗄️ Waiting for MySQL to be ready and running Database Migrations..."

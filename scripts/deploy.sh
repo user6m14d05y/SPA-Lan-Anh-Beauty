@@ -20,6 +20,7 @@ fi
 
 echo "🐳 [3/5] Build và khởi chạy Docker Production Containers..."
 docker compose -f docker-compose.prod.yml up -d --build --remove-orphans
+docker compose -f docker-compose.prod.yml restart nginx
 
 echo "🗄️ [4/5] Chạy Database Migrations..."
 for i in {1..15}; do
