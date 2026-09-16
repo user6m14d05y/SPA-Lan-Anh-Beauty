@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Outlet, NavLink, useLocation, useNavigate } from 'react-router-dom';
 // Icon
-import { LayoutDashboard, Calendar, CalendarOff, Users, Sparkles, Mail, MessageCircle, LogOut, User, ShieldCheck, ChevronDown, List } from '../icons.jsx';
+import { LayoutDashboard, Calendar, CalendarOff, Users, Sparkles, Mail, MessageCircle, LogOut, User, ShieldCheck, ChevronDown, List, Star } from '../icons.jsx';
 import { useAuth } from '../context/AuthContext';
 import styles from './AdminLayout.module.css';
 
@@ -49,6 +49,7 @@ export default function AdminLayout() {
       case '/admin/blog': return 'Quản lý bài viết';
       case '/admin/contacts': return 'Liên hệ';
       case '/admin/chat': return 'Chat Khách hàng';
+      case '/admin/reviews': return 'Feedback & Đánh Giá';
       default: return 'Admin Panel';
     }
   };
@@ -235,6 +236,15 @@ export default function AdminLayout() {
             >
               <span className={styles.navIcon}><Mail size={20} /></span>
               Liên hệ
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/admin/reviews"
+              className={({ isActive }) => isActive ? `${styles.navLink} ${styles.active}` : styles.navLink}
+            >
+              <span className={styles.navIcon}><Star size={20} /></span>
+              Feedback & Đánh Giá
             </NavLink>
           </li>
           <li>
