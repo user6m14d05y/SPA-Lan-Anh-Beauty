@@ -21,6 +21,20 @@ services:
       retries: 10
       start_period: 30s
 
+  redis:
+    image: redis:7-alpine
+    container_name: spa_redis
+    restart: always
+    expose:
+      - "6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   backend:
     build:
       context: ./backend
@@ -39,8 +53,14 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - DB_PORT=3306
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
       - PORT=${PORT}
       - JWT_SECRET=${JWT_SECRET}
+      - CAPTCHA_SECRET=${CAPTCHA_SECRET}
+      - CORS_ORIGINS=${CORS_ORIGINS:-http://localhost:5173}
+      - SEPAY_API_KEY=${SEPAY_API_KEY}
+      - SEPAY_SECRET_KEY=${SEPAY_SECRET_KEY}
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_PORT=${SMTP_PORT}
       - SMTP_SECURE=${SMTP_SECURE}
@@ -51,6 +71,8 @@ services:
       - GEMINI_MODEL=${GEMINI_MODEL:-gemini-2.5-flash}
     depends_on:
       mysql:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
   frontend:
@@ -70,3 +92,4 @@ services:
 
 volumes:
   mysql_data:
+  redis_data:

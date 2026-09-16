@@ -26,6 +26,25 @@ services:
           cpus: '1.0'
           memory: 1024M
 
+  redis:
+    image: redis:7-alpine
+    container_name: spa_prod_redis
+    restart: always
+    expose:
+      - "6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
   backend:
     build:
       context: ./backend
@@ -43,8 +62,13 @@ services:
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
       - DB_PORT=3306
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
       - PORT=${PORT:-5000}
       - JWT_SECRET=${JWT_SECRET}
+      - CAPTCHA_SECRET=${CAPTCHA_SECRET}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - CLIENT_URL=${CLIENT_URL:-https://${DOMAIN_NAME}}
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_PORT=${SMTP_PORT}
       - SMTP_SECURE=${SMTP_SECURE}
@@ -58,11 +82,8 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          cpus: '0.8'
-          memory: 512M
+      redis:
+        condition: service_healthy
 
   frontend:
     build:
@@ -102,4 +123,5 @@ services:
 
 volumes:
   mysql_data:
+  redis_data:
   certbot_data:

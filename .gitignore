@@ -1,6 +1,5 @@
 # Environment files - KHÔNG commit lên GitHub
 .env
-backend/.env
 backend/uploads/img/*
 !backend/uploads/img/.gitkeep
 !backend/uploads/img/sample-*
