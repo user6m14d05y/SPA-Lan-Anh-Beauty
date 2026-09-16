@@ -169,7 +169,7 @@
 
 @media (max-width: 900px) {
     .storySection .container {
-        flex-direction: column;
+        grid-template-columns: 1fr;
     }
     .valuesGrid {
         display: flex;
