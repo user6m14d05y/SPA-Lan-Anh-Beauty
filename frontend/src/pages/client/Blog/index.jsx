@@ -207,7 +207,6 @@ export default function Blog() {
           <div className="flex flex-wrap gap-3 flex-1">
             {visibleCategories.map((category) => (
               <button key={category.id} type="button" onClick={() => updateFilter('category', category.slug)} className={`border rounded-none px-4 py-3 text-left transition-all ${selectedCategory === category.slug ? 'border-[var(--primary-gold)] bg-white shadow-[var(--shadow-luxury)]' : 'border-[var(--border-silk-light)] bg-white/70 hover:border-[var(--primary-gold)]'}`}>
-                <span className="block text-[var(--primary-gold-dark)] text-[10px] font-bold tracking-[1.5px] uppercase mb-1">{category.slug ? 'DANH MỤC' : 'TẤT CẢ'}</span>
                 <strong className="text-base text-[var(--text-main)] font-serif">{category.name}</strong>
               </button>
             ))}

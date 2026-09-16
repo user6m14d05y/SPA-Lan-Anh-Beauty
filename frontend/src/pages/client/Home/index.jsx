@@ -341,7 +341,7 @@ export default function Home() {
               {/* Col 2: Content (Danh mục, Thời gian đọc, Lượt xem, Title, Mô tả, Link) */}
               <div className={styles.articleContentCol}>
                 <div className={styles.articleMeta}>
-                  <span className={styles.articleTag}>{item.categoryName}</span>
+                  <span className={styles.articleTag}>{item.categoryName || item.category?.name || 'Bài viết'}</span>
                   <span className={styles.articleMetaDivider}>•</span>
                   <span className={styles.readTime}>
                     <ClockIcon className="w-3.5 h-3.5 inline mr-1 text-[#C59B63]" />
@@ -350,7 +350,7 @@ export default function Home() {
                   <span className={styles.articleMetaDivider}>•</span>
                   <span className={styles.viewsCount}>
                     <Eye size={14} className="inline mr-1 text-[#C59B63]" />
-                    {item.viewCount.toLocaleString('vi-VN')} lượt xem
+                    {(item.viewCount || 0).toLocaleString('vi-VN')} lượt xem
                   </span>
                 </div>
 

@@ -202,7 +202,7 @@ export default function Bookings() {
                 </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 mb-[18px] bg-[var(--bg-light)] p-3.5 rounded-xl border border-[var(--border)] shadow-sm">
+            <div className="flex flex-wrap items-center gap-3 mb-[18px] bg-[var(--bg-light)] p-3.5 rounded-lg border border-[var(--border)] shadow-sm">
                 <input
                     className="flex-1 min-w-[250px] px-[15px] py-[10px] border border-[var(--border)] rounded-lg outline-none focus:border-[var(--primary)] bg-[var(--bg-light)] text-[var(--text-dark)] transition-colors"
                     value={searchTerm}
@@ -238,9 +238,9 @@ export default function Bookings() {
                 </button>
             </div>
 
-            {error && <div className="mb-4 p-6 bg-[#fee2e2] text-[#991b1b] rounded-[10px] border border-[#fecaca] text-center">{error}</div>}
+            {error && <div className="mb-4 p-6 bg-[#fee2e2] text-[#991b1b] rounded-lg border border-[#fecaca] text-center">{error}</div>}
 
-            <div className="bg-[var(--bg-light)] rounded-xl border border-[var(--border)] overflow-x-auto shadow-sm">
+            <div className="bg-[var(--bg-light)] rounded-lg border border-[var(--border)] overflow-x-auto shadow-sm">
                 {loading ? (
                     <div className="p-8 text-center text-[var(--text-muted)]">Đang tải danh sách lịch hẹn...</div>
                 ) : filteredAppointments.length === 0 ? (
@@ -354,7 +354,7 @@ export default function Bookings() {
                     onClick={() => setSelectedAppointment(null)}
                 >
                     <div 
-                        className="bg-white rounded-3xl w-full max-w-[840px] overflow-hidden shadow-[0_30px_90px_rgba(28,22,18,0.22)] border border-[var(--border)] animate-scaleUp my-auto" 
+                        className="bg-white rounded-lg w-full max-w-[840px] overflow-hidden shadow-[0_30px_90px_rgba(28,22,18,0.22)] border border-[var(--border)] animate-scaleUp my-auto" 
                         onClick={(event) => event.stopPropagation()}
                     >
                         {/* Header Banner */}
@@ -368,13 +368,13 @@ export default function Bookings() {
                             </button>
 
                             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#C59B63] text-white font-serif font-bold text-xl flex items-center justify-center shadow-md shrink-0 transition-transform duration-300 hover:scale-105">
+                                <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-[#D4AF37] to-[#C59B63] text-white font-serif font-bold text-xl flex items-center justify-center shadow-md shrink-0 transition-transform duration-300 hover:scale-105">
                                     {selectedAppointment.customerName ? selectedAppointment.customerName.split(' ').map(n => n[0]).join('').slice(-2).toUpperCase() : 'KH'}
                                 </div>
                                 <div>
                                     <div className="flex items-center gap-3 mb-1">
                                         <h3 className="text-2xl font-serif font-bold text-[var(--text-dark)] m-0">{selectedAppointment.customerName}</h3>
-                                        <span className={`px-3 py-0.5 text-[0.75rem] font-bold rounded-full transition-all duration-300 ${getStatusClass(selectedAppointment.status)}`}>
+                                        <span className={`px-3 py-0.5 text-[0.75rem] font-bold rounded-lg transition-all duration-300 ${getStatusClass(selectedAppointment.status)}`}>
                                             {statusLabels[selectedAppointment.status] || selectedAppointment.status}
                                         </span>
                                     </div>
@@ -403,7 +403,7 @@ export default function Bookings() {
                                 <div className={`${selectedAppointment.customerImage ? 'lg:col-span-7' : 'w-full'} space-y-6`}>
                                     
                                     {/* Service Banner */}
-                                    <div className="p-5 rounded-2xl bg-[rgba(197,155,99,0.06)] border border-[rgba(197,155,99,0.2)] transition-all duration-300 hover:border-[rgba(197,155,99,0.4)]">
+                                    <div className="p-5 rounded-lg bg-[rgba(197,155,99,0.06)] border border-[rgba(197,155,99,0.2)] transition-all duration-300 hover:border-[rgba(197,155,99,0.4)]">
                                         <div className="text-[0.72rem] font-bold uppercase tracking-wider text-[var(--primary)] mb-1 flex items-center gap-1.5">
                                             <Sparkles size={14} /> Dịch vụ đăng ký
                                         </div>
@@ -415,7 +415,7 @@ export default function Bookings() {
                                     {/* Info Grid (Clean Key-Value) */}
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="flex items-start gap-3">
-                                            <div className="w-9 h-9 rounded-xl bg-[#FAF7F2] border border-[var(--border)] flex items-center justify-center text-[var(--primary)] shrink-0 mt-0.5 transition-colors duration-200">
+                                            <div className="w-9 h-9 rounded-lg bg-[#FAF7F2] border border-[var(--border)] flex items-center justify-center text-[var(--primary)] shrink-0 mt-0.5 transition-colors duration-200">
                                                 <Calendar size={18} />
                                             </div>
                                             <div>
@@ -427,7 +427,7 @@ export default function Bookings() {
                                         </div>
 
                                         <div className="flex items-start gap-3">
-                                            <div className="w-9 h-9 rounded-xl bg-[#FAF7F2] border border-[var(--border)] flex items-center justify-center text-[var(--primary)] shrink-0 mt-0.5 transition-colors duration-200">
+                                            <div className="w-9 h-9 rounded-lg bg-[#FAF7F2] border border-[var(--border)] flex items-center justify-center text-[var(--primary)] shrink-0 mt-0.5 transition-colors duration-200">
                                                 <Clock size={18} />
                                             </div>
                                             <div>
@@ -443,7 +443,7 @@ export default function Bookings() {
                                     {selectedAppointment.notes && (
                                         <div className="pt-2">
                                             <span className="block text-[0.72rem] font-bold uppercase tracking-wider text-[var(--text-muted)] mb-2">Ghi chú của khách hàng</span>
-                                            <div className="p-4 rounded-xl bg-[#FAF7F2] border-l-4 border-[var(--primary)] text-[var(--text-dark)] text-[0.93rem] leading-relaxed whitespace-pre-wrap transition-all duration-300">
+                                            <div className="p-4 rounded-lg bg-[#FAF7F2] border-l-4 border-[var(--primary)] text-[var(--text-dark)] text-[0.93rem] leading-relaxed whitespace-pre-wrap transition-all duration-300">
                                                 "{selectedAppointment.notes}"
                                             </div>
                                         </div>
@@ -461,7 +461,7 @@ export default function Bookings() {
                                             {getImageUrls(selectedAppointment.customerImage).map((imgUrl, idx) => (
                                                 <div 
                                                     key={idx}
-                                                    className="relative overflow-hidden rounded-2xl border border-[var(--border)] shadow-xs group cursor-pointer transition-all duration-300 hover:shadow-md aspect-square bg-stone-100"
+                                                    className="relative overflow-hidden rounded-lg border border-[var(--border)] shadow-xs group cursor-pointer transition-all duration-300 hover:shadow-md aspect-square bg-stone-100"
                                                     onClick={() => setPreviewImage(imgUrl)}
                                                     title={`Bấm để mở ảnh full HD #${idx + 1}`}
                                                 >
@@ -493,7 +493,7 @@ export default function Bookings() {
                                         type="button"
                                         disabled={updatingId === selectedAppointment.id}
                                         onClick={() => handleStatusUpdate(selectedAppointment, 'CONFIRMED')}
-                                        className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all duration-200 shadow-sm hover:scale-[1.02] flex items-center gap-2 cursor-pointer disabled:opacity-50 text-[0.88rem]"
+                                        className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all duration-200 shadow-sm hover:scale-[1.02] flex items-center gap-2 cursor-pointer disabled:opacity-50 text-[0.88rem]"
                                     >
                                         <CheckCircle size={16} /> Xác nhận lịch
                                     </button>
@@ -503,7 +503,7 @@ export default function Bookings() {
                                         type="button"
                                         disabled={updatingId === selectedAppointment.id}
                                         onClick={() => handleStatusUpdate(selectedAppointment, 'COMPLETED')}
-                                        className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all duration-200 shadow-sm hover:scale-[1.02] flex items-center gap-2 cursor-pointer disabled:opacity-50 text-[0.88rem]"
+                                        className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-medium transition-all duration-200 shadow-sm hover:scale-[1.02] flex items-center gap-2 cursor-pointer disabled:opacity-50 text-[0.88rem]"
                                     >
                                         <ShieldCheck size={16} /> Hoàn thành
                                     </button>
@@ -513,7 +513,7 @@ export default function Bookings() {
                                         type="button"
                                         disabled={updatingId === selectedAppointment.id}
                                         onClick={() => handleStatusUpdate(selectedAppointment, 'CANCELLED')}
-                                        className="px-4 py-2.5 rounded-xl bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition-all duration-200 hover:scale-[1.02] flex items-center gap-1.5 cursor-pointer disabled:opacity-50 text-[0.88rem]"
+                                        className="px-4 py-2.5 rounded-lg bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition-all duration-200 hover:scale-[1.02] flex items-center gap-1.5 cursor-pointer disabled:opacity-50 text-[0.88rem]"
                                     >
                                         <X size={16} /> Hủy lịch
                                     </button>
@@ -521,7 +521,7 @@ export default function Bookings() {
                                 <button
                                     type="button"
                                     onClick={() => setSelectedAppointment(null)}
-                                    className="px-4 py-2.5 rounded-xl bg-white border border-[var(--border)] text-[var(--text-dark)] hover:bg-gray-100 transition-all duration-200 hover:scale-[1.02] cursor-pointer text-[0.88rem] font-medium"
+                                    className="px-4 py-2.5 rounded-lg bg-white border border-[var(--border)] text-[var(--text-dark)] hover:bg-gray-100 transition-all duration-200 hover:scale-[1.02] cursor-pointer text-[0.88rem] font-medium"
                                 >
                                     Đóng
                                 </button>
@@ -548,7 +548,7 @@ export default function Bookings() {
                         <img
                             src={previewImage}
                             alt="Full preview"
-                            className="max-w-full max-h-[85vh] object-contain rounded-2xl shadow-2xl border border-white/20"
+                            className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl border border-white/20"
                         />
                     </div>
                 </div>

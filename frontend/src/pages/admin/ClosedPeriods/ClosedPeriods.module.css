@@ -29,7 +29,7 @@
 .listCard {
     background: var(--bg-light);
     border: 1px solid var(--border);
-    border-radius: 14px;
+    border-radius: 8px;
     padding: 22px;
 }
 
@@ -57,7 +57,7 @@
 .formCard select {
     width: 100%;
     border: 1px solid var(--border);
-    border-radius: 9px;
+    border-radius: 8px;
     padding: 11px 12px;
     background: var(--bg);
     color: var(--text-dark);
@@ -74,7 +74,7 @@
 .formCard > button,
 .periodItem button {
     border: none;
-    border-radius: 9px;
+    border-radius: 8px;
     cursor: pointer;
     font-weight: 700;
     transition: var(--transition);
@@ -111,7 +111,7 @@
     align-items: center;
     border: 1px solid var(--border);
     background: var(--bg);
-    border-radius: 12px;
+    border-radius: 8px;
     padding: 14px;
 }
 
@@ -160,7 +160,7 @@
 
 .messageBox,
 .stateBox {
-    border-radius: 10px;
+    border-radius: 8px;
     padding: 14px 16px;
     line-height: 1.5;
 }
