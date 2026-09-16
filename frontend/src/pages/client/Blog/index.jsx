@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { ArrowUpRightIcon, CalendarIcon, PencilSquareIcon } from '../../../icons';
+import { CalendarIcon, PencilSquareIcon, ClockIcon } from '../../../icons';
 import heroImg from '../../../assets/images/hero.png';
 import { API_URL, ASSET_URL } from '../../../config';
 
@@ -243,9 +243,14 @@ export default function Blog() {
                 </div>
                 <div className="p-5 flex flex-col flex-grow">
                   <h3 className="text-lg text-[var(--text-main)] mb-2 line-clamp-2 font-serif font-bold leading-snug"><Link to={`/blog/${post.slug}`} className="hover:text-[var(--primary-gold-dark)] transition-colors">{post.title}</Link></h3>
-                  <div className="flex flex-wrap items-center text-[11px] text-[var(--primary-gold-dark)] font-semibold mb-3 gap-x-3 gap-y-1"><span><CalendarIcon className="w-3 h-3 mr-1 inline-block" />{formatDate(post.publishedAt)}</span><span><PencilSquareIcon className="w-3 h-3 mr-1 inline-block" />{post.authorName || post.author?.fullName || 'Lan Anh Beauty'}</span></div>
-                  <p className="text-[var(--text-muted)] text-sm leading-[1.6] mb-4 line-clamp-3 flex-grow">{post.excerpt}</p>
-                  <div className="mt-auto pt-3 border-t border-[var(--border-silk-light)] flex items-center justify-between"><Link to={`/blog/${post.slug}`} className="btn-luxury-secondary text-[11px] px-3 py-1.5 whitespace-nowrap inline-flex items-center rounded-none"><span>Đọc bài</span><ArrowUpRightIcon className="w-3 h-3 ml-0.5" /></Link>{post.readingTimeMinutes && <span className="text-[11px] text-[var(--text-light)]">{post.readingTimeMinutes} phút đọc</span>}</div>
+                  <div className="flex flex-wrap items-center text-[11px] text-[var(--primary-gold-dark)] font-semibold mb-3 gap-x-3 gap-y-1">
+                    <span><CalendarIcon className="w-3 h-3 mr-1 inline-block" />{formatDate(post.publishedAt)}</span>
+                    <span><PencilSquareIcon className="w-3 h-3 mr-1 inline-block" />{post.authorName || post.author?.fullName || 'Lan Anh Beauty'}</span>
+                    {post.readingTimeMinutes && (
+                      <span><ClockIcon className="w-3 h-3 mr-1 inline-block text-[var(--primary-gold-dark)]" />{post.readingTimeMinutes} phút đọc</span>
+                    )}
+                  </div>
+                  <p className="text-[var(--text-muted)] text-sm leading-[1.6] line-clamp-3 flex-grow">{post.excerpt}</p>
                 </div>
               </article>
             ))}
